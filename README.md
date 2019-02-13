@@ -1,4 +1,4 @@
-# Λsyncy CLI and REPL
+# Asyncy CLI
 
 [![Requires.io](https://img.shields.io/requires/github/asyncy/cli.svg?style=flat-square)](https://requires.io/github/asyncy/cli/requirements/?branch=master)
 [![CircleCI](https://img.shields.io/circleci/project/github/asyncy/cli.svg?style=flat-square)](https://circleci.com/gh/asyncy/cli)
