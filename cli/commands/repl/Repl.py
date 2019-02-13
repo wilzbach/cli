@@ -93,7 +93,7 @@
 #                 self.submit(lines)
 #
 #             elif user_input[0] == '/':
-#                 getattr(self, f'command_{user_input[1:]}', self.command_none)()
+#               getattr(self, f'command_{user_input[1:]}', self.command_none)()
 #
 #             elif user_input in self.scope:
 #                 # echo out a value
