@@ -135,10 +135,12 @@ def user() -> dict:
 
                     res.raise_for_status()
                     if res.json().get('beta') is False:
-                        click.echo('We are in private beta.')
                         click.echo(
-                            'You have been added to our next invite queue.'
-                            ' So, keep your eye on your email for an invite.'
+                            'Hello! Asyncy is in private beta at this time.')
+                        click.echo(
+                            'We\'ve added you to our beta testers queue, '
+                            'and you should hear from us\nshortly via email'
+                            ' (which is linked to your GitHub account).'
                         )
                         sys.exit(1)
 
