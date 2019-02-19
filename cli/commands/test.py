@@ -54,10 +54,9 @@ def compile_app(app_name_for_analytics, debug) -> dict:
     with click_spinner.spinner():
         try:
             stories = json.loads(App.compile(os.getcwd()))
-        except BaseException:
-            import traceback
-            traceback.print_exc()
-            click.echo('Failed', err=True)
+        except BaseException as e:
+            click.echo('Failed to compile project:\n', err=True)
+            click.echo(click.style(str(e.error), fg='red'), err=True)
             stories = None
 
         result = 'Success'
