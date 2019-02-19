@@ -2,7 +2,7 @@ __all__ = [
     'apps',
     'bootstrap',
     'config',
-    'feeback',
+    'feedback',
     'login',
     'logs',
     'maintenance',

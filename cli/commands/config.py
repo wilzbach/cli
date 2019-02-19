@@ -9,21 +9,21 @@ from .. import cli
 from .. import options
 
 
-@cli.cli.command()
-@options.app
-def config(app):
+@cli.cli.group()
+def config():
     """
-    List environment variables.
+    Update the configuration for your app
+    """
+    pass
 
-    asyncy config:get -- Get one or more variables.
 
-    asyncy config:set -- Set one or more variables.
-
-    asyncy config:del -- Delete one or more variables.
-
+@config.command(name='list')
+@options.app()
+def list_command(app):
+    """
+    List environment variables
     """
     cli.user()
-    cli.assert_project()
     click.echo('Fetching config... ', nl=False)
     with click_spinner.spinner():
         config = api.Config.get(app)
@@ -48,32 +48,30 @@ def config(app):
         click.echo(click.style('No configuration set yet.', bold=True))
         click.echo('\nSet Storyscript environment ' +
                    click.style('$ ', dim=True) +
-                   click.style('asyncy config:set key=value', fg='magenta'))
+                   click.style('asyncy config set key=value', fg='magenta'))
         click.echo('Set service environment ' +
                    click.style('$ ', dim=True) +
-                   click.style('asyncy config:set service.key=value',
+                   click.style('asyncy config set service.key=value',
                                fg='magenta'))
 
 
-@cli.cli.command(aliases=['config:set'])
+@config.command(name='set')
 @click.argument('variables', nargs=-1)
 @click.option('--message', '-m', nargs=1, default=None,
               help='(optional) Message why variable(s) were created.')
-@options.app
-def config_set(variables, app, message):
+@options.app()
+def set_command(variables, app, message):
     """
-    Set one or more environment variables
+    Set one or more environment variables.
 
-        $ asyncy config:set key=value foo=bar
+        $ asyncy config set key=value foo=bar
 
-    To set an environment variable to a specific service use
+    To set an environment variable for a specific service use
 
-        $ asyncy config:set twitter.oauth_token=value
+        $ asyncy config set twitter.oauth_token=value
 
     """
     cli.user()
-    cli.assert_project()
-    cli.track('Set variables')
 
     click.echo('Fetching config... ', nl=False)
     with click_spinner.spinner():
@@ -82,7 +80,13 @@ def config_set(variables, app, message):
 
     if variables:
         for keyval in variables:
-            key, val = tuple(keyval.split('=', 1))
+            try:
+                key, val = tuple(keyval.split('=', 1))
+            except ValueError:
+                click.echo(f'Config variables must be of the form name=value.'
+                           f'\nGot unexpected pair "{keyval}"', err=True)
+                click.echo(set_command.__doc__.strip())
+                return
             # TODO validate against a regexp pattern
             if '.' in key:
                 service, key = tuple(key.split('.', 1))
@@ -102,22 +106,20 @@ def config_set(variables, app, message):
         )
 
     else:
-        click.echo(config_set.__doc__.strip())
+        click.echo(set_command.__doc__.strip())
 
 
-@cli.cli.command(aliases=['config:get'])
+@config.command()
 @click.argument('variables', nargs=-1)
-@options.app
-def config_get(variables, app):
+@options.app()
+def get(variables, app):
     """
     Get one or more environment variables
     """
     cli.user()
-    cli.assert_project()
-    cli.track('Get variables')
     if variables:
 
-        click.echo(f'Fetching config for {cli.get_app_name()}... ', nl=False)
+        click.echo(f'Fetching config for {app}... ', nl=False)
         with click_spinner.spinner():
             config = api.Config.get(app=app)
         click.echo(click.style('√', fg='green'))
@@ -145,21 +147,19 @@ def config_get(variables, app):
                 click.echo(click.style(f'No variable named "{name.upper()}".',
                                        fg='red'))
     else:
-        click.echo(config_get.__doc__.strip())
+        click.echo(get.__doc__.strip())
 
 
-@cli.cli.command(aliases=['config:del'])
+@config.command(name='del')
 @click.argument('variables', nargs=-1)
 @click.option('--message', '-m', nargs=1, default=None,
               help='(optional) Message why variable(s) were deleted.')
-@options.app
-def config_del(variables, app, message):
+@options.app()
+def del_command(variables, app, message):
     """
     Delete one or more environment variables
     """
     cli.user()
-    cli.assert_project()
-    cli.track('Delete variables')
     if variables:
 
         click.echo('Fetching config... ', nl=False)
@@ -196,4 +196,4 @@ def config_del(variables, app, message):
                    click.style(f'v{release["id"]}', bold=True, fg='magenta'))
 
     else:
-        click.echo(config_del.__doc__.strip())
+        click.echo(del_command.__doc__.strip())

@@ -30,17 +30,13 @@ keywords = [
 
 requirements = [
     'asyncio==3.4.3',
-    'click-alias==0.1.1a1',
     'click-help-colors==0.5',
     'click-spinner==0.1.8',
     'click==7.0',
     'emoji==0.5.0',
-    'mixpanel==4.3.2',
-    'prompt-toolkit==2.0.3',
-    'Pygments==2.2.0',
     'raven==6.9.0',
     'requests==2.20.0',
-    'storyscript==0.7.1',
+    'storyscript==0.9.5',
     'texttable==1.4.0',
     'pyyaml==3.13',
     'pytz==2018.5'

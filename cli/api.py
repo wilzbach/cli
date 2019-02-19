@@ -3,6 +3,7 @@
 import os
 import sys
 from json import dumps
+from urllib.error import URLError
 
 import click
 
@@ -18,22 +19,33 @@ graphql_endpoint = os.getenv(
 
 
 def graphql(query, **variables):
-    res = requests.post(
-        graphql_endpoint,
-        data=dumps({
-            'query': query,
-            'variables': variables
-        }),
-        headers={
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': f'Bearer {cli.data["access_token"]}'
-        }
-    )
+    try:
+        res = requests.post(
+            graphql_endpoint,
+            data=dumps({
+                'query': query,
+                'variables': variables
+            }),
+            headers={
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': f'Bearer {cli.get_access_token()}'
+            }
+        )
+    except KeyboardInterrupt:  # OK - user cancelled.
+        click.echo('\nCancelled')
+        sys.exit(1)
+    except (URLError, ConnectionError, requests.exceptions.ConnectionError):
+        click.echo(click.style(f'\nFailed to connect to {graphql_endpoint}',
+                               fg='red'), err=True)
+        sys.exit(1)
+
     data = res.json()
     if 'errors' in data:
+        click.echo()
         for error in data['errors']:
-            click.echo(click.style('Error: ', fg='red') + error['message'])
+            click.echo(click.style('Error: ', fg='red') + error['message'],
+                       err=True)
         sys.exit(1)
     return data
 
@@ -91,7 +103,7 @@ class Releases:
 
     @staticmethod
     def rollback(version: str, app: str):
-        app = Apps.get_uuid_from_hostname(app)
+        app_uuid = Apps.get_uuid_from_hostname(app)
         res = graphql(
             """
             query($app: UUID!, $version: Int!){
@@ -101,30 +113,14 @@ class Releases:
               }
             }
             """,
-            app=app,
+            app=app_uuid,
             version=version
         )
         release = res['data']['releaseByAppUuidAndId']
 
-        res = graphql(
-            """
-            mutation ($data: CreateReleaseInput!){
-              createRelease(input: $data) {
-                release { id }
-              }
-            }
-            """,
-            data={
-                'release': {
-                    'appUuid': app,
-                    'message': f'Rollback to v{version}',
-                    'config': release['config'] or {},
-                    'payload': release['payload'],
-                    'ownerUuid': cli.data['id']
-                }
-            }
-        )
-        return res['data']['createRelease']['release']
+        return Releases.create(release['config'] or {},
+                               release['payload'], app,
+                               f'Rollback to v{version}')
 
     @staticmethod
     def get(app: str):
@@ -166,7 +162,20 @@ class Releases:
                 }
             }
         )
-        return res['data']['createRelease']['release']
+
+        release_ = res['data']['createRelease']['release']
+
+        changes = 'Code'
+        if payload is None:
+            changes = 'Config'
+
+        cli.track('App Release Created', {
+            'Version': release_['id'],
+            'App name': app,
+            'Changes': changes
+        })
+
+        return release_
 
 
 class Apps:
@@ -182,6 +191,14 @@ class Apps:
             """,
             app=app
         )
+        if res['data']['app'] is None:
+            click.echo()
+            click.echo(click.style(
+                f'The app "{app}" doesn\'t seem to exist.\n'
+                f'Are you sure you have access to it?',
+                fg='red'), err=True)
+            sys.exit(1)
+
         return res['data']['app']['appUuid']
 
     @staticmethod

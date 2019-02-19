@@ -1,39 +1,185 @@
 version: 2.0
 jobs:
-    build:
-        working_directory: ~/repo
-        docker:
-            - image: circleci/python:3.7.0-node
-        steps:
-            - checkout
-            - restore_cache:
-                keys:
-                    - v1-dependencies-{{ checksum "setup.py" }}
-                    - v1-dependencies-
+  test:
+    working_directory: ~/repo
+    docker:
+    - image: circleci/python:3.7.0-node
+    steps:
+    - checkout
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "setup.py" }}
+        - v1-dependencies-
 
-            - run:
-                name: install dependencies
-                command: |
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    python3 setup.py install
-                    pip install tox
+    - run:
+        name: install dependencies
+        command: |
+          python -m venv venv
+          . venv/bin/activate
+          python3 setup.py install
+          pip install tox
 
-            - save_cache:
-                paths:
-                    - ./venv
-                key: v1-dependencies-{{ checksum "setup.py" }}
+    - save_cache:
+        paths:
+        - ./venv
+        key: v1-dependencies-{{ checksum "setup.py" }}
 
-            - run:
-                command: |
-                    . venv/bin/activate
-                    tox
+    - run:
+        command: |
+          . venv/bin/activate
+          tox
 
-            - run:
-                name: collect coverage
-                command: |
-                    bash <(curl -s https://codecov.io/bash)
+    - run:
+        name: collect coverage
+        command: |
+          bash <(curl -s https://codecov.io/bash)
 
-            - store_artifacts:
-                path: test-reports
-                destination: test-reports
+    - store_artifacts:
+        path: test-reports
+        destination: test-reports
+
+  release_pypi:
+    docker:
+    - image: circleci/python:3.7.0-node
+    steps:
+      - checkout
+      - run:
+          name: setup venv
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+      - run:
+          name: install twine
+          command: |
+            . venv/bin/activate
+            pip install twine
+      - run:
+          name: sdist
+          command: |
+            . venv/bin/activate
+            python setup.py sdist
+      - run:
+          name: upload
+          command: |
+            . venv/bin/activate
+            twine upload dist/asyncy-*.tar.gz
+  release_brew:
+    macos:
+      xcode: "9.0"
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "8e:2f:db:cd:a7:a4:38:ca:c1:c3:8f:ef:fc:27:4a:93"
+#      - restore_cache:
+#          keys:
+#            - brew-cache-{{ .Branch }}
+      - run:
+          name: install or re-link brew
+          command: |
+            if [ -d /usr/local/Cellar ]; then
+              for i in `ls /usr/local/Cellar/`; do echo "Re-linking $i"; brew link --force $i; done
+            else
+              /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+            fi
+      - run:
+          name: upgrade python
+          command: brew upgrade python || echo "Python is already installed"
+#      - save_cache:
+#          paths:
+#            - /usr/local/Cellar
+#            - /usr/local/Homebrew
+#          key: brew-cache-{{ .Branch }}
+      - run:
+          name: install virtualenv
+          command: pip3 install virtualenv
+      - checkout
+      - run:
+          name: change git name
+          command: git config --global user.name "Asyncy Infrastructure"
+      - run:
+          name: change git email
+          command: git config --global user.email infra@asyncy.com
+      - run:
+          name: create brew pr
+          command: bash ./scripts/update_brew.sh $CIRCLE_TAG
+#  release_snap:
+#    docker:
+#      - image: cibuilds/snapcraft:stable
+#    steps:
+#      - checkout
+#      - run:
+#          name: apt-get update
+#          command: apt-get update
+#      - run:
+#          name: create snapcraft.yaml
+#          command: |
+#            echo "
+#            name: asyncy
+#            version: $CIRCLE_TAG
+#            summary: Asyncy CLI
+#            description: Asyncy CLI
+#            grade: devel
+#            confinement: devmode
+#            base: core18
+#
+#            apps:
+#              asyncy:
+#                command: bin/asyncy
+#                environment:
+#                  LANG: C.UTF-8
+#                  LC_ALL: C.UTF-8
+#
+#            parts:
+#              asyncy:
+#                plugin: python
+#                python-version: python3
+#                python-packages:
+#                - asyncy==$CIRCLE_TAG
+#            " > snapcraft.yaml
+#      - run:
+#          name: build snap
+#          command: snapcraft
+#      - run:
+#          name: install snap
+#          command: snap install asyncy_${CIRCLE_TAG}_amd64.snap --dangerous --devmode
+#      - run:
+#          name: check version
+#          command: asyncy version | grep ${CIRCLE_TAG}
+#      - run:
+#          name: snapcraft login
+#          command: echo $SNAPCRAFT_LOGIN | snapcraft login --with -
+#      - run:
+#          name: snapcraft push
+#          command: snapcraft push --release edge asyncy_${CIRCLE_TAG}_amd64.snap
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+    - test:
+        filters:
+          tags:
+            only: /.*/
+    - release_pypi:
+        requires:
+          - test
+        filters:
+          tags:
+            only: /^[0-9]+\.[0-9]+\.[0-9]+$/
+          branches:
+            ignore: /.*/
+#    - release_snap:
+#        requires:
+#          - release_pypi
+#        filters:
+#          tags:
+#            only: /^[0-9]+\.[0-9]+\.[0-9]+$/
+#          branches:
+#            ignore: /.*/
+    - release_brew:
+        requires:
+        - release_pypi
+        filters:
+          tags:
+            only: /^[0-9]+\.[0-9]+\.[0-9]+$/
+          branches:
+            ignore: /.*/

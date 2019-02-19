@@ -45,7 +45,13 @@ asyncy --help
 git checkout -b release_$tag
 git commit -a -m "Release $tag."
 git push origin release_$tag
-echo "Branch release_$tag created. Please open a PR and have it accepted."
+git checkout master
+git merge release_$tag
+git tag $tag
+git push origin master
+git push origin master --tags
+
+echo "Released!"
 
 cd ../..
 echo "Cleaning $BUILD_DIR..."

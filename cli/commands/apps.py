@@ -22,8 +22,16 @@ def maintenance(enabled: bool) -> str:
         return 'running'
 
 
-@cli.cli.command()
+@cli.cli.group()
 def apps():
+    """
+    Create, list and manage apps which you have access to
+    """
+    pass
+
+
+@apps.command(name='list')
+def list_command():
     """
     List your applications
     """
@@ -53,7 +61,7 @@ def apps():
 
     if count == 0:
         click.echo('No application found. Create your first app with')
-        click.echo(click.style('$ asyncy apps:create', fg='magenta'))
+        click.echo(click.style('$ asyncy apps create', fg='magenta'))
     else:
         click.echo(table.draw())
 
@@ -83,16 +91,15 @@ def _is_git_repo_good():
         pass
 
 
-@cli.cli.command(aliases=['apps:create'])
+@apps.command()
 @click.argument('name', nargs=1, required=False)
 @click.option('--team', type=str,
               help='Team name that owns this new Application')
-def apps_create(name, team):
+def create(name, team):
     """
     Create a new Asyncy App
     """
     cli.user()
-    cli.track('Creating application')
     asyncy_yaml = cli.find_asyncy_yml()
     if asyncy_yaml is not None:
         click.echo(
@@ -131,6 +138,7 @@ def apps_create(name, team):
         emoji.emojize(':party_popper:') +
         '  You are ready to build your first Asyncy App'
     )
+    cli.track('App Created', {'App name': name})
     click.echo('- [ ] Write some stories')
     click.echo('- [ ] ' + click.style('$ asyncy deploy', fg='magenta'))
     click.echo(
@@ -139,21 +147,37 @@ def apps_create(name, team):
     )
 
 
-@cli.cli.command(aliases=['apps:destroy'])
-@options.app
-@click.option('--confirm', is_flag=True,
-              help='Do not prompt to confirm destruction.')
-def apps_destroy(confirm, app):
+@apps.command()
+@options.app()
+def url(app):
     """
-    Destory an application
+    Returns the full url of your application.
+    Great to use with $(asyncy apps url) in bash.
     """
     cli.user()
-    cli.track('Destroying application')
+    print_nl = False
+    import os
+    if os.isatty(sys.stdout.fileno()):
+        print_nl = True
+
+    click.echo(f'https://{app}.asyncyapp.com', nl=print_nl)
+
+
+@apps.command()
+@options.app()
+@click.option('--confirm', is_flag=True,
+              help='Do not prompt to confirm destruction.')
+def destroy(confirm, app):
+    """
+    Destroy an application
+    """
+    cli.user()
     if (
         confirm or
-        click.confirm(f'Do you want to destory "{app}"?', abort=True)
+        click.confirm(f'Do you want to destroy "{app}"?', abort=True)
     ):
         click.echo(f'Destroying application "{app}"...', nl=False)
         with click_spinner.spinner():
             api.Apps.destroy(app=app)
+            cli.track('App Destroyed', {'App name': app})
         click.echo(click.style('√', fg='green'))

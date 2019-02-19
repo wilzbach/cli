@@ -10,15 +10,11 @@ from uuid import uuid4
 
 import click
 
-from click_alias import ClickAliasedGroup
-
 import click_help_colors
 
 import click_spinner
 
 import emoji
-
-from mixpanel import Mixpanel
 
 from raven import Client
 
@@ -29,23 +25,35 @@ from .version import version
 
 
 if not os.getenv('TOXENV'):
-    mp = Mixpanel('c207b744ee33522b9c0d363c71ff6122')
+    enable_reporting = True
     sentry = Client(
         'https://007e7d135737487f97f5fe87d5d85b55@sentry.io/1206504'
     )
 else:
-    mp = None
+    enable_reporting = False
     sentry = Client()
 
 data = None
 home = os.path.expanduser('~/.asyncy')
-token = None
 
 
-def track(message, extra={}):
+def get_access_token():
+    return data['access_token']
+
+
+def track(event_name, extra: dict = None):
     try:
-        extra['version'] = version
-        mp.track(str(data['id']), message, extra)
+        if extra is None:
+            extra = {}
+
+        extra['CLI version'] = version
+
+        if enable_reporting:
+            requests.post('https://stories.asyncyapp.com/track/event', json={
+                'id': str(data['id']),
+                'event_name': event_name,
+                'event_props': extra
+            })
     except Exception:
         # ignore issues with tracking
         pass
@@ -64,9 +72,10 @@ def find_asyncy_yml():
     return None
 
 
-def get_app_name() -> str:
+def get_app_name_from_yml() -> str:
     file = find_asyncy_yml()
-    assert file is not None
+    if file is None:
+        return None
     import yaml
     with open(file, 'r') as s:
         return yaml.load(s).pop('app_name')
@@ -88,13 +97,15 @@ def user() -> dict:
     """
     Get the active user
     """
+    global data
+
     if data:
         return data
 
     else:
         click.echo(
             'Hi! Thank you for using ' +
-            click.style('Λsyncy', fg='magenta') + '.'
+            click.style('Asyncy', fg='magenta') + '.'
         )
         click.echo('Please login with GitHub to get started.')
 
@@ -104,7 +115,7 @@ def user() -> dict:
             'state': state
         }
 
-        url = f'https://login.asyncyapp.com/github?{urlencode(query)}'
+        url = f'https://stories.asyncyapp.com/github?{urlencode(query)}'
 
         click.launch(url)
         click.echo()
@@ -116,7 +127,7 @@ def user() -> dict:
         with click_spinner.spinner():
             while True:
                 try:
-                    url = 'https://login.asyncyapp.com/github/oauth_callback'
+                    url = 'https://stories.asyncyapp.com/github/oauth_callback'
                     res = requests.get(f'{url}?state={state}')
 
                     if res.text == 'null':
@@ -146,11 +157,32 @@ def user() -> dict:
             f'  Welcome {data["name"]}!'
         )
         click.echo()
-        click.echo('You may create or list your apps with:')
+        click.echo('Create a new app with:')
+        print_command('asyncy apps create')
+
+        click.echo()
+
+        click.echo('To list all your apps:')
         print_command('asyncy apps')
 
         click.echo()
-        track('Logged into CLI')
+        track('Login Completed')
+        try:
+            if enable_reporting:
+                requests.post(
+                    'https://stories.asyncyapp.com/track/profile',
+                    json={
+                        'id': str(data['id']),
+                        'profile': {
+                            'Name': data['name'],
+                            'Email': data.get('email'),
+                            'GitHub Username': data.get('username'),
+                            'Timezone': time.tzname[time.daylight]
+                        }
+                    })
+        except:
+            # Ignore tracking errors
+            pass
         return data
 
 
@@ -158,17 +190,28 @@ def print_command(command):
     click.echo(click.style(f'$ {command}', fg='magenta'))
 
 
-def assert_project():
-    try:
-        name = get_app_name()
-        if not name:
-            raise Exception()
-    except:
+def print_deprecated_warning(alternative):
+    click.echo(click.style('Warning: ', fg='yellow') +
+               'This command is deprecated and will be removed' +
+               ' in a future release. Please use ' +
+               click.style(f'$ {alternative}\n', fg='magenta'))
+
+
+def assert_project(command, app, default_app, allow_option):
+    if app is None:
         click.echo(click.style('No Asyncy application found.', fg='red'))
         click.echo()
         click.echo('Create an application with:')
-        print_command('asyncy apps:create')
+        print_command('asyncy apps create')
         sys.exit(1)
+    elif not allow_option and app != default_app:
+        click.echo(click.style(
+            'The --app option is not allowed with the {} command.'
+            .format(command),
+            fg='red'
+        ))
+        sys.exit(1)
+    return app
 
 
 def init():
@@ -216,28 +259,8 @@ def run(cmd: str):
 # click_help_colors._colorize = _colorize
 
 
-class Cli(DYMGroup, ClickAliasedGroup,
-          click_help_colors.HelpColorsGroup):
-
-    def format_commands(self, ctx, formatter):
-        rows = []
-        for sub_command in self.list_commands(ctx):
-            cmd = self.get_command(ctx, sub_command)
-            if cmd is None:
-                continue
-            if hasattr(cmd, 'hidden') and cmd.hidden:
-                continue
-            if sub_command in self._commands:
-                aliases = ','.join(sorted(self._commands[sub_command]))
-                if ':' in aliases:
-                    sub_command = f'  {aliases}'
-                else:
-                    sub_command = aliases
-            cmd_help = cmd.short_help or ''
-            rows.append((sub_command, cmd_help))
-        if rows:
-            with formatter.section('Commands'):
-                formatter.write_dl(rows)
+class Cli(DYMGroup, click_help_colors.HelpColorsGroup):
+    pass
 
 
 @click.group(cls=Cli,
@@ -245,7 +268,7 @@ class Cli(DYMGroup, ClickAliasedGroup,
              help_options_color='magenta')
 def cli():
     """
-    Hello! Welcome to Λsyncy
+    Hello! Welcome to Asyncy
 
     We hope you enjoy and we look forward to your feedback.
 

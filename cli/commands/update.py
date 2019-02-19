@@ -5,7 +5,7 @@ import click
 from .. import cli
 
 
-@cli.cli.command()
+@cli.cli.command(hidden=True)
 def update():
     """
     Look for new version updates to CLI

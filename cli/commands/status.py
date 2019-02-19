@@ -5,7 +5,7 @@ import click
 from .. import cli
 
 
-@cli.cli.command()
+@cli.cli.command(hidden=True)
 def status():
     """
     Show Asyncy status

@@ -9,15 +9,22 @@ from .. import cli
 from .. import options
 
 
-@cli.cli.command()
-@options.app
-def maintenance(app):
+@cli.cli.group()
+def maintenance():
+    """
+    Manage the availability of your apps
+    """
+    pass
+
+
+@maintenance.command()
+@options.app()
+def check(app):
     """
     Returns if the application is in maintenance mode.
     """
     cli.user()
-    cli.assert_project()
-    click.echo(f'Fetching maintenance mode for {cli.get_app_name()}... ',
+    click.echo(f'Fetching maintenance mode for {app}... ',
                nl=False)
     with click_spinner.spinner():
         enabled = api.Apps.maintenance(app=app, maintenance=None)
@@ -29,15 +36,14 @@ def maintenance(app):
                    bold=True, fg='green'))
 
 
-@cli.cli.command(aliases=['maintenance:on'])
-@options.app
-def maintenance_on(app):
+@maintenance.command()
+@options.app()
+def on(app):
     """
     Turns maintenance mode on.
     """
     cli.user()
-    cli.assert_project()
-    click.echo(f'Enabling maintenance mode for app {cli.get_app_name()}... ',
+    click.echo(f'Enabling maintenance mode for app {app}... ',
                nl=False)
     with click_spinner.spinner():
         app = api.Apps.maintenance(app=app, maintenance=True)
@@ -46,15 +52,14 @@ def maintenance_on(app):
                            dim=True))
 
 
-@cli.cli.command(aliases=['maintenance:off'])
-@options.app
-def maintenance_off(app):
+@maintenance.command()
+@options.app()
+def off(app):
     """
     Turns maintenance mode off.
     """
     cli.user()
-    cli.assert_project()
-    click.echo(f'Disabling maintenance mode for app {cli.get_app_name()}... ',
+    click.echo(f'Disabling maintenance mode for app {app}... ',
                nl=False)
     with click_spinner.spinner():
         app = api.Apps.maintenance(app=app, maintenance=False)

@@ -5,6 +5,8 @@ import sys
 
 import click
 
+import click_spinner
+
 import emoji
 
 from .. import cli
@@ -14,30 +16,61 @@ from .. import cli
 @click.option('--debug', is_flag=True, help='Compile in debug mode')
 def test(debug):
     """
-    Test the Stories
+    Compile your project and check for any errors
     """
-    from storyscript.app import App
+
     cli.user()
-    cli.track('Test Stories')
-    click.echo(click.style('Compiling Stories', bold=True))
-    try:
-        stories = json.loads(App.compile(os.getcwd(), debug=debug))
-    except Exception as e:
-        cli.track('Stories failed')
-        cli.sentry.captureException()
-        click.echo(click.style('X', fg='red') +
-                   ' Errors found in Storyscript.')
-        click.echo(str(e))
+
+    app_name = cli.get_app_name_from_yml() or 'Not created'
+    tree = compile_app(app_name, debug)
+
+    if tree is None:
+        sys.exit(1)
+
+    count = len(tree.get('stories', {}))
+
+    if count == 0:
+        click.echo(click.style('\tX', fg='red') + ' No stories found')
+        sys.exit(1)
     else:
-        cli.track('Stories passed')
-        cli.write(stories, f'{cli.home}/stories.json')
-        if stories['stories'] == {}:
-            click.echo(click.style('   X', fg='red') + ' No stories found')
-            sys.exit(1)
+        for k, v in tree['stories'].items():
+            click.echo(click.style('\t√', fg='green') + f' {k}')
+
+    click.echo(click.style('√', fg='green') +
+               emoji.emojize(' Looking good! :thumbs_up:'))
+    click.echo()
+    click.echo('Deploy your app with:')
+    cli.print_command('asyncy deploy')
+
+
+def compile_app(app_name_for_analytics, debug) -> dict:
+    """
+    Compiles, prints pretty info, and returns the compiled tree.
+    :return: The compiled tree
+    """
+    from storyscript.App import App
+    click.echo(click.style('Compiling Stories...', bold=True))
+
+    with click_spinner.spinner():
+        try:
+            stories = json.loads(App.compile(os.getcwd()))
+        except BaseException as e:
+            click.echo('Failed to compile project:\n', err=True)
+            click.echo(click.style(str(e.error), fg='red'), err=True)
+            stories = None
+
+        result = 'Success'
+        count = 0
+
+        if stories is None:
+            result = 'Failed'
         else:
-            click.echo(click.style('   √', fg='green') + ' Stories built.')
+            count = len(stories.get('stories', {}))
 
-        # click.echo(click.style('Checking Services', bold=True))
+        cli.track('App Compiled', {
+            'App name': app_name_for_analytics,
+            'Result': result,
+            'Stories': count
+        })
 
-        click.echo(click.style('√', fg='green') +
-                   emoji.emojize(' Looking good! :thumbs_up:'))
+    return stories
