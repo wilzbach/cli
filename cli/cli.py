@@ -93,98 +93,103 @@ def write(content: str, location: str):
         file.write(content)
 
 
+def initiate_login():
+    global data
+
+    click.echo(
+        'Hi! Thank you for using ' +
+        click.style('Asyncy', fg='magenta') + '.'
+    )
+    click.echo('Please login with GitHub to get started.')
+
+    state = uuid4()
+
+    query = {
+        'state': state
+    }
+
+    url = f'https://stories.asyncyapp.com/github?{urlencode(query)}'
+
+    click.launch(url)
+    click.echo()
+    click.echo('Visit this link if your browser '
+               'doesn\'t open automatically:')
+    click.echo(url)
+    click.echo()
+
+    with click_spinner.spinner():
+        while True:
+            try:
+                url = 'https://stories.asyncyapp.com/github/oauth_callback'
+                res = requests.get(f'{url}?state={state}')
+
+                if res.text == 'null':
+                    raise IOError()
+
+                res.raise_for_status()
+                if res.json().get('beta') is False:
+                    click.echo(
+                        'Hello! Asyncy is in private beta at this time.')
+                    click.echo(
+                        'We\'ve added you to our beta testers queue, '
+                        'and you should hear from us\nshortly via email'
+                        ' (which is linked to your GitHub account).'
+                    )
+                    sys.exit(1)
+
+                write(res.text, f'{home}/.config')
+                init()
+                break
+            except IOError:
+                time.sleep(0.5)
+                # just try again
+                pass
+            except KeyboardInterrupt:
+                click.echo('Login failed. Please try again.')
+                sys.exit(1)
+    click.echo(
+        emoji.emojize(':waving_hand:') +
+        f'  Welcome {data["name"]}!'
+    )
+    click.echo()
+    click.echo('Create a new app with:')
+    print_command('asyncy apps create')
+
+    click.echo()
+
+    click.echo('To list all your apps:')
+    print_command('asyncy apps')
+
+    click.echo()
+    track('Login Completed')
+    try:
+        if enable_reporting:
+            requests.post(
+                'https://stories.asyncyapp.com/track/profile',
+                json={
+                    'id': str(data['id']),
+                    'profile': {
+                        'Name': data['name'],
+                        'Email': data.get('email'),
+                        'GitHub Username': data.get('username'),
+                        'Timezone': time.tzname[time.daylight]
+                    }
+                })
+    except:
+        # Ignore tracking errors
+        pass
+
+
 def user() -> dict:
     """
-    Get the active user
+    Get the active user.
     """
     global data
 
     if data:
         return data
-
     else:
-        click.echo(
-            'Hi! Thank you for using ' +
-            click.style('Asyncy', fg='magenta') + '.'
-        )
-        click.echo('Please login with GitHub to get started.')
-
-        state = uuid4()
-
-        query = {
-            'state': state
-        }
-
-        url = f'https://stories.asyncyapp.com/github?{urlencode(query)}'
-
-        click.launch(url)
-        click.echo()
-        click.echo('Visit this link if your browser '
-                   'doesn\'t open automatically:')
-        click.echo(url)
-        click.echo()
-
-        with click_spinner.spinner():
-            while True:
-                try:
-                    url = 'https://stories.asyncyapp.com/github/oauth_callback'
-                    res = requests.get(f'{url}?state={state}')
-
-                    if res.text == 'null':
-                        raise IOError()
-
-                    res.raise_for_status()
-                    if res.json().get('beta') is False:
-                        click.echo(
-                            'Hello! Asyncy is in private beta at this time.')
-                        click.echo(
-                            'We\'ve added you to our beta testers queue, '
-                            'and you should hear from us\nshortly via email'
-                            ' (which is linked to your GitHub account).'
-                        )
-                        sys.exit(1)
-
-                    write(res.text, f'{home}/.config')
-                    init()
-                    break
-                except IOError:
-                    time.sleep(0.5)
-                    # just try again
-                    pass
-                except KeyboardInterrupt:
-                    click.echo('Login failed. Please try again.')
-                    sys.exit(1)
-        click.echo(
-            emoji.emojize(':waving_hand:') +
-            f'  Welcome {data["name"]}!'
-        )
-        click.echo()
-        click.echo('Create a new app with:')
-        print_command('asyncy apps create')
-
-        click.echo()
-
-        click.echo('To list all your apps:')
-        print_command('asyncy apps')
-
-        click.echo()
-        track('Login Completed')
-        try:
-            if enable_reporting:
-                requests.post(
-                    'https://stories.asyncyapp.com/track/profile',
-                    json={
-                        'id': str(data['id']),
-                        'profile': {
-                            'Name': data['name'],
-                            'Email': data.get('email'),
-                            'GitHub Username': data.get('username'),
-                            'Timezone': time.tzname[time.daylight]
-                        }
-                    })
-        except:
-            # Ignore tracking errors
-            pass
+        initiate_login()
         return data
 
 
