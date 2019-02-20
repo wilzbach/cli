@@ -9,6 +9,8 @@ import click_spinner
 
 import emoji
 
+from storyscript.exceptions import StoryError
+
 from .. import cli
 
 
@@ -54,9 +56,13 @@ def compile_app(app_name_for_analytics, debug) -> dict:
     with click_spinner.spinner():
         try:
             stories = json.loads(App.compile(os.getcwd()))
+        except StoryError as e:
+            click.echo('Failed to compile project:\n', err=True)
+            click.echo(click.style(str(e.message()), fg='red'), err=True)
+            stories = None
         except BaseException as e:
             click.echo('Failed to compile project:\n', err=True)
-            click.echo(click.style(str(e.error), fg='red'), err=True)
+            click.echo(click.style(str(e), fg='red'), err=True)
             stories = None
 
         result = 'Success'
