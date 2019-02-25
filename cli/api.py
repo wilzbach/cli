@@ -179,8 +179,17 @@ class Releases:
 
 
 class Apps:
+    _hostname_to_uuid = {}
+
     @staticmethod
     def get_uuid_from_hostname(app: str) -> str:
+        """
+        This method also caches all queries made, but only during the current
+        CLI session.
+        """
+        if Apps._hostname_to_uuid.get(app) is not None:
+            return Apps._hostname_to_uuid.get(app)
+
         res = graphql(
             """
             query($app: Hostname!){
@@ -199,7 +208,10 @@ class Apps:
                 fg='red'), err=True)
             sys.exit(1)
 
-        return res['data']['app']['appUuid']
+        app_uuid = res['data']['app']['appUuid']
+        Apps._hostname_to_uuid[app] = app_uuid
+
+        return app_uuid
 
     @staticmethod
     def maintenance(app: str, maintenance: bool):
