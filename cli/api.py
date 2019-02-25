@@ -36,7 +36,8 @@ def graphql(query, **variables):
     except KeyboardInterrupt:  # OK - user cancelled.
         click.echo('\nCancelled')
         sys.exit(1)
-    except (URLError, ConnectionError, requests.exceptions.ConnectionError):
+    except (URLError, ConnectionError, requests.exceptions.ConnectionError,
+            requests.exceptions.ReadTimeout):
         click.echo(click.style(f'\nFailed to connect to {graphql_endpoint}',
                                fg='red'), err=True)
         sys.exit(1)
