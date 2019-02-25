@@ -145,23 +145,6 @@ class Releases:
             return []
 
     @staticmethod
-    def list_releases_with_status(state: str, app: str):
-        res = graphql(
-            """
-            query($app: UUID!, $state: ReleaseState!) {
-                allReleases(condition: {appUuid: $app, state: $state}, 
-                            orderBy: ID_DESC) {
-                    nodes {
-                        id
-                        state
-                    }
-                }
-            }
-            """, app=Apps.get_uuid_from_hostname(app), state=state.upper())
-
-        print(res)
-
-    @staticmethod
     def create(config: {}, payload: {}, app: str, message: str) -> dict:
         res = graphql(
             """
