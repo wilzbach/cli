@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+from time import sleep
 
 import click
 
@@ -34,8 +35,28 @@ def deploy(app, message):
     click.echo()
     click.echo(click.style('√', fg='green') +
                f' Version {release["id"]} of your app has '
-               f'been queued for deployment.\n\n'
-               f'Check the deployment status with:')
-    cli.print_command('asyncy releases list')
+               f'been queued for deployment\n')
+
+    click.echo('Waiting for deployment to complete... ', nl=False)
+    with click_spinner.spinner():
+        state = 'QUEUED'
+        while state in ['DEPLOYING', 'QUEUED']:
+            state = Releases.get(app)[0]['state']
+            sleep(0.5)
+
     click.echo()
-    click.echo(f'If your story listens to HTTP requests, visit {url}')
+    if state == 'DEPLOYED':
+        click.echo(click.style('√', fg='green') + ' Deployed successfully!')
+        click.echo(f'If your story listens to HTTP requests, visit {url}')
+    elif state == 'FAILED':
+        click.echo(click.style('X', fg='red') + ' Deployment failed!',
+                   err=True)
+        click.echo(
+            'Please use the following command to view your app\'s logs:',
+            err=True)
+        cli.print_command('asyncy logs')
+    else:
+        click.echo(
+            f'An unhandled state of your app has been encountered - {state}',
+            err=True)
+        click.echo(f'Please shoot an email to support@asyncy.com')
