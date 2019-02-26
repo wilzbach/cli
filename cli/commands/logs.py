@@ -14,8 +14,10 @@ from ..api import Apps
 
 @cli.cli.command()
 @click.option('--follow', '-f', is_flag=True, help='Follow the logs')
+@click.option('--all', is_flag=True,
+              help='Return logs from all services')
 @options.app()
-def logs(follow, app):
+def logs(follow, all, app):
     """
     Fetch logs for your app
     """
@@ -27,12 +29,16 @@ def logs(follow, app):
 
     url = 'https://stories.asyncyapp.com/logs'
     click.echo(f'Retrieving logs for {app}... ', nl=False)
+    params = {
+        'access_token': cli.get_access_token(),
+    }
+
+    if all:
+        params['all'] = 'true'
+
     with click_spinner.spinner():
-        app_id = Apps.get_uuid_from_hostname(app)
-        r = requests.get(url, params={
-            'app_id': app_id,
-            'access_token': cli.get_access_token()
-        })
+        params['app_id'] = Apps.get_uuid_from_hostname(app)
+        r = requests.get(url, params=params)
 
     click.echo()
 
@@ -55,19 +61,33 @@ def logs(follow, app):
     arr.reverse()  # Latest is at the head.
 
     for log in arr:
-        message = log['payload']['message']
-        level = log['payload']['level'][:6].rjust(6)
+        if not all:
+            message: str = log['payload']['message']
+            level = log['payload']['level']
+        else:
+            message: str = log['payload']
+            level = log['severity']
+
+        level = level[:6].rjust(6)
 
         # Replace the ":" in the timezone field for datetime.
         ts = log['timestamp']
         ts = ts[0:ts.rindex(':')] + ts[ts.rindex(':') + 1:]
-        date = datetime.strptime(ts, '%Y-%m-%d %H:%M:%S.%f%z')
+        if all:
+            date = datetime.strptime(ts, '%Y-%m-%d %H:%M:%S%z')
+        else:
+            date = datetime.strptime(ts, '%Y-%m-%d %H:%M:%S.%f%z')
 
         pretty_date = date.astimezone().strftime('%b %d %H:%M:%S')
-        colourize_and_print(pretty_date, level, message)
+
+        tag = None
+        if all:
+            tag = log['resource'][1]['container_name'][:21]
+
+        colourize_and_print(pretty_date, tag, level, message.strip())
 
 
-def colourize_and_print(date, level, message):
+def colourize_and_print(date, tag, level, message):
     level_col = 'green'  # Default for info.
     level = level.lower()
     if 'debug' in level:
@@ -77,6 +97,12 @@ def colourize_and_print(date, level, message):
     elif 'crit' in level or 'error' in level:
         level_col = 'red'
 
-    click.echo(f'{click.style(date, fg="white")} '
-               f'{click.style(level.upper(), fg=level_col)} '
-               f'{message}')
+    if tag:
+        click.echo(f'{click.style(date, fg="white")} '
+                   f'{click.style(level.upper(), fg=level_col)} '
+                   f'{click.style(tag, fg="blue")}: '
+                   f'{message}')
+    else:
+        click.echo(f'{click.style(date, fg="white")} '
+                   f'{click.style(level.upper(), fg=level_col)} '
+                   f'{message}')
