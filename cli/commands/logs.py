@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from datetime import datetime
 
 import click
@@ -74,6 +75,9 @@ def logs(follow, all, app):
         ts = log['timestamp']
         ts = ts[0:ts.rindex(':')] + ts[ts.rindex(':') + 1:]
         if all:
+            # Truncate milliseconds from the date
+            # (sometimes this appears, and sometimes it doesn't appear)
+            ts = re.sub(r'\.[0-9]*', '', ts)
             date = datetime.strptime(ts, '%Y-%m-%d %H:%M:%S%z')
         else:
             date = datetime.strptime(ts, '%Y-%m-%d %H:%M:%S.%f%z')
