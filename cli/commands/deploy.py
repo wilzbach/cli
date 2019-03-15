@@ -8,7 +8,7 @@ import click_spinner
 
 from .test import compile_app
 from .. import cli, options
-from ..api import Config, Releases
+from ..api import Apps, Config, Releases
 
 
 @cli.cli.command()
@@ -39,6 +39,17 @@ def deploy(app, message):
 
     click.echo('Waiting for deployment to complete... ', nl=False)
     with click_spinner.spinner():
+        if Apps.maintenance(app, maintenance=None):
+            click.echo()
+            click.echo()
+            click.echo('Your app is in maintenance mode.\n'
+                       'Run the following to turn off it off:')
+            cli.print_command('asyncy maintenance off')
+            click.echo()
+            click.echo('Once maintenance mode is turned off, '
+                       'your app will be deployed immediately.')
+            return
+
         state = 'QUEUED'
         while state in ['DEPLOYING', 'QUEUED']:
             state = Releases.get(app)[0]['state']
