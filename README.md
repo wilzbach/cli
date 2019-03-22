@@ -5,6 +5,7 @@
 [![Codecov](https://img.shields.io/codecov/c/github/asyncy/cli.svg?style=flat-square)](https://codecov.io/gh/asyncy/cli)
 [![PyPI](https://img.shields.io/pypi/v/asyncy.svg?style=flat-square)](https://pypi.org/project/asyncy/)
 [![Snap Status](https://build.snapcraft.io/badge/asyncy/snapcraft.svg)](https://build.snapcraft.io/user/asyncy/snapcraft)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fasyncy%2Fcli.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fasyncy%2Fcli?ref=badge_shield)
 
 The Asyncy CLI is used to manage Asyncy from the command line.
 
@@ -56,3 +57,7 @@ Install
 python setup.py install
 asyncy
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fasyncy%2Fcli.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fasyncy%2Fcli?ref=badge_large)
