@@ -62,8 +62,9 @@ def track(event_name, extra: dict = None):
 def find_asyncy_yml():
     current_dir = os.getcwd()
     while True:
-        if os.path.exists(f'{current_dir}{os.path.sep}asyncy.yml'):
-            return f'{current_dir}/asyncy.yml'
+        p = os.path.join(current_dir, 'asyncy.yml')
+        if os.path.exists(p):
+            return p
         elif current_dir == os.path.dirname(current_dir):
             break
         else:
