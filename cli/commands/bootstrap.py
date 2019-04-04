@@ -56,7 +56,7 @@ def bootstrap(story):
 
         click.echo(emoji.emojize(':backhand_index_pointing_right:') +
                    '  Run ' +
-                   click.style('asyncy bootsrap _template_name_',
+                   click.style('asyncy bootstrap _template_name_',
                                fg='magenta'))
         click.echo('')
 
