@@ -81,6 +81,16 @@ def get_app_name_from_yml() -> str:
         return yaml.load(s).pop('app_name')
 
 
+def get_asyncy_yaml() -> dict:
+    file = find_asyncy_yml()
+    # Anybody calling this must've already checked for this file presence.
+    assert file is not None
+
+    import yaml
+    with open(file, 'r') as s:
+        return yaml.load(s)
+
+
 def write(content: str, location: str):
     dir = os.path.dirname(location)
     if dir and not os.path.exists(dir):
