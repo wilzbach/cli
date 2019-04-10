@@ -69,6 +69,10 @@ def logs(follow, all, app):
             message: str = log['payload']
             level = log['severity']
 
+        # In some cases, if the log line is a map,
+        # the log service will convert it to a json map.
+        message = str(message)
+
         level = level[:6].rjust(6)
 
         # Replace the ":" in the timezone field for datetime.
