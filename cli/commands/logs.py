@@ -15,10 +15,13 @@ from ..api import Apps
 
 @cli.cli.command()
 @click.option('--follow', '-f', is_flag=True, help='Follow the logs')
-@click.option('--all', is_flag=True,
+@click.option('--all', '-a', is_flag=True,
               help='Return logs from all services')
+@click.option('--level', '-l', default='info',
+              type=click.Choice(['debug', 'info', 'warning', 'error']),
+              help='Specify the minimum log level')
 @options.app()
-def logs(follow, all, app):
+def logs(follow, all, app, level):
     """
     Fetch logs for your app
     """
@@ -32,6 +35,7 @@ def logs(follow, all, app):
     click.echo(f'Retrieving logs for {app}... ', nl=False)
     params = {
         'access_token': cli.get_access_token(),
+        'level': level
     }
 
     if all:
@@ -68,6 +72,10 @@ def logs(follow, all, app):
         else:
             message: str = log['payload']
             level = log['severity']
+
+        # In some cases, if the log line is a map,
+        # the log service will convert it to a json map.
+        message = str(message)
 
         level = level[:6].rjust(6)
 
