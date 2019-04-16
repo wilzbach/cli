@@ -41,22 +41,66 @@ def get_access_token():
     return data['access_token']
 
 
-def track(event_name, extra: dict = None):
+def track_profile():
+    _make_tracking_http_request(
+        'https://stories.asyncyapp.com/track/profile', {
+            'id': str(data['id']),
+            'profile': {
+                'Name': data['name'],
+                'Email': data.get('email'),
+                'GitHub Username': data.get('username'),
+                'Timezone': time.tzname[time.daylight]
+            }
+        })
+
+
+def _make_tracking_http_request(url, json_data):
+    """
+    Forks the HTTP call into the background.
+    The caller does not make the call, and this method returns just after
+    forking the process.
+
+    The child makes the call, and does not return back to the caller,
+    but instead just exits (sys.exit(0)). This is to ensure that whatever
+    needs to happen after this method is called, does not happen twice.
+    """
+    if not enable_reporting:
+        return
+    if sys.platform != 'linux' and sys.platform != 'darwin':
+        try:
+            requests.post(url, json=json_data)
+        except Exception:
+            # ignore issues with tracking
+            pass
+
+        return
+
+    pid = os.fork()
+    if pid > 0:
+        # This is the parent process.
+        return
+
     try:
-        if extra is None:
-            extra = {}
-
-        extra['CLI version'] = version
-
-        if enable_reporting:
-            requests.post('https://stories.asyncyapp.com/track/event', json={
-                'id': str(data['id']),
-                'event_name': event_name,
-                'event_props': extra
-            })
+        requests.post(url, json=json_data)
     except Exception:
         # ignore issues with tracking
         pass
+
+    # This is the child process. Exit now.
+    sys.exit(0)
+
+
+def track(event_name, extra: dict = None):
+    if extra is None:
+        extra = {}
+
+    extra['CLI version'] = version
+    _make_tracking_http_request(
+        'https://stories.asyncyapp.com/track/event', {
+            'id': str(data['id']),
+            'event_name': event_name,
+            'event_props': extra
+        })
 
 
 def find_asyncy_yml():
@@ -127,36 +171,37 @@ def initiate_login():
     click.echo(url)
     click.echo()
 
-    with click_spinner.spinner():
-        while True:
+    while True:
+        with click_spinner.spinner():
             try:
                 url = 'https://stories.asyncyapp.com/github/oauth_callback'
+
                 res = requests.get(f'{url}?state={state}')
 
                 if res.text == 'null':
                     raise IOError()
 
                 res.raise_for_status()
-                if res.json().get('beta') is False:
-                    click.echo(
-                        'Hello! Asyncy is in private beta at this time.')
-                    click.echo(
-                        'We\'ve added you to our beta testers queue, '
-                        'and you should hear from us\nshortly via email'
-                        ' (which is linked to your GitHub account).'
-                    )
-                    sys.exit(1)
-
-                write(res.text, f'{home}/.config')
-                init()
                 break
             except IOError:
                 time.sleep(0.5)
-                # just try again
-                pass
             except KeyboardInterrupt:
                 click.echo('Login failed. Please try again.')
                 sys.exit(1)
+
+    if res.json().get('beta') is False:
+        click.echo(
+            'Hello! Asyncy is in private beta at this time.')
+        click.echo(
+            'We\'ve added you to our beta testers queue, '
+            'and you should hear from us\nshortly via email'
+            ' (which is linked to your GitHub account).'
+        )
+        sys.exit(1)
+
+    write(res.text, f'{home}/.config')
+    init()
+
     click.echo(
         emoji.emojize(':waving_hand:') +
         f'  Welcome {data["name"]}!'
@@ -172,22 +217,7 @@ def initiate_login():
 
     click.echo()
     track('Login Completed')
-    try:
-        if enable_reporting:
-            requests.post(
-                'https://stories.asyncyapp.com/track/profile',
-                json={
-                    'id': str(data['id']),
-                    'profile': {
-                        'Name': data['name'],
-                        'Email': data.get('email'),
-                        'GitHub Username': data.get('username'),
-                        'Timezone': time.tzname[time.daylight]
-                    }
-                })
-    except:
-        # Ignore tracking errors
-        pass
+    track_profile()
 
 
 def user() -> dict:
