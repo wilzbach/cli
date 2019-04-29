@@ -156,7 +156,7 @@ def initiate_login():
 
     click.echo(
         'Hi! Thank you for using ' +
-        click.style('Storyscript Cloud', fg='magenta') + '.'
+        click.style('Story Cloud', fg='magenta') + '.'
     )
     click.echo('Please login with GitHub to get started.')
 
@@ -196,7 +196,7 @@ def initiate_login():
 
     if r.json().get('beta') is False:
         click.echo(
-            'Hello! Storyscript Cloud is in private beta at this time.')
+            'Hello! Story Cloud is in private beta at this time.')
         click.echo(
             'We\'ve added you to our beta testers queue, '
             'and you should hear from us\nshortly via email'
@@ -257,7 +257,7 @@ def print_deprecated_warning(alternative):
 def assert_project(command, app, default_app, allow_option):
     if app is None:
         click.echo(
-            click.style('No Storyscript Cloud application found.', fg='red')
+            click.style('No Story Cloud application found.', fg='red')
         )
         click.echo()
         click.echo('Create an application with:')
