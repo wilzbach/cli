@@ -19,13 +19,14 @@ classifiers = [
 ]
 
 keywords = [
-    'asyncy',
+    'storyscript',
     'devops',
     'devtools',
     'microservices',
     'orchestration',
     'serverless',
-    'storyscript',
+    'APIs',
+    'asyncy',
 ]
 
 requirements = [
@@ -36,29 +37,29 @@ requirements = [
     'emoji==0.5.0',
     'raven==6.9.0',
     'requests==2.20.0',
-    'storyscript==0.16.1',
+    'storyscript>=0.18.0',
     'texttable==1.4.0',
     'pyyaml==3.13',
     'pytz==2018.5'
 ]
 
 
-setup(name='asyncy',
+setup(name='story',
       version=version,
-      description='Asyncy CLI',
+      description='Storyscript CLI',
       long_description='',
       classifiers=classifiers,
-      download_url='https://github.com/asyncy/cli/archive/master.zip',
+      download_url='https://github.com/storyscript/cli/archive/master.zip',
       keywords=' '.join(keywords),
-      author='Asyncy',
-      author_email='hello@asyncy.com',
-      url='http://docs.asyncy.com/cli',
-      license='MIT',
+      author='Storyscript',
+      author_email='hello@storyscript.io',
+      url='http://docs.storyscript.com/cli',
+      license='Apache 2',
       packages=find_packages(exclude=['scripts', 'tests']),
       include_package_data=True,
       zip_safe=True,
       install_requires=requirements,
       extras_require={},
       entry_points={
-          'console_scripts': ['asyncy=cli.main:cli']
+          'console_scripts': ['story=story.main:cli']
       })
