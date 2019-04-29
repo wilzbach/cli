@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from cli.main import cli
+from story.main import cli
 
 from click.testing import CliRunner
 

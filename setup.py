@@ -3,7 +3,7 @@
 from setuptools import find_packages, setup
 from setuptools.command.install import install
 
-from cli.version import version
+from story.version import version
 
 
 classifiers = [
