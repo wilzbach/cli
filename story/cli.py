@@ -18,6 +18,7 @@ from requests import Session
 from .helpers.didyoumean import DYMGroup
 from .version import version
 
+# Initiate requests session, for connection pooling.
 requests = Session()
 
 if not os.getenv('TOXENV'):
