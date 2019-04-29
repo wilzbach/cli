@@ -9,20 +9,16 @@ from urllib.parse import urlencode
 from uuid import uuid4
 
 import click
-
 import click_help_colors
-
 import click_spinner
-
 import emoji
-
 from raven import Client
-
-import requests
+from requests import Session
 
 from .helpers.didyoumean import DYMGroup
 from .version import version
 
+requests = Session()
 
 if not os.getenv('TOXENV'):
     enable_reporting = True
