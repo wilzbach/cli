@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import time
+import typing
 from urllib.parse import urlencode
 from uuid import uuid4
 
@@ -20,6 +21,9 @@ from .version import version
 
 # Initiate requests session, for connection pooling.
 requests = Session()
+
+# Typing hints.
+Content = typing.Union[str, typing.Mapping, typing.List]
 
 if not os.getenv('TOXENV'):
     enable_reporting = True
@@ -100,11 +104,12 @@ def track(event_name, extra: dict = None):
         })
 
 
-def find_asyncy_yml():
+def find_story_yml():
+    """Finds './story.yml'."""
     current_dir = os.getcwd()
     while True:
-        if os.path.exists(f'{current_dir}{os.path.sep}asyncy.yml'):
-            return f'{current_dir}/asyncy.yml'
+        if os.path.exists(f'{current_dir}{os.path.sep}story.yml'):
+            return f'{current_dir}/story.yml'
         elif current_dir == os.path.dirname(current_dir):
             break
         else:
@@ -114,35 +119,37 @@ def find_asyncy_yml():
 
 
 def get_app_name_from_yml() -> str:
-    file = find_asyncy_yml()
+    file = find_story_yml()
     if file is None:
         return None
     import yaml
     with open(file, 'r') as s:
-        return yaml.load(s).pop('app_name')
+        return yaml.safe_load(s).pop('app_name')
 
 
 def get_asyncy_yaml() -> dict:
-    file = find_asyncy_yml()
+    file = find_story_yml()
     # Anybody calling this must've already checked for this file presence.
     assert file is not None
 
     import yaml
     with open(file, 'r') as s:
-        return yaml.load(s)
+        return yaml.safe_load(s)
 
 
-def write(content: str, location: str):
-    dir = os.path.dirname(location)
-    if dir and not os.path.exists(dir):
-        os.makedirs(dir)
+def settings_set(content: Content, location: str):
+    """Overwrites settings, to given location and content."""
 
+    # Ensure the path is created and exists...
+    os.makedirs(dir, exist_ok=True)
+
+    # If content is an object-like...
     if isinstance(content, (list, dict)):
         content = json.dumps(content, indent=2)
 
+    # Write to the file.
     with open(location, 'w+') as file:
         file.write(content)
-
 
 def initiate_login():
     global data
@@ -163,8 +170,8 @@ def initiate_login():
 
     click.launch(url)
     click.echo()
-    click.echo('Visit this link if your browser '
-               'doesn\'t open automatically:')
+    click.echo(
+        "Visit this link if your browser doesn't open automatically:")
     click.echo(url)
     click.echo()
 
@@ -197,7 +204,7 @@ def initiate_login():
         )
         sys.exit(1)
 
-    write(r.text, f'{home}/.config')
+    settings_set(r.text, f'{home}/.config')
     init()
 
     click.echo(
@@ -219,9 +226,8 @@ def initiate_login():
 
 
 def user() -> dict:
-    """
-    Get the active user.
-    """
+    """Get the active user."""
+
     global data
 
     if data:
@@ -232,23 +238,34 @@ def user() -> dict:
 
 
 def print_command(command):
-    click.echo(click.style(f'$ {command}', fg='magenta'))
+    """Prints a command to the CLI."""
+
+    click.echo(
+        click.style(f'$ {command}', fg='magenta')
+    )
 
 
 def print_deprecated_warning(alternative):
-    click.echo(click.style('Warning: ', fg='yellow') +
-               'This command is deprecated and will be removed' +
-               ' in a future release. Please use ' +
-               click.style(f'$ {alternative}\n', fg='magenta'))
+    click.echo(
+        click.style('Warning: ', fg='yellow') +
+        'This command is deprecated and will be removed' +
+        ' in a future release. Please use ' +
+        click.style(f'$ {alternative}\n', fg='magenta')
+    )
 
 
 def assert_project(command, app, default_app, allow_option):
     if app is None:
-        click.echo(click.style('No Storyscript Cloud application found.', fg='red'))
+        click.echo(
+            click.style('No Storyscript Cloud application found.', fg='red')
+        )
         click.echo()
         click.echo('Create an application with:')
+
         print_command('story apps create')
+
         sys.exit(1)
+
     elif not allow_option and app != default_app:
         click.echo(click.style(
             'The --app option is not allowed with the {} command.'
@@ -261,7 +278,9 @@ def assert_project(command, app, default_app, allow_option):
 
 def init():
     global data
+
     if os.path.exists(f'{home}/.config'):
+
         with open(f'{home}/.config', 'r') as file:
             data = json.load(file)
             sentry.user_context({
@@ -272,15 +291,20 @@ def init():
 
 def stream(cmd: str):
     process = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE)
+
     while True:
+
         output = process.stdout.readline()
+
         if output == b'' and process.poll() is not None:
             break
+
         if output:
             click.echo(output.strip())
 
 
 def run(cmd: str):
+
     output = subprocess.run(
         cmd.split(' '),
         check=True,
@@ -308,9 +332,7 @@ class CLI(DYMGroup, click_help_colors.HelpColorsGroup):
     pass
 
 
-@click.group(cls=CLI,
-             help_headers_color='yellow',
-             help_options_color='magenta')
+@click.group(cls=CLI, help_headers_color='yellow', help_options_color='magenta')
 def cli():
     """
     Hello! Welcome to Storyscript.

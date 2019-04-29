@@ -72,7 +72,7 @@ def compile_app(app_name_for_analytics, debug) -> dict:
             result = 'Failed'
         else:
             count = len(stories.get('stories', {}))
-            stories['yaml'] = cli.get_asyncy_yaml()
+            stories['yaml'] = cli.settings_get()
 
         cli.track('App Compiled', {
             'App name': app_name_for_analytics,

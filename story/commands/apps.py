@@ -100,7 +100,7 @@ def create(name, team):
     Create a new Asyncy App
     """
     cli.user()
-    asyncy_yaml = cli.find_asyncy_yml()
+    asyncy_yaml = cli.find_story_yml()
     if asyncy_yaml is not None:
         click.echo(
             click.style('There appears to be an Asyncy project in '
@@ -123,7 +123,7 @@ def create(name, team):
     # cli.run(f'git remote add asyncy https://git.asyncy.com/{name}')
     # click.echo(click.style('√', fg='green'))
     click.echo('Creating asyncy.yml...', nl=False)
-    cli.write(f'app_name: {name}\n', 'asyncy.yml')
+    cli.settings_set(f'app_name: {name}\n', 'asyncy.yml')
 
     click.echo(click.style('√', fg='green'))
 
