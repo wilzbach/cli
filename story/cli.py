@@ -30,7 +30,7 @@ else:
     sentry = Client()
 
 data = None
-home = os.path.expanduser('~/.asyncy')
+home = os.path.expanduser('~/.storyscript')
 
 
 def get_access_token():
@@ -92,7 +92,7 @@ def track(event_name, extra: dict = None):
 
     extra['CLI version'] = version
     _make_tracking_http_request(
-        'https://stories.asyncyapp.com/track/event', {
+        'https://stories.storyscript.io/track/event', {
             'id': str(data['id']),
             'event_name': event_name,
             'event_props': extra
@@ -148,7 +148,7 @@ def initiate_login():
 
     click.echo(
         'Hi! Thank you for using ' +
-        click.style('Asyncy', fg='magenta') + '.'
+        click.style('Storyscript Cloud', fg='magenta') + '.'
     )
     click.echo('Please login with GitHub to get started.')
 
@@ -171,23 +171,24 @@ def initiate_login():
         with click_spinner.spinner():
             try:
                 url = 'https://stories.asyncyapp.com/github/oauth_callback'
+                r = requests.get(url=url, args={'state': state})
 
-                res = requests.get(f'{url}?state={state}')
-
-                if res.text == 'null':
+                if r.text == 'null':
                     raise IOError()
 
-                res.raise_for_status()
+                r.raise_for_status()
                 break
+
             except IOError:
                 time.sleep(0.5)
+
             except KeyboardInterrupt:
                 click.echo('Login failed. Please try again.')
                 sys.exit(1)
 
-    if res.json().get('beta') is False:
+    if r.json().get('beta') is False:
         click.echo(
-            'Hello! Asyncy is in private beta at this time.')
+            'Hello! Storyscript Cloud is in private beta at this time.')
         click.echo(
             'We\'ve added you to our beta testers queue, '
             'and you should hear from us\nshortly via email'
@@ -195,7 +196,7 @@ def initiate_login():
         )
         sys.exit(1)
 
-    write(res.text, f'{home}/.config')
+    write(r.text, f'{home}/.config')
     init()
 
     click.echo(
@@ -204,12 +205,12 @@ def initiate_login():
     )
     click.echo()
     click.echo('Create a new app with:')
-    print_command('asyncy apps create')
+    print_command('story apps create')
 
     click.echo()
 
     click.echo('To list all your apps:')
-    print_command('asyncy apps')
+    print_command('story apps')
 
     click.echo()
     track('Login Completed')
@@ -242,10 +243,10 @@ def print_deprecated_warning(alternative):
 
 def assert_project(command, app, default_app, allow_option):
     if app is None:
-        click.echo(click.style('No Asyncy application found.', fg='red'))
+        click.echo(click.style('No Storyscript Cloud application found.', fg='red'))
         click.echo()
         click.echo('Create an application with:')
-        print_command('asyncy apps create')
+        print_command('story apps create')
         sys.exit(1)
     elif not allow_option and app != default_app:
         click.echo(click.style(
@@ -302,19 +303,19 @@ def run(cmd: str):
 # click_help_colors._colorize = _colorize
 
 
-class Cli(DYMGroup, click_help_colors.HelpColorsGroup):
+class CLI(DYMGroup, click_help_colors.HelpColorsGroup):
     pass
 
 
-@click.group(cls=Cli,
+@click.group(cls=CLI,
              help_headers_color='yellow',
              help_options_color='magenta')
 def cli():
     """
-    Hello! Welcome to Asyncy
+    Hello! Welcome to Storyscript.
 
-    We hope you enjoy and we look forward to your feedback.
+    We hope you enjoy, & we look forward to your feedback!
 
-    Documentation: https://docs.asyncy.com
+    Documentation: https://docs.storyscript.io/
     """
     init()
