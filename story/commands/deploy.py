@@ -34,10 +34,10 @@ def deploy(app, message):
     click.echo(
         click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
         + f' Version {release["id"]} of your app has '
-        f'been queued for deployment\n'
+        f'been queued for deployment.\n'
     )
 
-    click.echo('Waiting for deployment to complete… ', nl=False)
+    click.echo('Waiting for deployment to complete…  ', nl=False)
     with spinner():
         if Apps.maintenance(app, maintenance=None):
             click.echo()
