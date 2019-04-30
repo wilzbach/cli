@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 
+import emoji
 import click
 from blindspin import spinner
 
@@ -17,8 +18,7 @@ def releases():
 
 
 @releases.command(name='list')
-@click.option('--limit', '-n', nargs=1, default=20,
-              help='List N latest releases')
+@click.option('--limit', '-n', nargs=1, default=20, help='List N latest releases')
 @options.app()
 def list_command(app, limit):
     """List application releases."""
@@ -34,18 +34,21 @@ def list_command(app, limit):
 
     if res:
         from texttable import Texttable
+
         table = Texttable(max_width=800)
         table.set_deco(Texttable.HEADER)
         table.set_cols_align(['l', 'l', 'l', 'l'])
         all_releases = [['VERSION', 'STATUS', 'CREATED', 'MESSAGE']]
         for release in res:
             date = parse_psql_date_str(release['timestamp'])
-            all_releases.append([
-                f'v{release["id"]}',
-                release['state'].capitalize(),
-                reltime(date),
-                release['message']
-            ])
+            all_releases.append(
+                [
+                    f'v{release["id"]}',
+                    release['state'].capitalize(),
+                    reltime(date),
+                    release['message'],
+                ]
+            )
         table.add_rows(rows=all_releases)
         click.echo(table.draw())
     else:
@@ -63,22 +66,23 @@ def rollback(version, app):
         version = version[1:]
 
     if not version:
-        click.echo(f'Getting latest release for app {app}… ',
-                   nl=False)
+        click.echo(f'Getting latest release for app {app}…  ', nl=False)
         with spinner():
             res = api.Releases.get(app=app)
             version = int(res[0]['id']) - 1
-        click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
+        click.echo(click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))
 
     if int(version) == 0:
         click.echo('Unable to rollback a release before v1.')
         sys.exit(1)
 
-    click.echo(f'Rolling back to v{version}… ', nl=False)
+    click.echo(f'Rolling back to v{version}…  ', nl=False)
 
     with spinner():
         res = api.Releases.rollback(version=version, app=app)
 
-    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
-    click.echo(f'Deployed new release… ' +
-               click.style(f'v{res["id"]}', bold=True, fg='magenta'))
+    click.echo(click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))
+    click.echo(
+        f'Deployed new release… '
+        + click.style(f'v{res["id"]}', bold=True, fg='magenta')
+    )

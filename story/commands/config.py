@@ -103,9 +103,10 @@ def set_command(variables, app, message):
             else:
                 config[key.upper()] = val
 
-            click.echo(click.style(key.upper(), fg='green') + f':  {val}')
+            click.echo()
+            click.echo(f" {click.style(key.upper(), fg='green')}: {val}")
 
-        click.echo('\nSetting config and deploying new release… ', nl=False)
+        click.echo('\nSetting config and deploying new release…  ', nl=False)
         with spinner():
             release = api.Config.set(config=config, app=app, message=message)
         click.echo(click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))

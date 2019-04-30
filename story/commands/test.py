@@ -36,7 +36,7 @@ def test(debug):
             click.echo(click.style('\t√', fg='green') + f' {k}')
 
     click.echo(
-        click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
         + emoji.emojize(' Looking good! :thumbs_up:')
     )
     click.echo()
