@@ -179,7 +179,7 @@ def initiate_login():
         with spinner():
             try:
                 url = 'https://stories.storyscriptapp.com/github/oauth_callback'
-                r = requests.get(url=url, args={'state': state})
+                r = requests.get(url=url, params={'state': state})
 
                 if r.text == 'null':
                     raise IOError()
@@ -203,7 +203,7 @@ def initiate_login():
         )
         sys.exit(1)
 
-    settings_set(r.text, f'{home}/.config')
+    settings_set(r.text, f'{home}/config')
     init()
 
     click.echo(emoji.emojize(':waving_hand:') + f'  Welcome {data["name"]}!')
@@ -272,9 +272,9 @@ def assert_project(command, app, default_app, allow_option):
 def init():
     global data
 
-    if os.path.exists(f'{home}/.config'):
+    if os.path.exists(f'{home}/config'):
 
-        with open(f'{home}/.config', 'r') as file:
+        with open(f'{home}/config', 'r') as file:
             data = json.load(file)
             sentry.user_context({'id': data['id'], 'email': data['email']})
 
