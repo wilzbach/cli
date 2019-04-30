@@ -15,11 +15,14 @@ from ..api import Apps
 
 @cli.cli.command()
 @click.option('--follow', '-f', is_flag=True, help='Follow the logs')
-@click.option('--all', '-a', is_flag=True,
-              help='Return logs from all services')
-@click.option('--level', '-l', default='info',
-              type=click.Choice(['debug', 'info', 'warning', 'error']),
-              help='Specify the minimum log level')
+@click.option('--all', '-a', is_flag=True, help='Return logs from all services')
+@click.option(
+    '--level',
+    '-l',
+    default='info',
+    type=click.Choice(['debug', 'info', 'warning', 'error']),
+    help='Specify the minimum log level',
+)
 @options.app()
 def logs(follow, all, app, level):
     """Fetch the logs of your Storyscript Cloud app."""
@@ -30,12 +33,9 @@ def logs(follow, all, app, level):
 
     cli.user()
 
-    url = 'https://stories.storyscript.io/logs'
-    click.echo(f'Retrieving logs of {app}... ', nl=False)
-    params = {
-        'access_token': cli.get_access_token(),
-        'level': level
-    }
+    url = 'https://stories.storyscriptapp.com/logs'
+    click.echo(f'Retrieving logs of {app}… ', nl=False)
+    params = {'access_token': cli.get_access_token(), 'level': level}
 
     if all:
         params['all'] = 'true'
@@ -50,9 +50,12 @@ def logs(follow, all, app, level):
         arr = r.json()
         assert isinstance(arr, list)
     except BaseException:
-        click.echo('Logs for your app aren\'t available right now.\n'
-                   'If this error persists, please shoot us an email '
-                   'on support@storyscript.io', err=True)
+        click.echo(
+            'Logs for your app aren\'t available right now.\n'
+            'If this error persists, please shoot us an email '
+            'on support@storyscript.io',
+            err=True,
+        )
         sys.exit(1)
 
     cli.track('App Logs Retrieved', {'App name': app, 'Log count': len(arr)})
@@ -79,7 +82,7 @@ def logs(follow, all, app, level):
 
         # Replace the ":" in the timezone field for datetime.
         ts = log['timestamp']
-        ts = ts[0:ts.rindex(':')] + ts[ts.rindex(':') + 1:]
+        ts = ts[0 : ts.rindex(':')] + ts[ts.rindex(':') + 1 :]
         if all:
             # Truncate milliseconds from the date
             # (sometimes this appears, and sometimes it doesn't appear)
@@ -100,6 +103,7 @@ def logs(follow, all, app, level):
 def colourize_and_print(date, tag, level, message):
     level_col = 'green'  # Default for info.
     level = level.lower()
+
     if 'debug' in level:
         level_col = 'blue'
     elif 'warn' in level:
@@ -108,11 +112,15 @@ def colourize_and_print(date, tag, level, message):
         level_col = 'red'
 
     if tag:
-        click.echo(f'{click.style(date, fg="white")} '
-                   f'{click.style(level.upper(), fg=level_col)} '
-                   f'{click.style(tag, fg="blue")}: '
-                   f'{message}')
+        click.echo(
+            f'{click.style(date, fg="white")} '
+            f'{click.style(level.upper(), fg=level_col)} '
+            f'{click.style(tag, fg="blue")}: '
+            f'{message}'
+        )
     else:
-        click.echo(f'{click.style(date, fg="white")} '
-                   f'{click.style(level.upper(), fg=level_col)} '
-                   f'{message}')
+        click.echo(
+            f'{click.style(date, fg="white")} '
+            f'{click.style(level.upper(), fg=level_col)} '
+            f'{message}'
+        )

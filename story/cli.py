@@ -97,7 +97,7 @@ def track(event_name, extra: dict = None):
 
     extra['CLI version'] = version
     _make_tracking_http_request(
-        'https://stories.storyscript.io/track/event',
+        'https://stories.storyscriptapp.com/track/event',
         {'id': str(data['id']), 'event_name': event_name, 'event_props': extra},
     )
 
