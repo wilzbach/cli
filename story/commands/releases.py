@@ -72,8 +72,12 @@ def rollback(version, app):
             version = int(res[0]['id']) - 1
         click.echo(click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))
 
-    if int(version) == 0:
-        click.echo('Unable to rollback a release before v1.')
+    try:
+        if int(version) == 0:
+            click.echo('Unable to rollback a release before v1.')
+            sys.exit(1)
+    except ValueError:
+        click.echo(click.style('Invalid release specified.', fg='red'), err=True)
         sys.exit(1)
 
     click.echo(f'Rolling back to v{version}…  ', nl=False)
