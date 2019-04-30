@@ -33,7 +33,7 @@ def list_command():
     from texttable import Texttable
     cli.user()
 
-    with blindspin(text="Loading…"):
+    with spinner():
         res = api.Apps.list()
 
     count = 0
