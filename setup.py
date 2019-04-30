@@ -56,7 +56,7 @@ with io.open(long_description_fname, encoding='utf-8') as f:
 setup(
     name='story',
     version=version,
-    description='Storyscript CLI',
+    description='Storyscript Cloud CLI',
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=classifiers,
