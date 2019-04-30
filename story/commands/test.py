@@ -47,8 +47,7 @@ def test(debug):
 
 
 def compile_app(app_name_for_analytics, debug) -> dict:
-    """
-    Compiles, prints pretty info, and returns the compiled tree.
+    """Compiles, prints pretty info, and returns the compiled tree.
     :return: The compiled tree
     """
     from storyscript.App import App
