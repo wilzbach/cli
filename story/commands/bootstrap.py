@@ -27,7 +27,7 @@ def bootstrap(story):
                   {'App name': app_name, 'Template used': story})
 
     else:
-        click.echo(click.style('Choose a template', bold=True))
+        click.echo(click.style('Please specify a template:', bold=True))
         click.echo(click.style('   http', fg='cyan') +
                    '      - serverless http endpoint')
         click.echo(click.style('   function', fg='cyan') +
