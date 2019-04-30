@@ -64,7 +64,7 @@ setup(
     keywords=' '.join(keywords),
     author='Storyscript',
     author_email='hello@storyscript.io',
-    url='http://docs.storyscript.com/cli',
+    url='http://docs.storyscript.io/cli',
     license='Apache 2',
     packages=find_packages(exclude=['scripts', 'tests']),
     include_package_data=True,
