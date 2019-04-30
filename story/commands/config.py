@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import click
-from yaspin import yaspin
+from blindspin import spinner
 
 from .. import api
 from .. import cli
@@ -10,22 +10,21 @@ from .. import options
 
 @cli.cli.group()
 def config():
-    """
-    Update the configuration for your app
-    """
+    """Update the configuration for your app."""
     pass
 
 
 @config.command(name='list')
 @options.app()
 def list_command(app):
-    """
-    List environment variables
-    """
+    """List environment variables."""
+
     cli.user()
     click.echo('Fetching config…', nl=False)
-    with yaspin():
+
+    with spinner():
         config = api.Config.get(app)
+
     click.echo(click.style('√', fg='green'))
 
     if config:
@@ -73,7 +72,7 @@ def set_command(variables, app, message):
     cli.user()
 
     click.echo('Fetching config…', nl=False)
-    with yaspin():
+    with spinner():
         config = api.Config.get(app=app)
     click.echo(click.style('√', fg='green'))
 
@@ -96,7 +95,7 @@ def set_command(variables, app, message):
             click.echo(click.style(key.upper(), fg='green') + f':  {val}')
 
         click.echo('\nSetting config and deploying new release…', nl=False)
-        with yaspin():
+        with spinner():
             release = api.Config.set(config=config, app=app, message=message)
         click.echo(click.style('√', fg='green'))
         click.echo(
@@ -119,7 +118,7 @@ def get(variables, app):
     if variables:
 
         click.echo(f'Fetching config for {app}…', nl=False)
-        with yaspin():
+        with spinner():
             config = api.Config.get(app=app)
         click.echo(click.style('√', fg='green'))
 
@@ -162,7 +161,7 @@ def del_command(variables, app, message):
     if variables:
 
         click.echo('Fetching config…', nl=False)
-        with yaspin():
+        with spinner():
             config = api.Config.get(app=app)
         click.echo(click.style('√', fg='green'))
 
@@ -188,7 +187,7 @@ def del_command(variables, app, message):
                     click.style('Removed', fg='red') + f': {key.upper()}')
 
         click.echo('\nSetting config and deploying new release…', nl=False)
-        with yaspin():
+        with spinner():
             release = api.Config.set(config=config, app=app, message=message)
         click.echo(click.style('√', fg='green'))
         click.echo(f'Deployed new release… ' +

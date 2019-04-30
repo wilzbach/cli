@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 
 import click
-from yaspin import yaspin
+from blindspin import spinner
 
 import requests
 
@@ -40,7 +40,7 @@ def logs(follow, all, app, level):
     if all:
         params['all'] = 'true'
 
-    with yaspin():
+    with spinner():
         params['app_id'] = Apps.get_uuid_from_hostname(app)
         r = requests.get(url, params=params)
 

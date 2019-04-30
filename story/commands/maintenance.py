@@ -2,7 +2,7 @@
 
 import click
 
-from yaspin import yaspin
+from blindspin import spinner
 
 from .. import api
 from .. import cli
@@ -22,7 +22,7 @@ def check(app):
     cli.user()
     click.echo(f'Fetching maintenance mode for {app}… ',
                nl=False)
-    with yaspin():
+    with spinner():
         enabled = api.Apps.maintenance(app=app, maintenance=None)
     if enabled:
         click.echo(click.style('ON. Application is disabled.',
@@ -40,7 +40,7 @@ def on(app):
     cli.user()
     click.echo(f'Enabling maintenance mode for app {app}… ',
                nl=False)
-    with yaspin():
+    with spinner():
         app = api.Apps.maintenance(app=app, maintenance=True)
     click.echo(click.style('√', fg='green'))
     click.echo(click.style('Application is now in maintenance–mode.',
@@ -55,7 +55,7 @@ def off(app):
     cli.user()
     click.echo(f'Disabling maintenance mode for app {app}… ',
                nl=False)
-    with yaspin():
+    with spinner():
         app = api.Apps.maintenance(app=app, maintenance=False)
     click.echo(click.style('√', fg='green'))
     click.echo(click.style('Application is now running.',

@@ -5,7 +5,7 @@ import sys
 
 import click
 import emoji
-from yaspin import yaspin
+from blindspin import spinner
 
 from .. import api
 from .. import awesome
@@ -23,9 +23,7 @@ def maintenance(enabled: bool) -> str:
 
 @cli.cli.group()
 def apps():
-    """
-    Create, list and manage Storyscript Cloud apps that you have access to.
-    """
+    """Create, list, and manage Storyscript Cloud apps."""
     pass
 
 
@@ -35,7 +33,7 @@ def list_command():
     from texttable import Texttable
     cli.user()
 
-    with yaspin(text="Loading…"):
+    with blindspin(text="Loading…"):
         res = api.Apps.list()
 
     count = 0
@@ -114,7 +112,7 @@ def create(name, team):
 
     click.echo('Creating application… ', nl=False)
 
-    with yaspin():
+    with spinner():
         api.Apps.create(name=name, team=team)
 
     click.echo(click.style('√', fg='green'))
@@ -178,7 +176,7 @@ def destroy(confirm, app):
     ):
         click.echo(f'Destroying application "{app}"…', nl=False)
 
-        with yaspin():
+        with spinner():
 
             api.Apps.destroy(app=app)
             cli.track('App Destroyed', {'App name': app})

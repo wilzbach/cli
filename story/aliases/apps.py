@@ -9,7 +9,7 @@ from ..commands import apps
 @cli.cli.command(name='apps:list', hidden=True)
 @click.pass_context
 def apps_list(ctx):
-    cli.print_deprecated_warning(alternative='asyncy apps list')
+    cli.print_deprecated_warning(alternative='story apps list')
     ctx.forward(apps.list_command)
 
 
@@ -19,7 +19,7 @@ def apps_list(ctx):
               help='Team name that owns this new Application')
 @click.pass_context
 def apps_create(ctx, name, team):
-    cli.print_deprecated_warning(alternative='asyncy apps create')
+    cli.print_deprecated_warning(alternative='story apps create')
     ctx.forward(apps.create)
 
 
@@ -27,7 +27,7 @@ def apps_create(ctx, name, team):
 @options.app()
 @click.pass_context
 def apps_url(ctx, app):
-    cli.print_deprecated_warning(alternative='asyncy apps url')
+    cli.print_deprecated_warning(alternative='story apps url')
     ctx.forward(apps.url)
 
 
@@ -37,5 +37,5 @@ def apps_url(ctx, app):
               help='Do not prompt to confirm destruction.')
 @click.pass_context
 def apps_destroy(ctx, confirm, app):
-    cli.print_deprecated_warning(alternative='asyncy apps destroy')
+    cli.print_deprecated_warning(alternative='story apps destroy')
     ctx.forward(apps.destroy)

@@ -15,9 +15,7 @@ from .. import cli
                                    'slack-bot', 'subscribe',
                                    'every', 'websocket', '-']))
 def bootstrap(story):
-    """
-    Bootstrap your app with a pre-defined template
-    """
+    """Pre–defined templates to bootstrap your app!"""
     if story != '-':
         data = pkgutil.get_data('cli', f'stories/{story}.story')
         click.echo(data)
@@ -65,5 +63,5 @@ def bootstrap(story):
                    click.style('https://github.com/topics/asyncy-example',
                                fg='cyan'))
         click.echo('    Services at ' +
-                   click.style('https://hub.asyncy.com', fg='cyan'))
+                   click.style('https://hub.storyscript.io/', fg='cyan'))
         click.echo('')

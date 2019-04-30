@@ -4,7 +4,7 @@ import os
 import sys
 
 import click
-from yaspin import yaspin
+from blindspin import spinner
 
 import emoji
 
@@ -50,7 +50,7 @@ def compile_app(app_name_for_analytics, debug) -> dict:
     from storyscript.App import App
     click.echo(click.style('Compiling Stories...', bold=True))
 
-    with yaspin():
+    with spinner():
         try:
             stories = json.loads(App.compile(os.getcwd()))
         except StoryError as e:

@@ -3,7 +3,7 @@ import sys
 from time import sleep
 
 import click
-from yaspin import yaspin
+from blindspin import spinner
 
 from .test import compile_app
 from .. import cli, options
@@ -24,7 +24,7 @@ def deploy(app, message):
 
     click.echo(f'Deploying app {app}... ', nl=False)
 
-    with yaspin():
+    with spinner():
         config = Config.get(app)
         release = Releases.create(config, payload, app, message)
 
@@ -35,7 +35,7 @@ def deploy(app, message):
                f'been queued for deployment\n')
 
     click.echo('Waiting for deployment to complete... ', nl=False)
-    with yaspin():
+    with spinner():
         if Apps.maintenance(app, maintenance=None):
             click.echo()
             click.echo()

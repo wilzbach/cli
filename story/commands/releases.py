@@ -2,7 +2,7 @@
 import sys
 
 import click
-from yaspin import yaspin
+from blindspin import spinner
 
 from .. import api
 from .. import cli
@@ -27,7 +27,7 @@ def list_command(app, limit):
     # click.echo(click.style('Releases', fg='magenta'))
     # click.echo(click.style('========', fg='magenta'))
 
-    with yaspin():
+    with spinner():
         res = api.Releases.list(app, limit=limit)
 
     res = sorted(res, key=lambda elem: elem['id'])
@@ -65,7 +65,7 @@ def rollback(version, app):
     if not version:
         click.echo(f'Getting latest release for app {app}… ',
                    nl=False)
-        with yaspin():
+        with spinner():
             res = api.Releases.get(app=app)
             version = int(res[0]['id']) - 1
         click.echo(click.style('√', fg='green'))
@@ -76,7 +76,7 @@ def rollback(version, app):
 
     click.echo(f'Rolling back to v{version}… ', nl=False)
 
-    with yaspin():
+    with spinner():
         res = api.Releases.rollback(version=version, app=app)
 
     click.echo(click.style('√', fg='green'))
