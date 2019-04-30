@@ -46,6 +46,7 @@ requirements = [
     'blindspin'
 ]
 
+# Read the README.md as the long_description.
 here = os.path.abspath(os.path.dirname(__file__))
 long_description_fname = os.path.join(here, 'README.md')
 with io.open(long_description_fname, encoding='utf-8') as f:
