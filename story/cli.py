@@ -236,7 +236,7 @@ def user() -> dict:
 def print_command(command):
     """Prints a command to the CLI."""
 
-    click.echo(click.style(f'$ {command}', fg='magenta'))
+    click.echo('  $ ' + click.style(command, fg='magenta'))
 
 
 def print_deprecated_warning(alternative):

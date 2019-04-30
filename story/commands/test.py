@@ -33,12 +33,14 @@ def test(debug):
         sys.exit(1)
     else:
         for k, v in tree['stories'].items():
-            click.echo(click.style('\t√', fg='green') + f' {k}')
+            click.echo(
+                ' - '
+                + f'{k}'
+                + click.style(f'{emoji.emojize(" :heavy_check_mark:")}', fg='green')
+            )
 
-    click.echo(
-        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
-        + emoji.emojize(' Looking good! :thumbs_up:')
-    )
+    click.echo()
+    click.echo(emoji.emojize('Looking good! :party_popper:'))
     click.echo()
     click.echo('Deploy your app with:')
     cli.print_command('story deploy')
@@ -51,32 +53,31 @@ def compile_app(app_name_for_analytics, debug) -> dict:
     """
     from storyscript.App import App
 
-    click.echo(click.style('Compiling Stories...', bold=True))
+    click.echo(click.style('Compiling Stories… ', bold=True))
 
-    with spinner():
-        try:
-            stories = json.loads(App.compile(os.getcwd()))
-        except StoryError as e:
-            click.echo('Failed to compile project:\n', err=True)
-            click.echo(click.style(str(e.message()), fg='red'), err=True)
-            stories = None
-        except BaseException as e:
-            click.echo('Failed to compile project:\n', err=True)
-            click.echo(click.style(str(e), fg='red'), err=True)
-            stories = None
+    try:
+        stories = json.loads(App.compile(os.getcwd()))
+    except StoryError as e:
+        click.echo('Failed to compile project:\n', err=True)
+        click.echo(click.style(str(e.message()), fg='red'), err=True)
+        stories = None
+    except BaseException as e:
+        click.echo('Failed to compile project:\n', err=True)
+        click.echo(click.style(str(e), fg='red'), err=True)
+        stories = None
 
-        result = 'Success'
-        count = 0
+    result = 'Success'
+    count = 0
 
-        if stories is None:
-            result = 'Failed'
-        else:
-            count = len(stories.get('stories', {}))
-            stories['yaml'] = cli.get_asyncy_yaml()
+    if stories is None:
+        result = 'Failed'
+    else:
+        count = len(stories.get('stories', {}))
+        stories['yaml'] = cli.get_asyncy_yaml()
 
-        cli.track(
-            'App Compiled',
-            {'App name': app_name_for_analytics, 'Result': result, 'Stories': count},
-        )
+    cli.track(
+        'App Compiled',
+        {'App name': app_name_for_analytics, 'Result': result, 'Stories': count},
+    )
 
     return stories

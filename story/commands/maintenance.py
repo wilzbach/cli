@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import click
+import emoji
 
 from blindspin import spinner
 
@@ -20,16 +21,13 @@ def maintenance():
 def check(app):
     """Displays current maintinence status."""
     cli.user()
-    click.echo(f'Fetching maintenance mode for {app}… ',
-               nl=False)
+    click.echo(f'Fetching maintenance mode for {app}… ', nl=False)
     with spinner():
         enabled = api.Apps.maintenance(app=app, maintenance=None)
     if enabled:
-        click.echo(click.style('ON. Application is disabled.',
-                   bold=True, fg='red'))
+        click.echo(click.style('ON. Application is disabled.', bold=True, fg='red'))
     else:
-        click.echo(click.style('off. Application is running.',
-                   bold=True, fg='green'))
+        click.echo(click.style('off. Application is running.', bold=True, fg='green'))
 
 
 @maintenance.command()
@@ -38,13 +36,11 @@ def on(app):
     """Turns maintenance–mode on."""
 
     cli.user()
-    click.echo(f'Enabling maintenance mode for app {app}… ',
-               nl=False)
+    click.echo(f'Enabling maintenance mode for app {app}… ', nl=False)
     with spinner():
         app = api.Apps.maintenance(app=app, maintenance=True)
-    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
-    click.echo(click.style('Application is now in maintenance–mode.',
-                           dim=True))
+    click.echo('\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
+    click.echo(click.style('Application is now in maintenance–mode.', dim=True))
 
 
 @maintenance.command()
@@ -53,10 +49,8 @@ def off(app):
     """Turns maintenance–mode off."""
 
     cli.user()
-    click.echo(f'Disabling maintenance mode for app {app}… ',
-               nl=False)
+    click.echo(f'Disabling maintenance mode for app {app}… ', nl=False)
     with spinner():
         app = api.Apps.maintenance(app=app, maintenance=False)
-    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
-    click.echo(click.style('Application is now running.',
-                           dim=True))
+    click.echo(click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))
+    click.echo(click.style('Application is now running.', dim=True))

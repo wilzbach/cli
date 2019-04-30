@@ -9,7 +9,4 @@ from .. import cli
 def login():
     """Login to Storyscript Cloud via GitHub."""
     cli.user()
-    click.echo(
-        "You're logged in as " +
-        click.style(cli.data['email'], fg='cyan')
-    )
+    click.echo("You're logged in as " + click.style(cli.data['email'], fg='cyan') + '.')
