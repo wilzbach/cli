@@ -7,9 +7,7 @@ from ..commands import write
 
 
 @cli.cli.command(name='bootstrap', hidden=True)
-# @options.app()
 @click.argument('story', default='-', type=click.Choice(write.CHOICES))
-#
 @click.argument(
     'output_file', default=None, type=click.Path(exists=False), required=False
 )
