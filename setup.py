@@ -71,5 +71,6 @@ setup(
     zip_safe=True,
     install_requires=requirements,
     extras_require={},
+    requires_python='>=3.6.0',
     entry_points={'console_scripts': ['story=story.main:cli']},
 )
