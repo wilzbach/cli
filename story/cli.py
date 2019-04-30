@@ -140,7 +140,8 @@ def get_asyncy_yaml() -> dict:
 def settings_set(content: Content, location: str):
     """Overwrites settings, to given location and content."""
 
-    # Ensure the path is created and exists...
+    # Ensure the path is created and exists..
+    dir = os.path.dirname(location)
     os.makedirs(dir, exist_ok=True)
 
     # If content is an object-like...
