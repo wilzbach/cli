@@ -123,15 +123,16 @@ def set_command(variables, app, message):
 @click.argument('variables', nargs=-1)
 @options.app()
 def get(variables, app):
-    """
-    Get one or more environment variables
-    """
-    cli.user()
-    if variables:
+    """Get one or more environment variables."""
 
+    cli.user()
+
+    if variables:
         click.echo(f'Fetching config for {app}… ', nl=False)
+
         with spinner():
             config = api.Config.get(app=app)
+
         click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
         for name in variables:
