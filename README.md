@@ -16,7 +16,7 @@ The goals of this project is to provide a utility for developers to interact wit
 ## Installation
 
 ```shell
-$ brew install storyscript/brew/storyscript
+$ brew install storyscript/brew/story
 ```
 
 ✨🍰✨
