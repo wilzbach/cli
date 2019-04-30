@@ -13,6 +13,7 @@ import click
 import click_help_colors
 import click_spinner
 import emoji
+from yaspin import yaspin
 from raven import Client
 from requests import Session
 
@@ -176,7 +177,7 @@ def initiate_login():
     click.echo()
 
     while True:
-        with click_spinner.spinner():
+        with yaspin():
             try:
                 url = 'https://stories.asyncyapp.com/github/oauth_callback'
                 r = requests.get(url=url, args={'state': state})

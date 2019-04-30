@@ -40,7 +40,8 @@ requirements = [
     'storyscript>=0.18.0',
     'texttable==1.4.0',
     'pyyaml==3.13',
-    'pytz==2018.5'
+    'pytz==2018.5',
+    'yaspin'
 ]
 
 

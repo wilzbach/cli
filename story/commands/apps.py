@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
 import subprocess
 import sys
 
 import click
-
-import click_spinner
-
 import emoji
+from yaspin import yaspin
 
 from .. import api
 from .. import awesome
@@ -25,20 +24,18 @@ def maintenance(enabled: bool) -> str:
 @cli.cli.group()
 def apps():
     """
-    Create, list and manage apps which you have access to
+    Create, list and manage Storyscript Cloud apps that you have access to.
     """
     pass
 
 
 @apps.command(name='list')
 def list_command():
-    """
-    List your applications
-    """
+    """List your Storyscript Cloud applications."""
     from texttable import Texttable
     cli.user()
 
-    with click_spinner.spinner():
+    with yaspin(text="Loading…"):
         res = api.Apps.list()
 
     count = 0
@@ -96,71 +93,74 @@ def _is_git_repo_good():
 @click.option('--team', type=str,
               help='Team name that owns this new Application')
 def create(name, team):
-    """
-    Create a new Asyncy App
-    """
+    """Create a new Storyscript Cloud App."""
+
     cli.user()
-    asyncy_yaml = cli.find_story_yml()
-    if asyncy_yaml is not None:
+    story_yaml = cli.find_story_yml()
+
+    if story_yaml is not None:
         click.echo(
-            click.style('There appears to be an Asyncy project in '
-                        f'{asyncy_yaml} already.\n', fg='red'))
+            click.style('There appears to be an Storyscript Cloud project in '
+                        f'{story_yaml} already.\n', fg='red'))
         click.echo(
             click.style('Are you trying to deploy? '
                         'Try the following:', fg='red'))
-        click.echo(click.style('$ asyncy deploy', fg='magenta'))
+        click.echo(click.style('$ story deploy', fg='magenta'))
         sys.exit(1)
+
     # _is_git_repo_good()
 
     name = name or awesome.new()
 
-    click.echo('Creating application... ', nl=False)
-    with click_spinner.spinner():
+    click.echo('Creating application… ', nl=False)
+
+    with yaspin():
         api.Apps.create(name=name, team=team)
+
     click.echo(click.style('√', fg='green'))
 
     # click.echo('Adding git-remote... ', nl=False)
     # cli.run(f'git remote add asyncy https://git.asyncy.com/{name}')
     # click.echo(click.style('√', fg='green'))
-    click.echo('Creating asyncy.yml...', nl=False)
-    cli.settings_set(f'app_name: {name}\n', 'asyncy.yml')
+
+    click.echo('Creating story.yml…', nl=False)
+    cli.settings_set(f'app_name: {name}\n', 'story.yml')
 
     click.echo(click.style('√', fg='green'))
 
     click.echo('\nNew application name: ' + click.style(name, bold=True))
     click.echo(
         'Found at ' +
-        click.style(f'https://{name}.asyncyapp.com', fg='blue') +
+        click.style(f'https://{name}.storyscriptapp.com/', fg='blue') +
         '\n'
     )
 
     click.echo(
         emoji.emojize(':party_popper:') +
-        '  You are ready to build your first Asyncy App'
+        '  You are ready to write your first Storyscript!'
     )
     cli.track('App Created', {'App name': name})
-    click.echo('- [ ] Write some stories')
-    click.echo('- [ ] ' + click.style('$ asyncy deploy', fg='magenta'))
+    click.echo('- [ ] Write some stories:')
+    click.echo('- [ ] ' + click.style('$ story deploy', fg='magenta'))
     click.echo(
         click.style('\nHINT:', fg='cyan') + ' run ' +
-        click.style('$ asyncy bootstrap', fg='magenta') + ' for examples'
+        click.style('$ story bootstrap', fg='magenta') + ' for examples'
     )
 
 
 @apps.command()
 @options.app()
 def url(app):
-    """
-    Returns the full url of your application.
-    Great to use with $(asyncy apps url) in bash.
+    """Returns the full url of your application.
+    Great to use with $(story apps url) in bash.
     """
     cli.user()
     print_nl = False
-    import os
+
     if os.isatty(sys.stdout.fileno()):
         print_nl = True
 
-    click.echo(f'https://{app}.asyncyapp.com', nl=print_nl)
+    click.echo(f'https://{app}.storyscriptapp.com/', nl=print_nl)
 
 
 @apps.command()
@@ -168,16 +168,19 @@ def url(app):
 @click.option('--confirm', is_flag=True,
               help='Do not prompt to confirm destruction.')
 def destroy(confirm, app):
-    """
-    Destroy an application
-    """
+    """Destroy an application."""
+
     cli.user()
+
     if (
         confirm or
         click.confirm(f'Do you want to destroy "{app}"?', abort=True)
     ):
-        click.echo(f'Destroying application "{app}"...', nl=False)
-        with click_spinner.spinner():
+        click.echo(f'Destroying application "{app}"…', nl=False)
+
+        with yaspin():
+
             api.Apps.destroy(app=app)
             cli.track('App Destroyed', {'App name': app})
+
         click.echo(click.style('√', fg='green'))

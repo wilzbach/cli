@@ -3,8 +3,7 @@ import sys
 from time import sleep
 
 import click
-
-import click_spinner
+from yaspin import yaspin
 
 from .test import compile_app
 from .. import cli, options
@@ -15,9 +14,7 @@ from ..api import Apps, Config, Releases
 @click.option('--message', is_flag=True, help='Deployment message')
 @options.app(allow_option=False)
 def deploy(app, message):
-    """
-    Deploy your app instantly to the Asyncy Cloud
-    """
+    """Deploy your app instantly to the Storyscript Cloud."""
     cli.user()
 
     payload = compile_app(app, False)  # Also adds a spinner.
@@ -27,18 +24,18 @@ def deploy(app, message):
 
     click.echo(f'Deploying app {app}... ', nl=False)
 
-    with click_spinner.spinner():
+    with yaspin():
         config = Config.get(app)
         release = Releases.create(config, payload, app, message)
 
-    url = f'https://{app}.asyncyapp.com'
+    url = f'https://{app}.storyscriptapp.com/'
     click.echo()
     click.echo(click.style('√', fg='green') +
                f' Version {release["id"]} of your app has '
                f'been queued for deployment\n')
 
     click.echo('Waiting for deployment to complete... ', nl=False)
-    with click_spinner.spinner():
+    with yaspin():
         if Apps.maintenance(app, maintenance=None):
             click.echo()
             click.echo()
@@ -57,8 +54,8 @@ def deploy(app, message):
 
     click.echo()
     if state == 'DEPLOYED':
-        click.echo(click.style('√', fg='green') + ' Deployed successfully!')
-        click.echo(f'If your story listens to HTTP requests, visit {url}')
+        click.echo(click.style('√', fg='green') + ' Deployment successful!')
+        click.echo(f'If your Story responds to HTTP requests, please visit:\n  {url}')
     elif state == 'FAILED':
         click.echo(click.style('X', fg='red') + ' Deployment failed!',
                    err=True)
@@ -70,4 +67,4 @@ def deploy(app, message):
         click.echo(
             f'An unhandled state of your app has been encountered - {state}',
             err=True)
-        click.echo(f'Please shoot an email to support@asyncy.com')
+        click.echo(f'Please shoot an email to support@storyscript.io')

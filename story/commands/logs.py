@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
+import sys
 import re
 from datetime import datetime
 
 import click
-
-import click_spinner
+from yaspin import yaspin
 
 import requests
 
@@ -22,17 +22,16 @@ from ..api import Apps
               help='Specify the minimum log level')
 @options.app()
 def logs(follow, all, app, level):
-    """
-    Fetch logs for your app
-    """
+    """Fetch the logs of your Storyscript Cloud app."""
+
     if follow:
         click.echo('-f (following log output) is not supported yet.')
         return
 
     cli.user()
 
-    url = 'https://stories.asyncyapp.com/logs'
-    click.echo(f'Retrieving logs for {app}... ', nl=False)
+    url = 'https://stories.storyscript.io/logs'
+    click.echo(f'Retrieving logs of {app}... ', nl=False)
     params = {
         'access_token': cli.get_access_token(),
         'level': level
@@ -41,7 +40,7 @@ def logs(follow, all, app, level):
     if all:
         params['all'] = 'true'
 
-    with click_spinner.spinner():
+    with yaspin():
         params['app_id'] = Apps.get_uuid_from_hostname(app)
         r = requests.get(url, params=params)
 
@@ -53,8 +52,7 @@ def logs(follow, all, app, level):
     except BaseException:
         click.echo('Logs for your app aren\'t available right now.\n'
                    'If this error persists, please shoot us an email '
-                   'on support@asyncy.com', err=True)
-        import sys
+                   'on support@storyscript.io', err=True)
         sys.exit(1)
 
     cli.track('App Logs Retrieved', {'App name': app, 'Log count': len(arr)})

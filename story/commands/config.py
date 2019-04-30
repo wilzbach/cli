@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import click
-
-import click_spinner
+from yaspin import yaspin
 
 from .. import api
 from .. import cli
@@ -24,8 +23,8 @@ def list_command(app):
     List environment variables
     """
     cli.user()
-    click.echo('Fetching config... ', nl=False)
-    with click_spinner.spinner():
+    click.echo('Fetching config…', nl=False)
+    with yaspin():
         config = api.Config.get(app)
     click.echo(click.style('√', fg='green'))
 
@@ -48,10 +47,10 @@ def list_command(app):
         click.echo(click.style('No configuration set yet.', bold=True))
         click.echo('\nSet Storyscript environment ' +
                    click.style('$ ', dim=True) +
-                   click.style('asyncy config set key=value', fg='magenta'))
+                   click.style('story config set key=value', fg='magenta'))
         click.echo('Set service environment ' +
                    click.style('$ ', dim=True) +
-                   click.style('asyncy config set service.key=value',
+                   click.style('story config set service.key=value',
                                fg='magenta'))
 
 
@@ -64,17 +63,17 @@ def set_command(variables, app, message):
     """
     Set one or more environment variables.
 
-        $ asyncy config set key=value foo=bar
+        $ story config set key=value foo=bar
 
     To set an environment variable for a specific service use
 
-        $ asyncy config set twitter.oauth_token=value
+        $ story config set twitter.oauth_token=value
 
     """
     cli.user()
 
-    click.echo('Fetching config... ', nl=False)
-    with click_spinner.spinner():
+    click.echo('Fetching config…', nl=False)
+    with yaspin():
         config = api.Config.get(app=app)
     click.echo(click.style('√', fg='green'))
 
@@ -96,12 +95,12 @@ def set_command(variables, app, message):
 
             click.echo(click.style(key.upper(), fg='green') + f':  {val}')
 
-        click.echo('\nSetting config and deploying new release... ', nl=False)
-        with click_spinner.spinner():
+        click.echo('\nSetting config and deploying new release…', nl=False)
+        with yaspin():
             release = api.Config.set(config=config, app=app, message=message)
         click.echo(click.style('√', fg='green'))
         click.echo(
-            f'Deployed new release... ' +
+            f'Deployed new release…' +
             click.style(f'v{release["id"]}', bold=True, fg='magenta')
         )
 
@@ -119,8 +118,8 @@ def get(variables, app):
     cli.user()
     if variables:
 
-        click.echo(f'Fetching config for {app}... ', nl=False)
-        with click_spinner.spinner():
+        click.echo(f'Fetching config for {app}…', nl=False)
+        with yaspin():
             config = api.Config.get(app=app)
         click.echo(click.style('√', fg='green'))
 
@@ -162,8 +161,8 @@ def del_command(variables, app, message):
     cli.user()
     if variables:
 
-        click.echo('Fetching config... ', nl=False)
-        with click_spinner.spinner():
+        click.echo('Fetching config…', nl=False)
+        with yaspin():
             config = api.Config.get(app=app)
         click.echo(click.style('√', fg='green'))
 
@@ -188,11 +187,11 @@ def del_command(variables, app, message):
                 click.echo(
                     click.style('Removed', fg='red') + f': {key.upper()}')
 
-        click.echo('\nSetting config and deploying new release... ', nl=False)
-        with click_spinner.spinner():
+        click.echo('\nSetting config and deploying new release…', nl=False)
+        with yaspin():
             release = api.Config.set(config=config, app=app, message=message)
         click.echo(click.style('√', fg='green'))
-        click.echo(f'Deployed new release... ' +
+        click.echo(f'Deployed new release… ' +
                    click.style(f'v{release["id"]}', bold=True, fg='magenta'))
 
     else:
