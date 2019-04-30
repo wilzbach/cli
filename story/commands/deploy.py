@@ -3,6 +3,7 @@ import sys
 from time import sleep
 
 import click
+import emoji
 from blindspin import spinner
 
 from .test import compile_app
@@ -30,21 +31,27 @@ def deploy(app, message):
 
     url = f'https://{app}.storyscriptapp.com/'
     click.echo()
-    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green') +
-               f' Version {release["id"]} of your app has '
-               f'been queued for deployment\n')
+    click.echo(
+        click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+        + f' Version {release["id"]} of your app has '
+        f'been queued for deployment\n'
+    )
 
     click.echo('Waiting for deployment to complete... ', nl=False)
     with spinner():
         if Apps.maintenance(app, maintenance=None):
             click.echo()
             click.echo()
-            click.echo('Your app is in maintenance mode.\n'
-                       'Run the following to turn off it off:')
+            click.echo(
+                'Your app is in maintenance mode.\n'
+                'Run the following to turn off it off:'
+            )
             cli.print_command('asyncy maintenance off')
             click.echo()
-            click.echo('Once maintenance mode is turned off, '
-                       'your app will be deployed immediately.')
+            click.echo(
+                'Once maintenance mode is turned off, '
+                'your app will be deployed immediately.'
+            )
             return
 
         state = 'QUEUED'
@@ -54,17 +61,19 @@ def deploy(app, message):
 
     click.echo()
     if state == 'DEPLOYED':
-        click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green') + ' Deployment successful!')
+        click.echo(
+            click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+            + ' Deployment successful!'
+        )
         click.echo(f'If your Story responds to HTTP requests, please visit:\n  {url}')
     elif state == 'FAILED':
-        click.echo(click.style('X', fg='red') + ' Deployment failed!',
-                   err=True)
+        click.echo(click.style('X', fg='red') + ' Deployment failed!', err=True)
         click.echo(
-            'Please use the following command to view your app\'s logs:',
-            err=True)
+            'Please use the following command to view your app\'s logs:', err=True
+        )
         cli.print_command('asyncy logs')
     else:
         click.echo(
-            f'An unhandled state of your app has been encountered - {state}',
-            err=True)
+            f'An unhandled state of your app has been encountered - {state}', err=True
+        )
         click.echo(f'Please shoot an email to support@storyscript.io')

@@ -35,8 +35,10 @@ def test(debug):
         for k, v in tree['stories'].items():
             click.echo(click.style('\t√', fg='green') + f' {k}')
 
-    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green') +
-               emoji.emojize(' Looking good! :thumbs_up:'))
+    click.echo(
+        click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+        + emoji.emojize(' Looking good! :thumbs_up:')
+    )
     click.echo()
     click.echo('Deploy your app with:')
     cli.print_command('story deploy')
@@ -48,6 +50,7 @@ def compile_app(app_name_for_analytics, debug) -> dict:
     :return: The compiled tree
     """
     from storyscript.App import App
+
     click.echo(click.style('Compiling Stories...', bold=True))
 
     with spinner():
@@ -69,12 +72,11 @@ def compile_app(app_name_for_analytics, debug) -> dict:
             result = 'Failed'
         else:
             count = len(stories.get('stories', {}))
-            stories['yaml'] = cli.settings_get()
+            stories['yaml'] = cli.get_asyncy_yaml()
 
-        cli.track('App Compiled', {
-            'App name': app_name_for_analytics,
-            'Result': result,
-            'Stories': count
-        })
+        cli.track(
+            'App Compiled',
+            {'App name': app_name_for_analytics, 'Result': result, 'Stories': count},
+        )
 
     return stories
