@@ -10,7 +10,7 @@ from ..commands import maintenance
 @options.app()
 @click.pass_context
 def maintenance_check(ctx, app):
-    cli.print_deprecated_warning(alternative='asyncy maintenance check')
+    cli.print_deprecated_warning(alternative='story maintenance check')
     ctx.forward(maintenance.check)
 
 
@@ -18,7 +18,7 @@ def maintenance_check(ctx, app):
 @options.app()
 @click.pass_context
 def maintenance_on(ctx, app):
-    cli.print_deprecated_warning(alternative='asyncy maintenance on')
+    cli.print_deprecated_warning(alternative='story maintenance on')
     ctx.forward(maintenance.on)
 
 
@@ -26,5 +26,5 @@ def maintenance_on(ctx, app):
 @options.app()
 @click.pass_context
 def maintenance_off(ctx, app):
-    cli.print_deprecated_warning(alternative='asyncy maintenance off')
+    cli.print_deprecated_warning(alternative='story maintenance off')
     ctx.forward(maintenance.off)

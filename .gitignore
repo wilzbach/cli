@@ -12,3 +12,5 @@ venv
 *.pyc
 htmlcov
 .vscode/
+Pipfile.lock
+Pipfile

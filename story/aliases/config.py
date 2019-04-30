@@ -10,18 +10,23 @@ from ..commands import config
 @options.app()
 @click.pass_context
 def config_list(ctx, app):
-    cli.print_deprecated_warning(alternative='asyncy config list')
+    cli.print_deprecated_warning(alternative='story config list')
     ctx.forward(config.list_command)
 
 
 @cli.cli.command(name='config:set', hidden=True)
 @click.argument('variables', nargs=-1)
-@click.option('--message', '-m', nargs=1, default=None,
-              help='(optional) Message why variable(s) were created.')
+@click.option(
+    '--message',
+    '-m',
+    nargs=1,
+    default=None,
+    help='(optional) Message why variable(s) were created.',
+)
 @options.app()
 @click.pass_context
 def config_set(ctx, variables, app, message):
-    cli.print_deprecated_warning(alternative='asyncy config set')
+    cli.print_deprecated_warning(alternative='story config set')
     ctx.forward(config.set_command)
 
 
@@ -30,16 +35,21 @@ def config_set(ctx, variables, app, message):
 @options.app()
 @click.pass_context
 def config_get(ctx, variables, app):
-    cli.print_deprecated_warning(alternative='asyncy config get')
+    cli.print_deprecated_warning(alternative='story config get')
     ctx.forward(config.get)
 
 
 @cli.cli.command(name='config:del', hidden=True)
 @click.argument('variables', nargs=-1)
-@click.option('--message', '-m', nargs=1, default=None,
-              help='(optional) Message why variable(s) were deleted.')
+@click.option(
+    '--message',
+    '-m',
+    nargs=1,
+    default=None,
+    help='(optional) Message why variable(s) were deleted.',
+)
 @options.app()
 @click.pass_context
 def config_del(ctx, variables, app, message):
-    cli.print_deprecated_warning(alternative='asyncy config del')
+    cli.print_deprecated_warning(alternative='story config del')
     ctx.forward(config.del_command)
