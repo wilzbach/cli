@@ -20,12 +20,12 @@ def list_command(app):
     """List environment variables."""
 
     cli.user()
-    click.echo('Fetching config…', nl=False)
+    click.echo('Fetching config… ', nl=False)
 
     with spinner():
         config = api.Config.get(app)
 
-    click.echo(click.style('√', fg='green'))
+    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
     if config:
         click.echo(click.style('Storyscript variables:', dim=True))
@@ -71,10 +71,10 @@ def set_command(variables, app, message):
     """
     cli.user()
 
-    click.echo('Fetching config…', nl=False)
+    click.echo('Fetching config… ', nl=False)
     with spinner():
         config = api.Config.get(app=app)
-    click.echo(click.style('√', fg='green'))
+    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
     if variables:
         for keyval in variables:
@@ -94,12 +94,12 @@ def set_command(variables, app, message):
 
             click.echo(click.style(key.upper(), fg='green') + f':  {val}')
 
-        click.echo('\nSetting config and deploying new release…', nl=False)
+        click.echo('\nSetting config and deploying new release… ', nl=False)
         with spinner():
             release = api.Config.set(config=config, app=app, message=message)
-        click.echo(click.style('√', fg='green'))
+        click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
         click.echo(
-            f'Deployed new release…' +
+            f'Deployed new release… ' +
             click.style(f'v{release["id"]}', bold=True, fg='magenta')
         )
 
@@ -117,10 +117,10 @@ def get(variables, app):
     cli.user()
     if variables:
 
-        click.echo(f'Fetching config for {app}…', nl=False)
+        click.echo(f'Fetching config for {app}… ', nl=False)
         with spinner():
             config = api.Config.get(app=app)
-        click.echo(click.style('√', fg='green'))
+        click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
         for name in variables:
             if '.' in name:
@@ -160,10 +160,10 @@ def del_command(variables, app, message):
     cli.user()
     if variables:
 
-        click.echo('Fetching config…', nl=False)
+        click.echo('Fetching config… ', nl=False)
         with spinner():
             config = api.Config.get(app=app)
-        click.echo(click.style('√', fg='green'))
+        click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
         for key in variables:
             removed = False
@@ -186,10 +186,10 @@ def del_command(variables, app, message):
                 click.echo(
                     click.style('Removed', fg='red') + f': {key.upper()}')
 
-        click.echo('\nSetting config and deploying new release…', nl=False)
+        click.echo('\nSetting config and deploying new release… ', nl=False)
         with spinner():
             release = api.Config.set(config=config, app=app, message=message)
-        click.echo(click.style('√', fg='green'))
+        click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
         click.echo(f'Deployed new release… ' +
                    click.style(f'v{release["id"]}', bold=True, fg='magenta'))
 

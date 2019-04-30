@@ -52,16 +52,17 @@ def bootstrap(story):
                    ' - websocket support')
         click.echo('')
 
-        click.echo(emoji.emojize(':backhand_index_pointing_right:') +
-                   '  Run ' +
-                   click.style('asyncy bootstrap _template_name_',
-                               fg='magenta'))
+        click.echo(
+            '  Run $ ' +
+            click.style('story bootstrap :template_name: ', fg='magenta') +
+            emoji.emojize(':backhand_index_pointing_left:')
+        )
         click.echo('')
 
-        click.echo(click.style('More', bold=True))
-        click.echo('    Examples at ' +
-                   click.style('https://github.com/topics/asyncy-example',
+        click.echo(click.style('Learn more:', bold=True))
+        click.echo('  - Examples: ' +
+                   click.style('https://github.com/topics/storyscript-example',
                                fg='cyan'))
-        click.echo('    Services at ' +
+        click.echo('  - Services: ' +
                    click.style('https://hub.storyscript.io/', fg='cyan'))
         click.echo('')

@@ -42,7 +42,7 @@ def on(app):
                nl=False)
     with spinner():
         app = api.Apps.maintenance(app=app, maintenance=True)
-    click.echo(click.style('√', fg='green'))
+    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
     click.echo(click.style('Application is now in maintenance–mode.',
                            dim=True))
 
@@ -57,6 +57,6 @@ def off(app):
                nl=False)
     with spinner():
         app = api.Apps.maintenance(app=app, maintenance=False)
-    click.echo(click.style('√', fg='green'))
+    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
     click.echo(click.style('Application is now running.',
                            dim=True))

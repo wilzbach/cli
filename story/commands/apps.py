@@ -115,36 +115,39 @@ def create(name, team):
     with spinner():
         api.Apps.create(name=name, team=team)
 
-    click.echo(click.style('√', fg='green'))
+    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
     # click.echo('Adding git-remote... ', nl=False)
     # cli.run(f'git remote add asyncy https://git.asyncy.com/{name}')
-    # click.echo(click.style('√', fg='green'))
+    # click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
-    click.echo('Creating story.yml…', nl=False)
+    click.echo('Creating story.yml… ', nl=False)
     cli.settings_set(f'app_name: {name}\n', 'story.yml')
 
-    click.echo(click.style('√', fg='green'))
+    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
-    click.echo('\nNew application name: ' + click.style(name, bold=True))
+    click.echo('\nApp Name: ' + click.style(name, bold=True))
     click.echo(
-        'Found at ' +
+        'App URL:  ' +
         click.style(f'https://{name}.storyscriptapp.com/', fg='blue') +
         '\n'
     )
 
     click.echo(
-        emoji.emojize(':party_popper:') +
-        '  You are ready to write your first Storyscript!'
+        'You are now ready to write your first Storyscript! '
+        f'{emoji.emojize(":party_popper:")}'
     )
-    cli.track('App Created', {'App name': name})
-    click.echo('- [ ] Write some stories:')
-    click.echo('- [ ] ' + click.style('$ story deploy', fg='magenta'))
-    click.echo(
-        click.style('\nHINT:', fg='cyan') + ' run ' +
-        click.style('$ story bootstrap', fg='magenta') + ' for examples'
-    )
+    click.echo()
 
+    cli.track('App Created', {'App name': name})
+
+    click.echo(' - [ ] Write a Story:')
+    click.echo('       $ ' + click.style('story bootstrap http > http.story', fg='magenta'))
+    click.echo()
+    click.echo(' - [ ] Deploy to Storyscript Cloud:')
+    click.echo('       $ ' + click.style('story deploy', fg='magenta'))
+    click.echo()
+    click.echo('We hope you enjoy your deployment experience!')
 
 @apps.command()
 @options.app()
@@ -172,13 +175,13 @@ def destroy(confirm, app):
 
     if (
         confirm or
-        click.confirm(f'Do you want to destroy "{app}"?', abort=True)
+        click.confirm(f'Do you want to destroy {app!r}?', abort=True)
     ):
-        click.echo(f'Destroying application "{app}"…', nl=False)
+        click.echo(f'Destroying application {app!r}… ', nl=False)
 
         with spinner():
 
             api.Apps.destroy(app=app)
             cli.track('App Destroyed', {'App name': app})
 
-        click.echo(click.style('√', fg='green'))
+        click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))

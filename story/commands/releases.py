@@ -68,7 +68,7 @@ def rollback(version, app):
         with spinner():
             res = api.Releases.get(app=app)
             version = int(res[0]['id']) - 1
-        click.echo(click.style('√', fg='green'))
+        click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
     if int(version) == 0:
         click.echo('Unable to rollback a release before v1.')
@@ -79,6 +79,6 @@ def rollback(version, app):
     with spinner():
         res = api.Releases.rollback(version=version, app=app)
 
-    click.echo(click.style('√', fg='green'))
+    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
     click.echo(f'Deployed new release… ' +
                click.style(f'v{res["id"]}', bold=True, fg='magenta'))

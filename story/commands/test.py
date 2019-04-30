@@ -35,7 +35,7 @@ def test(debug):
         for k, v in tree['stories'].items():
             click.echo(click.style('\t√', fg='green') + f' {k}')
 
-    click.echo(click.style('√', fg='green') +
+    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green') +
                emoji.emojize(' Looking good! :thumbs_up:'))
     click.echo()
     click.echo('Deploy your app with:')
