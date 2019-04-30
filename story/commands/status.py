@@ -7,8 +7,6 @@ from .. import cli
 
 @cli.cli.command(hidden=True)
 def status():
-    """
-    Show Asyncy status
-    """
+    """Show Storyscript Cloud status."""
     # TODO get asyncy component
     click.echo('Sorry, command not programmed yet.')

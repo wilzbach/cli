@@ -11,7 +11,6 @@ from uuid import uuid4
 
 import click
 import click_help_colors
-import click_spinner
 import emoji
 from yaspin import yaspin
 from raven import Client

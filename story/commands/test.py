@@ -4,8 +4,7 @@ import os
 import sys
 
 import click
-
-import click_spinner
+from yaspin import yaspin
 
 import emoji
 
@@ -17,9 +16,7 @@ from .. import cli
 @cli.cli.command()
 @click.option('--debug', is_flag=True, help='Compile in debug mode')
 def test(debug):
-    """
-    Compile your project and check for any errors
-    """
+    """Compile your Storyscripts, and check for any errors."""
 
     cli.user()
 
@@ -42,7 +39,7 @@ def test(debug):
                emoji.emojize(' Looking good! :thumbs_up:'))
     click.echo()
     click.echo('Deploy your app with:')
-    cli.print_command('asyncy deploy')
+    cli.print_command('story deploy')
 
 
 def compile_app(app_name_for_analytics, debug) -> dict:
@@ -53,7 +50,7 @@ def compile_app(app_name_for_analytics, debug) -> dict:
     from storyscript.App import App
     click.echo(click.style('Compiling Stories...', bold=True))
 
-    with click_spinner.spinner():
+    with yaspin():
         try:
             stories = json.loads(App.compile(os.getcwd()))
         except StoryError as e:

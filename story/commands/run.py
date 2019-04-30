@@ -9,9 +9,7 @@ from .. import cli
 
 @cli.cli.command()
 def run():
-    """
-    Write Storyscript interactively
-    """
+    """Write Storyscript, interactively."""
     click.echo('This command has not been implemented yet.')
     # cli.user()
     #

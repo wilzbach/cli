@@ -7,8 +7,7 @@ from .. import cli
 
 @cli.cli.command()
 def version():
-    """
-    Prints the CLI version and the Storyscript compiler version
+    """Prints the 'story' and Storyscript Compiler versions.
     """
     from storyscript import version
 

@@ -2,8 +2,7 @@
 import sys
 
 import click
-
-import click_spinner
+from yaspin import yaspin
 
 from .. import api
 from .. import cli
@@ -13,9 +12,7 @@ from ..helpers.datetime import parse_psql_date_str, reltime
 
 @cli.cli.group()
 def releases():
-    """
-    Manage releases for your app (including rollback)
-    """
+    """Manage releases for your app (including rollback)."""
     pass
 
 
@@ -24,15 +21,13 @@ def releases():
               help='List N latest releases')
 @options.app()
 def list_command(app, limit):
-    """
-    List application releases
-    """
+    """List application releases."""
     cli.user()
 
     # click.echo(click.style('Releases', fg='magenta'))
     # click.echo(click.style('========', fg='magenta'))
 
-    with click_spinner.spinner():
+    with yaspin():
         res = api.Releases.list(app, limit=limit)
 
     res = sorted(res, key=lambda elem: elem['id'])
@@ -61,18 +56,16 @@ def list_command(app, limit):
 @click.argument('version', nargs=1, required=False)
 @options.app()
 def rollback(version, app):
-    """
-    Rollback release to a previous release.
-    """
+    """Rollback release to a previous release."""
     cli.user()
 
     if version and version[0] == 'v':
         version = version[1:]
 
     if not version:
-        click.echo(f'Getting latest release for app {app}... ',
+        click.echo(f'Getting latest release for app {app}… ',
                    nl=False)
-        with click_spinner.spinner():
+        with yaspin():
             res = api.Releases.get(app=app)
             version = int(res[0]['id']) - 1
         click.echo(click.style('√', fg='green'))
@@ -81,9 +74,11 @@ def rollback(version, app):
         click.echo('Unable to rollback a release before v1.')
         sys.exit(1)
 
-    click.echo(f'Rolling back to v{version}... ', nl=False)
-    with click_spinner.spinner():
+    click.echo(f'Rolling back to v{version}… ', nl=False)
+
+    with yaspin():
         res = api.Releases.rollback(version=version, app=app)
+
     click.echo(click.style('√', fg='green'))
-    click.echo(f'Deployed new release... ' +
+    click.echo(f'Deployed new release… ' +
                click.style(f'v{res["id"]}', bold=True, fg='magenta'))
