@@ -29,16 +29,12 @@ CHOICES = [
 )
 def write(story, output_file=None):
     """Pre–defined Storyscripts for your app!"""
-    if story != '-':
-        data = pkgutil.get_data('story', f'stories/{story}.story')
-        click.echo(data)
-        app_name = cli.get_app_name_from_yml()
-        if app_name is None:
-            app_name = 'Not created yet'
 
-        cli.track('App Bootstrapped', {'App name': app_name, 'Template used': story})
+    # Support '$ story write http -` usecase.`
+    if output_file == '-':
+        output_file = None
 
-    else:
+    if story == '-':
         click.echo(click.style('Please specify a template:', bold=True))
         click.echo(click.style('  http', fg='cyan') + '      - serverless http')
         click.echo(click.style('  function', fg='cyan') + '  - generic function')
@@ -72,3 +68,26 @@ def write(story, output_file=None):
             '  - Services: ' + click.style('https://hub.storyscript.io/', fg='cyan')
         )
         click.echo('')
+
+    else:
+
+        # Grab the story, from packaging...
+        data = pkgutil.get_data('story', f'stories/{story}.story')
+
+        # If output_file was passed, assume it was an interfactive session.
+        if output_file:
+            # Write to the file...
+            with open(output_file, 'wb') as f:
+                f.write(data)
+
+            cmd = f'cat {output_file}'
+            cmd = click.style(cmd, fg='magenta')
+            click.echo(f'$ {cmd}', err=True)
+
+        click.echo(data)
+
+        app_name = cli.get_app_name_from_yml()
+        if app_name is None:
+            app_name = 'Not created yet'
+
+        cli.track('App Bootstrapped', {'App name': app_name, 'Template used': story})
