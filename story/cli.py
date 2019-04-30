@@ -141,8 +141,7 @@ def settings_set(content: Content, location: str):
     """Overwrites settings, to given location and content."""
 
     # Ensure the path is created and exists..
-    dir = os.path.dirname(location)
-    os.makedirs(dir, exist_ok=True)
+    os.makedirs(os.path.dirname(location), exist_ok=True)
 
     # If content is an object-like...
     if isinstance(content, (list, dict)):
