@@ -23,14 +23,15 @@ def maintenance(enabled: bool) -> str:
 
 @cli.cli.group()
 def apps():
-    """Create, list, and manage Storyscript Cloud apps."""
+    """Create, list, and manage apps on Storyscript Cloud."""
     pass
 
 
 @apps.command(name='list')
 def list_command():
-    """List your Storyscript Cloud applications."""
+    """List apps that you have access to."""
     from texttable import Texttable
+
     cli.user()
 
     with spinner():
@@ -46,11 +47,7 @@ def list_command():
     for app in res:
         count += 1
         date = parse_psql_date_str(app['timestamp'])
-        all_apps.append([
-            app['name'],
-            maintenance(app['maintenance']),
-            reltime(date)
-        ])
+        all_apps.append([app['name'], maintenance(app['maintenance']), reltime(date)])
 
     table.add_rows(rows=all_apps)
 
@@ -65,8 +62,9 @@ def _is_git_repo_good():
     try:
         assert cli.run('git status 2&>1')
     except:
-        click.echo('Please create your application '
-                   'from a git-backed project folder.')
+        click.echo(
+            'Please create your application ' 'from a git-backed project folder.'
+        )
         click.echo(click.style('$ git init', bold=True, fg='magenta'))
         sys.exit(1)
 
@@ -75,11 +73,16 @@ def _is_git_repo_good():
         # not exist.
         remote = cli.run('git remote get-url asyncy')
         click.echo(
-            click.style('There appears to be git remote '
-                        f'named asyncy already ({remote}).\n', fg='red'))
-        click.echo('If you\'re trying to create a new app, please create a\n'
-                   'new directory with a git repository '
-                   'in there.')
+            click.style(
+                'There appears to be git remote ' f'named asyncy already ({remote}).\n',
+                fg='red',
+            )
+        )
+        click.echo(
+            'If you\'re trying to create a new app, please create a\n'
+            'new directory with a git repository '
+            'in there.'
+        )
         sys.exit(1)
     except subprocess.CalledProcessError:
         # This just means that the remote does not exist, which is OK.
@@ -88,21 +91,24 @@ def _is_git_repo_good():
 
 @apps.command()
 @click.argument('name', nargs=1, required=False)
-@click.option('--team', type=str,
-              help='Team name that owns this new Application')
+@click.option('--team', type=str, help='Team name that owns this new Application')
 def create(name, team):
-    """Create a new Storyscript Cloud App."""
+    """Create a new app."""
 
     cli.user()
     story_yaml = cli.find_story_yml()
 
     if story_yaml is not None:
         click.echo(
-            click.style('There appears to be an Storyscript Cloud project in '
-                        f'{story_yaml} already.\n', fg='red'))
+            click.style(
+                'There appears to be an Storyscript Cloud project in '
+                f'{story_yaml} already.\n',
+                fg='red',
+            )
+        )
         click.echo(
-            click.style('Are you trying to deploy? '
-                        'Try the following:', fg='red'))
+            click.style('Are you trying to deploy? ' 'Try the following:', fg='red')
+        )
         click.echo(click.style('$ story deploy', fg='magenta'))
         sys.exit(1)
 
@@ -128,9 +134,9 @@ def create(name, team):
 
     click.echo('\nApp Name: ' + click.style(name, bold=True))
     click.echo(
-        'App URL:  ' +
-        click.style(f'https://{name}.storyscriptapp.com/', fg='blue') +
-        '\n'
+        'App URL:  '
+        + click.style(f'https://{name}.storyscriptapp.com/', fg='blue')
+        + '\n'
     )
 
     click.echo(
@@ -142,17 +148,21 @@ def create(name, team):
     cli.track('App Created', {'App name': name})
 
     click.echo(' - [ ] Write a Story:')
-    click.echo('       $ ' + click.style('story bootstrap http > http.story', fg='magenta'))
+    click.echo(
+        '       $ ' + click.style('story bootstrap http > http.story', fg='magenta')
+    )
     click.echo()
     click.echo(' - [ ] Deploy to Storyscript Cloud:')
     click.echo('       $ ' + click.style('story deploy', fg='magenta'))
     click.echo()
     click.echo('We hope you enjoy your deployment experience!')
 
+
 @apps.command()
 @options.app()
 def url(app):
-    """Returns the full url of your application.
+    """Display the full URL of an app.
+
     Great to use with $(story apps url) in bash.
     """
     cli.user()
@@ -166,17 +176,13 @@ def url(app):
 
 @apps.command()
 @options.app()
-@click.option('--confirm', is_flag=True,
-              help='Do not prompt to confirm destruction.')
+@click.option('--confirm', is_flag=True, help='Do not prompt to confirm destruction.')
 def destroy(confirm, app):
-    """Destroy an application."""
+    """Destroy an app."""
 
     cli.user()
 
-    if (
-        confirm or
-        click.confirm(f'Do you want to destroy {app!r}?', abort=True)
-    ):
+    if confirm or click.confirm(f'Do you want to destroy {app!r}?', abort=True):
         click.echo(f'Destroying application {app!r}… ', nl=False)
 
         with spinner():
