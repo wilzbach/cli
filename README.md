@@ -24,7 +24,7 @@ $ brew install storyscript/brew/story
 
 Call `story` to get a full list of commands or continue to [read the documentation](https://docs.storyscript.io/cli).
 
-![usage](https://user-images.githubusercontent.com/2041757/42899845-8fe6a3a4-8ac7-11e8-8545-a22f99563368.png)
+![usage](https://github.com/storyscript/cli/blob/e7c2dc8f4b1de08163e94db16219a90fdb1d7d6b/ext/story-cli.png?raw=true)
 
 ## Issues
 
