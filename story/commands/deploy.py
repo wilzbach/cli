@@ -15,7 +15,7 @@ from ..api import Apps, Config, Releases
 @click.option('--message', is_flag=True, help='Deployment message')
 @options.app(allow_option=False)
 def deploy(app, message):
-    """Deploy your app instantly to the Storyscript Cloud."""
+    """Deploy your app to Storyscript Cloud."""
     cli.user()
 
     payload = compile_app(app, False)  # Also adds a spinner.
@@ -46,7 +46,7 @@ def deploy(app, message):
                 'Your app is in maintenance mode.\n'
                 'Run the following to turn off it off:'
             )
-            cli.print_command('asyncy maintenance off')
+            cli.print_command('story maintenance off')
             click.echo()
             click.echo(
                 'Once maintenance mode is turned off, '
@@ -71,7 +71,7 @@ def deploy(app, message):
         click.echo(
             'Please use the following command to view your app\'s logs:', err=True
         )
-        cli.print_command('asyncy logs')
+        cli.print_command('story logs')
     else:
         click.echo(
             f'An unhandled state of your app has been encountered - {state}', err=True

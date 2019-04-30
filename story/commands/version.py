@@ -7,7 +7,7 @@ from .. import cli
 
 @cli.cli.command()
 def version():
-    """Prints the 'story' and Storyscript Compiler versions."""
+    """Displays the Storyscript CLI & Compiler versions."""
     from storyscript import version
 
     click.echo(
