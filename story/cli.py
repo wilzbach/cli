@@ -27,9 +27,7 @@ Content = typing.Union[str, typing.Mapping, typing.List]
 
 if not os.getenv('TOXENV'):
     enable_reporting = True
-    sentry = Client(
-        'https://007e7d135737487f97f5fe87d5d85b55@sentry.io/1206504'
-    )
+    sentry = Client('https://007e7d135737487f97f5fe87d5d85b55@sentry.io/1206504')
 else:
     enable_reporting = False
     sentry = Client()
@@ -44,15 +42,17 @@ def get_access_token():
 
 def track_profile():
     _make_tracking_http_request(
-        'https://stories.asyncyapp.com/track/profile', {
+        'https://stories.storyscriptapp.com/track/profile',
+        {
             'id': str(data['id']),
             'profile': {
                 'Name': data['name'],
                 'Email': data.get('email'),
                 'GitHub Username': data.get('username'),
-                'Timezone': time.tzname[time.daylight]
-            }
-        })
+                'Timezone': time.tzname[time.daylight],
+            },
+        },
+    )
 
 
 def _make_tracking_http_request(url, json_data):
@@ -97,11 +97,9 @@ def track(event_name, extra: dict = None):
 
     extra['CLI version'] = version
     _make_tracking_http_request(
-        'https://stories.storyscript.io/track/event', {
-            'id': str(data['id']),
-            'event_name': event_name,
-            'event_props': extra
-        })
+        'https://stories.storyscript.io/track/event',
+        {'id': str(data['id']), 'event_name': event_name, 'event_props': extra},
+    )
 
 
 def find_story_yml():
@@ -123,6 +121,7 @@ def get_app_name_from_yml() -> str:
     if file is None:
         return None
     import yaml
+
     with open(file, 'r') as s:
         return yaml.safe_load(s).pop('app_name')
 
@@ -133,6 +132,7 @@ def get_asyncy_yaml() -> dict:
     assert file is not None
 
     import yaml
+
     with open(file, 'r') as s:
         return yaml.safe_load(s)
 
@@ -154,34 +154,31 @@ def settings_set(content: Content, location: str):
     with open(location, 'w+') as file:
         file.write(content)
 
+
 def initiate_login():
     global data
 
     click.echo(
-        'Hi! Thank you for using ' +
-        click.style('Story Cloud', fg='magenta') + '.'
+        'Hi! Thank you for using ' + click.style('Story Cloud', fg='magenta') + '.'
     )
     click.echo('Please login with GitHub to get started.')
 
     state = uuid4()
 
-    query = {
-        'state': state
-    }
+    query = {'state': state}
 
-    url = f'https://stories.asyncyapp.com/github?{urlencode(query)}'
+    url = f'https://stories.storyscriptapp.com/github?{urlencode(query)}'
 
     click.launch(url)
     click.echo()
-    click.echo(
-        "Visit this link if your browser doesn't open automatically:")
+    click.echo("Visit this link if your browser doesn't open automatically:")
     click.echo(url)
     click.echo()
 
     while True:
         with spinner():
             try:
-                url = 'https://stories.asyncyapp.com/github/oauth_callback'
+                url = 'https://stories.storyscriptapp.com/github/oauth_callback'
                 r = requests.get(url=url, args={'state': state})
 
                 if r.text == 'null':
@@ -198,8 +195,7 @@ def initiate_login():
                 sys.exit(1)
 
     if r.json().get('beta') is False:
-        click.echo(
-            'Hello! Story Cloud is in private beta at this time.')
+        click.echo('Hello! Story Cloud is in private beta at this time.')
         click.echo(
             'We\'ve added you to our beta testers queue, '
             'and you should hear from us\nshortly via email'
@@ -210,10 +206,7 @@ def initiate_login():
     settings_set(r.text, f'{home}/.config')
     init()
 
-    click.echo(
-        emoji.emojize(':waving_hand:') +
-        f'  Welcome {data["name"]}!'
-    )
+    click.echo(emoji.emojize(':waving_hand:') + f'  Welcome {data["name"]}!')
     click.echo()
     click.echo('Create a new app with:')
     print_command('story apps create')
@@ -243,25 +236,21 @@ def user() -> dict:
 def print_command(command):
     """Prints a command to the CLI."""
 
-    click.echo(
-        click.style(f'$ {command}', fg='magenta')
-    )
+    click.echo(click.style(f'$ {command}', fg='magenta'))
 
 
 def print_deprecated_warning(alternative):
     click.echo(
-        click.style('Warning: ', fg='yellow') +
-        'This command is deprecated and will be removed' +
-        ' in a future release. Please use ' +
-        click.style(f'$ {alternative}\n', fg='magenta')
+        click.style('Warning: ', fg='yellow')
+        + 'This command is deprecated and will be removed'
+        + ' in a future release. Please use '
+        + click.style(f'$ {alternative}\n', fg='magenta')
     )
 
 
 def assert_project(command, app, default_app, allow_option):
     if app is None:
-        click.echo(
-            click.style('No Story Cloud application found.', fg='red')
-        )
+        click.echo(click.style('No Story Cloud application found.', fg='red'))
         click.echo()
         click.echo('Create an application with:')
 
@@ -270,11 +259,12 @@ def assert_project(command, app, default_app, allow_option):
         sys.exit(1)
 
     elif not allow_option and app != default_app:
-        click.echo(click.style(
-            'The --app option is not allowed with the {} command.'
-            .format(command),
-            fg='red'
-        ))
+        click.echo(
+            click.style(
+                'The --app option is not allowed with the {} command.'.format(command),
+                fg='red',
+            )
+        )
         sys.exit(1)
     return app
 
@@ -286,10 +276,7 @@ def init():
 
         with open(f'{home}/.config', 'r') as file:
             data = json.load(file)
-            sentry.user_context({
-                'id': data['id'],
-                'email': data['email']
-            })
+            sentry.user_context({'id': data['id'], 'email': data['email']})
 
 
 def stream(cmd: str):
@@ -309,10 +296,7 @@ def stream(cmd: str):
 def run(cmd: str):
 
     output = subprocess.run(
-        cmd.split(' '),
-        check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        cmd.split(' '), check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     return str(output.stdout.decode('utf-8').strip())
 
