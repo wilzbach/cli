@@ -32,7 +32,7 @@ def deploy(app, message):
     url = f'https://{app}.storyscriptapp.com/'
     click.echo()
     click.echo(
-        click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
         + f' Version {release["id"]} of your app has '
         f'been queued for deployment.\n'
     )
@@ -62,7 +62,7 @@ def deploy(app, message):
     click.echo()
     if state == 'DEPLOYED':
         click.echo(
-            click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+            click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
             + ' Deployment successful!'
         )
         click.echo(f'If your Story responds to HTTP requests, please visit:\n  {url}')

@@ -121,7 +121,7 @@ def create(name, team):
     with spinner():
         api.Apps.create(name=name, team=team)
 
-    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
+    click.echo('\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
     # click.echo('Adding git-remote... ', nl=False)
     # cli.run(f'git remote add asyncy https://git.asyncy.com/{name}')
@@ -130,7 +130,7 @@ def create(name, team):
     click.echo('Creating story.yml… ', nl=False)
     cli.settings_set(f'app_name: {name}\n', 'story.yml')
 
-    click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
+    click.echo('\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
     click.echo('\nApp Name: ' + click.style(name, bold=True))
     click.echo(
@@ -190,4 +190,4 @@ def destroy(confirm, app):
             api.Apps.destroy(app=app)
             cli.track('App Destroyed', {'App name': app})
 
-        click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
+        click.echo('\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
