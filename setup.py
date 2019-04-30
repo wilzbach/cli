@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+import io
 
 from setuptools import find_packages, setup
 from setuptools.command.install import install
@@ -44,23 +46,31 @@ requirements = [
     'blindspin'
 ]
 
+here = os.path.abspath(os.path.dirname(__file__))
+long_description_fname = os.path.join(here, 'README.md')
+with io.open(long_description_fname, encoding='utf-8') as f:
+    long_description = f.read()
 
-setup(name='story',
-      version=version,
-      description='Storyscript CLI',
-      long_description='',
-      classifiers=classifiers,
-      download_url='https://github.com/storyscript/cli/archive/master.zip',
-      keywords=' '.join(keywords),
-      author='Storyscript',
-      author_email='hello@storyscript.io',
-      url='http://docs.storyscript.com/cli',
-      license='Apache 2',
-      packages=find_packages(exclude=['scripts', 'tests']),
-      include_package_data=True,
-      zip_safe=True,
-      install_requires=requirements,
-      extras_require={},
-      entry_points={
-          'console_scripts': ['story=story.main:cli']
-      })
+
+setup(
+    name='story',
+    version=version,
+    description='Storyscript CLI',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    classifiers=classifiers,
+    download_url='https://github.com/storyscript/cli/archive/master.zip',
+    keywords=' '.join(keywords),
+    author='Storyscript',
+    author_email='hello@storyscript.io',
+    url='http://docs.storyscript.com/cli',
+    license='Apache 2',
+    packages=find_packages(exclude=['scripts', 'tests']),
+    include_package_data=True,
+    zip_safe=True,
+    install_requires=requirements,
+    extras_require={},
+    entry_points={
+        'console_scripts': ['story=story.main:cli']
+    }
+)
