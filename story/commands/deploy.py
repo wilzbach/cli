@@ -37,7 +37,7 @@ def deploy(app, message):
         f'been queued for deployment\n'
     )
 
-    click.echo('Waiting for deployment to complete... ', nl=False)
+    click.echo('Waiting for deployment to complete… ', nl=False)
     with spinner():
         if Apps.maintenance(app, maintenance=None):
             click.echo()
