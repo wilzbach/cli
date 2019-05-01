@@ -59,6 +59,7 @@ setup(name='asyncy',
       zip_safe=True,
       install_requires=requirements,
       extras_require={},
+      python_requires='>=3.5',
       entry_points={
           'console_scripts': ['asyncy=cli.main:cli']
       })
