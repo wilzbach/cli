@@ -28,7 +28,7 @@ source ./bin/activate
 echo "Installing story==$tag..."
 $pip install story==$tag &> /dev/null
 
-echo "Cloning asyncy/homebrew-brew..."
+echo "Cloning storyscript/homebrew-brew..."
 git clone git@github.com:storyscript/homebrew-brew.git &> /dev/null
 cd homebrew-brew
 
