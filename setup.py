@@ -3,7 +3,6 @@ import os
 import io
 
 from setuptools import find_packages, setup
-from setuptools.command.install import install
 
 from story.version import version
 
@@ -64,7 +63,7 @@ setup(
     keywords=' '.join(keywords),
     author='Storyscript',
     author_email='hello@storyscript.io',
-    url='http://docs.storyscript.io/cli',
+    url='https://docs.storyscript.io/cli',
     license='Apache 2',
     packages=find_packages(exclude=['scripts', 'tests']),
     include_package_data=True,
@@ -72,5 +71,8 @@ setup(
     install_requires=requirements,
     extras_require={},
     requires_python='>=3.6.0',
-    entry_points={'console_scripts': ['story=story.main:cli']},
+    entry_points={'console_scripts': [
+        'story=story.main:cli',
+        'asyncy=story.main:cli'
+    ]},
 )
