@@ -41,10 +41,14 @@ def get_access_token():
     return data['access_token']
 
 
+def get_user_id():
+    return data['id']
+
+
 def track_profile():
     _make_tracking_http_request(
-        'https://stories.asyncyapp.com/track/profile', {
-            'id': str(data['id']),
+        'https://stories.storyscriptapp.com/track/profile', {
+            'id': str(get_user_id()),
             'profile': {
                 'Name': data['name'],
                 'Email': data.get('email'),
@@ -97,7 +101,7 @@ def track(event_name, extra: dict = None):
     extra['CLI version'] = version
     _make_tracking_http_request(
         'https://stories.asyncyapp.com/track/event', {
-            'id': str(data['id']),
+            'id': str(get_user_id()),
             'event_name': event_name,
             'event_props': extra
         })
@@ -267,7 +271,7 @@ def init():
         with open(f'{home}/.config', 'r') as file:
             data = json.load(file)
             sentry.user_context({
-                'id': data['id'],
+                'id': get_user_id(),
                 'email': data['email']
             })
 
