@@ -262,15 +262,6 @@ def print_command(command):
     click.echo('  $ ' + click.style(command, fg='magenta'))
 
 
-def print_deprecated_warning(alternative):
-    click.echo(
-        click.style('Warning: ', fg='yellow')
-        + 'This command is deprecated and will be removed'
-        + ' in a future release. Please use '
-        + click.style(f'$ {alternative}\n', fg='magenta')
-    )
-
-
 def assert_project(command, app, default_app, allow_option):
     if app is None:
         click.echo(click.style('No StoryScript Cloud application found.',
