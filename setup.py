@@ -60,7 +60,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=classifiers,
-    download_url='https://github.com/storyscript/cli/archive/master.zip',
+    download_url=f'https://github.com/storyscript/cli/archive/{version}.zip',
     keywords=' '.join(keywords),
     author='Storyscript',
     author_email='hello@storyscript.io',
