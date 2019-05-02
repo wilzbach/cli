@@ -5,7 +5,7 @@ import click
 
 import emoji
 
-from story import api
+from .. import api
 from .. import cli
 from .. import options
 
