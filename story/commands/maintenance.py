@@ -19,7 +19,7 @@ def maintenance():
 @maintenance.command()
 @options.app()
 def check(app):
-    """Displays current maintinence status."""
+    """Displays current maintenance status."""
     cli.user()
     click.echo(f'Fetching maintenance mode for {app}… ', nl=False)
     with spinner():
