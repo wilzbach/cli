@@ -12,6 +12,6 @@ def runner():
 
 
 def test_choose_template(runner):
-    res = runner.invoke(cli, ['bootstrap'])
+    res = runner.invoke(cli, ['write'])
     assert res.exit_code == 0
     assert 'Choose a template' in res.output
