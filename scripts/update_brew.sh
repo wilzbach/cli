@@ -32,8 +32,8 @@ echo "Cloning storyscript/homebrew-brew..."
 git clone git@github.com:storyscript/homebrew-brew.git &> /dev/null
 cd homebrew-brew
 
-echo "Running pip freeze and building Formula/asyncy.rb..."
-$pip freeze | grep -v story== | $python scripts/build.py $tag $sha > Formula/asyncy.rb
+echo "Running pip freeze and building Formula/story.rb..."
+$pip freeze | grep -v story== | $python scripts/build.py $tag $sha > Formula/story.rb
 deactivate
 
 echo "Updating brew..."
