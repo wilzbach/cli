@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-
-from cli.main import cli
-
 from click.testing import CliRunner
 
 from pytest import fixture
+
+from story.main import cli
 
 
 @fixture
@@ -13,6 +12,6 @@ def runner():
 
 
 def test_choose_template(runner):
-    res = runner.invoke(cli, ['bootstrap'])
+    res = runner.invoke(cli, ['write'])
     assert res.exit_code == 0
-    assert 'Choose a template' in res.output
+    assert 'Please specify a template' in res.output

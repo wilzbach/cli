@@ -1,6 +1,6 @@
 __all__ = [
     'apps',
-    'bootstrap',
+    'write',
     'config',
     'feedback',
     'login',
@@ -11,5 +11,5 @@ __all__ = [
     'test',
     'update',
     'version',
-    'deploy'
+    'deploy',
 ]

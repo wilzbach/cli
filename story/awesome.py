@@ -28,7 +28,7 @@ right = (
     'bhaskara', 'blackburn', 'blackwell', 'bohr', 'booth', 'borg', 'bose',
     'boyd', 'brahmagupta', 'brattain', 'brown', 'buck', 'burnell', 'cannon',
     'carson', 'cartwright', 'chandrasekhar', 'chaplygin', 'chatelet',
-    'chatterjee', 'chebyshev', 'cocks', 'cohen', 'chaum', 'clarke',
+    'chatterjee', 'chebyshev', 'cohen', 'chaum', 'clarke',
     'colden', 'cori', 'cray', 'curran', 'curie', 'darwin', 'davinci',
     'dewdney', 'dhawan', 'diffie', 'dijkstra', 'dirac', 'driscoll', 'dubinsky',
     'easley', 'edison', 'einstein', 'elbakyan', 'elgamal', 'elion', 'ellis',

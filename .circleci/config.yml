@@ -62,7 +62,7 @@ jobs:
           name: upload
           command: |
             . venv/bin/activate
-            twine upload dist/asyncy-*.tar.gz
+            twine upload dist/story-*.tar.gz
   release_brew:
     macos:
       xcode: "9.0"
@@ -95,10 +95,10 @@ jobs:
       - checkout
       - run:
           name: change git name
-          command: git config --global user.name "Asyncy Infrastructure"
+          command: git config --global user.name "Storyscript Infrastructure"
       - run:
           name: change git email
-          command: git config --global user.email infra@asyncy.com
+          command: git config --global user.email infra@storyscript.io
       - run:
           name: create brew pr
           command: bash ./scripts/update_brew.sh $CIRCLE_TAG

@@ -2,4 +2,4 @@
 
 set -ex
 
-pyinstaller --onefile cli/cli.py
+pyinstaller --onefile story/cli.py
