@@ -180,7 +180,7 @@ def initiate_login():
     global data
 
     click.echo(
-        'Hi! Thank you for using ' + click.style('Story Cloud',
+        'Hi! Thank you for using ' + click.style('Storyscript Cloud',
                                                  fg='magenta') + '.'
     )
     click.echo('Please login with GitHub to get started.')
@@ -218,7 +218,7 @@ def initiate_login():
                 sys.exit(1)
 
     if r.json().get('beta') is False:
-        click.echo('Hello! Story Cloud is in private beta at this time.')
+        click.echo('Hello! Storyscript Cloud is in private beta at this time.')
         click.echo(
             'We\'ve added you to our beta testers queue, '
             'and you should hear from us\nshortly via email'
