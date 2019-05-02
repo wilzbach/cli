@@ -5,7 +5,7 @@ import emoji
 
 from blindspin import spinner
 
-from .. import api
+from story import api
 from .. import cli
 from .. import options
 
