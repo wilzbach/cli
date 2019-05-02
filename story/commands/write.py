@@ -5,7 +5,7 @@ import click
 
 import emoji
 
-from .. import cli
+from story import cli
 
 CHOICES = [
     'http',
