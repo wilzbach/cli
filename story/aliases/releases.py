@@ -7,7 +7,8 @@ from ..commands import releases
 
 
 @cli.cli.command(name='releases:list', hidden=True)
-@click.option('--limit', '-n', nargs=1, default=20, help='List N latest releases')
+@click.option('--limit', '-n', nargs=1, default=20,
+              help='List N latest releases')
 @options.app()
 @click.pass_context
 def list_command(ctx, app, limit):

@@ -3,9 +3,11 @@ import os
 import subprocess
 import sys
 
-import click
-import emoji
 from blindspin import spinner
+
+import click
+
+import emoji
 
 from .. import api
 from .. import awesome
@@ -47,7 +49,8 @@ def list_command():
     for app in res:
         count += 1
         date = parse_psql_date_str(app['timestamp'])
-        all_apps.append([app['name'], maintenance(app['maintenance']), reltime(date)])
+        all_apps.append(
+            [app['name'], maintenance(app['maintenance']), reltime(date)])
 
     table.add_rows(rows=all_apps)
 
@@ -63,7 +66,7 @@ def _is_git_repo_good():
         assert cli.run('git status 2&>1')
     except:
         click.echo(
-            'Please create your application ' 'from a git-backed project folder.'
+            'Please create your application from a git-backed project folder.'
         )
         click.echo(click.style('$ git init', bold=True, fg='magenta'))
         sys.exit(1)
@@ -71,10 +74,11 @@ def _is_git_repo_good():
     try:
         # This will raise an error if a remote by the name of asyncy does
         # not exist.
-        remote = cli.run('git remote get-url asyncy')
+        # remote = cli.run('git remote get-url asyncy')
         click.echo(
             click.style(
-                'There appears to be git remote ' f'named asyncy already ({remote}).\n',
+                'There appears to be git remote named asyncy '
+                'already ({remote}).\n',
                 fg='red',
             )
         )
@@ -91,7 +95,8 @@ def _is_git_repo_good():
 
 @apps.command()
 @click.argument('name', nargs=1, required=False)
-@click.option('--team', type=str, help='Team name that owns this new Application')
+@click.option('--team', type=str,
+              help='Team name that owns this new Application')
 def create(name, team):
     """Create a new app."""
 
@@ -107,7 +112,8 @@ def create(name, team):
             )
         )
         click.echo(
-            click.style('Are you trying to deploy? ' 'Try the following:', fg='red')
+            click.style('Are you trying to deploy? ' 'Try the following:',
+                        fg='red')
         )
         click.echo(click.style('$ story deploy', fg='magenta'))
         sys.exit(1)
@@ -121,7 +127,8 @@ def create(name, team):
     with spinner():
         api.Apps.create(name=name, team=team)
 
-    click.echo('\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
+    click.echo(
+        '\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
     # click.echo('Adding git-remote... ', nl=False)
     # cli.run(f'git remote add asyncy https://git.asyncy.com/{name}')
@@ -130,13 +137,14 @@ def create(name, team):
     click.echo('Creating story.yml… ', nl=False)
     cli.settings_set(f'app_name: {name}\n', 'story.yml')
 
-    click.echo('\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
+    click.echo(
+        '\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
 
     click.echo('\nApp Name: ' + click.style(name, bold=True))
     click.echo(
-        'App URL:  '
-        + click.style(f'https://{name}.storyscriptapp.com/', fg='blue')
-        + '\n'
+        'App URL:  ' +
+        click.style(f'https://{name}.storyscriptapp.com/', fg='blue') +
+        '\n'
     )
 
     click.echo(
@@ -149,7 +157,8 @@ def create(name, team):
 
     click.echo(' - [ ] Write a Story:')
     click.echo(
-        '       $ ' + click.style('story bootstrap http > http.story', fg='magenta')
+        '       $ ' + click.style('story bootstrap http > http.story',
+                                  fg='magenta')
     )
     click.echo()
     click.echo(' - [ ] Deploy to Storyscript Cloud:')
@@ -176,18 +185,20 @@ def url(app):
 
 @apps.command()
 @options.app()
-@click.option('--confirm', is_flag=True, help='Do not prompt to confirm destruction.')
+@click.option('--confirm', is_flag=True,
+              help='Do not prompt to confirm destruction.')
 def destroy(confirm, app):
     """Destroy an app."""
 
     cli.user()
 
-    if confirm or click.confirm(f'Do you want to destroy {app!r}?', abort=True):
+    if confirm or click.confirm(f'Do you want to destroy {app!r}?',
+                                abort=True):
         click.echo(f'Destroying application {app!r}… ', nl=False)
 
         with spinner():
-
             api.Apps.destroy(app=app)
             cli.track('App Destroyed', {'App name': app})
 
-        click.echo('\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
+        click.echo('\b' + click.style(emoji.emojize(':heavy_check_mark:'),
+                                      fg='green'))

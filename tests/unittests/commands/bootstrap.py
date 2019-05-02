@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-
-from story.main import cli
-
 from click.testing import CliRunner
 
 from pytest import fixture
+
+from story.main import cli
 
 
 @fixture

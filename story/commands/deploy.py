@@ -2,9 +2,11 @@
 import sys
 from time import sleep
 
-import click
-import emoji
 from blindspin import spinner
+
+import click
+
+import emoji
 
 from .test import compile_app
 from .. import cli, options
@@ -65,15 +67,19 @@ def deploy(app, message):
             click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
             + ' Deployment successful!'
         )
-        click.echo(f'If your Story responds to HTTP requests, please visit:\n  {url}')
-    elif state == 'FAILED':
-        click.echo(click.style('X', fg='red') + ' Deployment failed!', err=True)
         click.echo(
-            'Please use the following command to view your app\'s logs:', err=True
+            f'If your Story responds to HTTP requests, please visit:\n  {url}')
+    elif state == 'FAILED':
+        click.echo(click.style('X', fg='red') + ' Deployment failed!',
+                   err=True)
+        click.echo(
+            'Please use the following command to view your app\'s logs:',
+            err=True
         )
         cli.print_command('story logs')
     else:
         click.echo(
-            f'An unhandled state of your app has been encountered - {state}', err=True
+            f'An unhandled state of your app has been encountered - {state}',
+            err=True
         )
         click.echo(f'Please shoot an email to support@storyscript.io')

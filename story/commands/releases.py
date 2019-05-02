@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import sys
 
-import emoji
-import click
 from blindspin import spinner
+
+import click
+
+import emoji
 
 from .. import api
 from .. import cli
@@ -18,7 +20,8 @@ def releases():
 
 
 @releases.command(name='list')
-@click.option('--limit', '-n', nargs=1, default=20, help='List N latest releases')
+@click.option('--limit', '-n', nargs=1, default=20,
+              help='List N latest releases')
 @options.app()
 def list_command(app, limit):
     """List application releases."""
@@ -70,14 +73,16 @@ def rollback(version, app):
         with spinner():
             res = api.Releases.get(app=app)
             version = int(res[0]['id']) - 1
-        click.echo(click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))
+        click.echo(click.style('\b' + emoji.emojize(':heavy_check_mark:'),
+                               fg='green'))
 
     try:
         if int(version) == 0:
             click.echo('Unable to rollback a release before v1.')
             sys.exit(1)
     except ValueError:
-        click.echo(click.style('Invalid release specified.', fg='red'), err=True)
+        click.echo(click.style('Invalid release specified.', fg='red'),
+                   err=True)
         sys.exit(1)
 
     click.echo(f'Rolling back to v{version}…  ', nl=False)
@@ -85,7 +90,8 @@ def rollback(version, app):
     with spinner():
         res = api.Releases.rollback(version=version, app=app)
 
-    click.echo(click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))
+    click.echo(
+        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))
     click.echo(
         f'Deployed new release… '
         + click.style(f'v{res["id"]}', bold=True, fg='magenta')

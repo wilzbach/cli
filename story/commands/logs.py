@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-import sys
 import re
+import sys
 from datetime import datetime
 
-import click
 from blindspin import spinner
+
+import click
 
 import requests
 
@@ -15,7 +16,8 @@ from ..api import Apps
 
 @cli.cli.command()
 @click.option('--follow', '-f', is_flag=True, help='Follow the logs')
-@click.option('--all', '-a', is_flag=True, help='Return logs from all services')
+@click.option('--all', '-a', is_flag=True,
+              help='Return logs from all services')
 @click.option(
     '--level',
     '-l',
@@ -82,7 +84,7 @@ def logs(follow, all, app, level):
 
         # Replace the ":" in the timezone field for datetime.
         ts = log['timestamp']
-        ts = ts[0 : ts.rindex(':')] + ts[ts.rindex(':') + 1 :]
+        ts = ts[0: ts.rindex(':')] + ts[ts.rindex(':') + 1:]
         if all:
             # Truncate milliseconds from the date
             # (sometimes this appears, and sometimes it doesn't appear)

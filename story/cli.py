@@ -9,11 +9,17 @@ import typing
 from urllib.parse import urlencode
 from uuid import uuid4
 
-import click
-import click_help_colors
-import emoji
 from blindspin import spinner
+
+import click
+
+import click_help_colors
+
+import emoji
+
+
 from raven import Client
+
 from requests import Session
 
 from .helpers.didyoumean import DYMGroup
@@ -27,13 +33,15 @@ Content = typing.Union[str, typing.Mapping, typing.List]
 
 if not os.getenv('TOXENV'):
     enable_reporting = True
-    sentry = Client('https://007e7d135737487f97f5fe87d5d85b55@sentry.io/1206504')
+    sentry = Client(
+        'https://007e7d135737487f97f5fe87d5d85b55@sentry.io/1206504')
 else:
     enable_reporting = False
     sentry = Client()
 
 data = None
 home = os.path.expanduser('~/.storyscript')
+old_home = os.path.expanduser('~/.asyncy')
 
 
 def get_access_token():
@@ -109,10 +117,18 @@ def track(event_name, extra: dict = None):
 
 def find_story_yml():
     """Finds './story.yml'."""
+    path = _find_story_yml('story.yml')
+    if not path:
+        path = _find_story_yml('asyncy.yml')
+
+    return path
+
+
+def _find_story_yml(file_name):
     current_dir = os.getcwd()
     while True:
-        if os.path.exists(f'{current_dir}{os.path.sep}story.yml'):
-            return f'{current_dir}/story.yml'
+        if os.path.exists(f'{current_dir}{os.path.sep}{file_name}'):
+            return f'{current_dir}{os.path.sep}{file_name}'
         elif current_dir == os.path.dirname(current_dir):
             break
         else:
@@ -164,7 +180,8 @@ def initiate_login():
     global data
 
     click.echo(
-        'Hi! Thank you for using ' + click.style('Story Cloud', fg='magenta') + '.'
+        'Hi! Thank you for using ' + click.style('Story Cloud',
+                                                 fg='magenta') + '.'
     )
     click.echo('Please login with GitHub to get started.')
 
@@ -183,7 +200,8 @@ def initiate_login():
     while True:
         with spinner():
             try:
-                url = 'https://stories.storyscriptapp.com/github/oauth_callback'
+                url = 'https://stories.storyscriptapp.com' \
+                      '/github/oauth_callback'
                 r = requests.get(url=url, params={'state': state})
 
                 if r.text == 'null':
@@ -266,7 +284,8 @@ def assert_project(command, app, default_app, allow_option):
     elif not allow_option and app != default_app:
         click.echo(
             click.style(
-                'The --app option is not allowed with the {} command.'.format(command),
+                'The --app option is not allowed with the {} command.'.format(
+                    command),
                 fg='red',
             )
         )
@@ -276,15 +295,26 @@ def assert_project(command, app, default_app, allow_option):
 
 def init():
     global data
-    # TODO: copy from .asyncy if it exists, with a warning message, and delete the old file
-    if os.path.exists(f'{home}/config'):
 
-        with open(f'{home}/config', 'r') as file:
+    config_file_path = f'{home}/config'
+    old_config_file_path = f'{old_home}/.config'
+
+    if os.path.exists(config_file_path):
+
+        with open(config_file_path, 'r') as file:
             data = json.load(file)
             sentry.user_context({
                 'id': get_user_id(),
                 'email': data['email']
             })
+    elif os.path.exists(old_config_file_path):
+
+        with open(old_config_file_path, 'r') as old_config:
+            data = json.load(old_config)
+            settings_set(data, config_file_path)
+
+        os.remove(old_config_file_path)
+        init()
 
 
 def stream(cmd: str):
@@ -302,9 +332,9 @@ def stream(cmd: str):
 
 
 def run(cmd: str):
-
     output = subprocess.run(
-        cmd.split(' '), check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        cmd.split(' '), check=True, stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
     )
     return str(output.stdout.decode('utf-8').strip())
 
@@ -327,7 +357,8 @@ class CLI(DYMGroup, click_help_colors.HelpColorsGroup):
     pass
 
 
-@click.group(cls=CLI, help_headers_color='yellow', help_options_color='magenta')
+@click.group(cls=CLI, help_headers_color='yellow',
+             help_options_color='magenta')
 def cli():
     """
     Hello! Welcome to Storyscript.
