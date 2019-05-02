@@ -15,7 +15,7 @@ if [ $tag == '' ]; then
 fi
 
 echo "Retrieving git SHA for tag $tag..."
-sha=`curl --silent https://api.github.com/repos/asyncy/cli/git/trees/$tag | $python -c "import sys, json; print(json.load(sys.stdin)['sha'])"`
+sha=`curl --silent https://api.github.com/repos/storyscript/cli/git/trees/$tag | $python -c "import sys, json; print(json.load(sys.stdin)['sha'])"`
 
 BUILD_DIR=`mktemp -d`
 
@@ -28,8 +28,8 @@ source ./bin/activate
 echo "Installing asyncy==$tag..."
 $pip install asyncy==$tag &> /dev/null
 
-echo "Cloning asyncy/homebrew-brew..."
-git clone git@github.com:asyncy/homebrew-brew.git &> /dev/null
+echo "Cloning storyscript/homebrew-brew..."
+git clone git@github.com:storyscript/homebrew-brew.git &> /dev/null
 cd homebrew-brew
 
 echo "Running pip freeze and building Formula/asyncy.rb..."
