@@ -14,4 +14,4 @@ def runner():
 def test_choose_template(runner):
     res = runner.invoke(cli, ['write'])
     assert res.exit_code == 0
-    assert 'Choose a template' in res.output
+    assert 'Please specify a template' in res.output
