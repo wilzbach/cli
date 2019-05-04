@@ -6,9 +6,7 @@ from .. import cli
 
 
 @cli.cli.command(hidden=True)
-def update():
-    """
-    Look for new version updates to CLI
-    """
-    # TODO create update command
+def status():
+    """Show Storyscript Cloud status."""
+    # TODO get asyncy component
     click.echo('Sorry, command not programmed yet.')

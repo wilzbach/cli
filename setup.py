@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import io
+import os
 
 from setuptools import find_packages, setup
-from setuptools.command.install import install
 
-from cli.version import version
+from story.version import version
 
 
 classifiers = [
@@ -19,13 +20,14 @@ classifiers = [
 ]
 
 keywords = [
-    'asyncy',
+    'storyscript',
     'devops',
     'devtools',
     'microservices',
     'orchestration',
     'serverless',
-    'storyscript',
+    'APIs',
+    'asyncy',
 ]
 
 requirements = [
@@ -35,31 +37,43 @@ requirements = [
     'click==7.0',
     'emoji==0.5.0',
     'raven==6.9.0',
-    'requests==2.20.0',
-    'storyscript==0.17.3',
+    'requests>=2.20.0',
+    'storyscript==0.18.1',
     'websockets==7.0',
     'texttable==1.4.0',
     'pyyaml==3.13',
-    'pytz==2018.5'
+    'pytz>=2018.5',
+    'blindspin',
 ]
 
+# Read the README.md as the long_description.
+here = os.path.abspath(os.path.dirname(__file__))
+long_description_fname = os.path.join(here, 'README.md')
+with io.open(long_description_fname, encoding='utf-8') as f:
+    long_description = f.read()
 
-setup(name='asyncy',
-      version=version,
-      description='Asyncy CLI',
-      long_description='',
-      classifiers=classifiers,
-      download_url='https://github.com/asyncy/cli/archive/master.zip',
-      keywords=' '.join(keywords),
-      author='Asyncy',
-      author_email='hello@asyncy.com',
-      url='http://docs.asyncy.com/cli',
-      license='MIT',
-      packages=find_packages(exclude=['scripts', 'tests']),
-      include_package_data=True,
-      zip_safe=True,
-      install_requires=requirements,
-      extras_require={},
-      entry_points={
-          'console_scripts': ['asyncy=cli.main:cli']
-      })
+
+setup(
+    name='story',
+    version=version,
+    description='Storyscript Cloud CLI',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    classifiers=classifiers,
+    download_url=f'https://github.com/storyscript/cli/archive/{version}.zip',
+    keywords=' '.join(keywords),
+    author='Storyscript',
+    author_email='hello@storyscript.io',
+    url='https://docs.storyscript.io/cli',
+    license='Apache 2',
+    packages=find_packages(exclude=['scripts', 'tests']),
+    include_package_data=True,
+    zip_safe=True,
+    install_requires=requirements,
+    extras_require={},
+    requires_python='>=3.6.0',
+    entry_points={'console_scripts': [
+        'story=story.main:cli',
+        'asyncy=story.main:cli'
+    ]},
+)

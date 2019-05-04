@@ -6,9 +6,7 @@ from .. import cli
 
 
 @cli.cli.command(hidden=True)
-def status():
-    """
-    Show Asyncy status
-    """
-    # TODO get asyncy component
+def update():
+    """Look for new version updates to CLI."""
+    # TODO create update command
     click.echo('Sorry, command not programmed yet.')

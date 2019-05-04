@@ -11,7 +11,6 @@ import requests
 
 from . import cli
 
-
 graphql_endpoint = os.getenv(
     'ASYNCY_GRAPHQL',
     'https://api.asyncy.com/graphql'
