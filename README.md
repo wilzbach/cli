@@ -10,7 +10,7 @@ The Storyscript CLI is used to manage Storyscript Cloud from the command line.
 
 ## Overview
 
-The goals of this project is to provide a utility for developers to interact with all of Asyncy features/services.
+The goals of this project is to provide a utility for developers to interact with all of Storyscript Cloud features/services.
 
 ## Installation
 
