@@ -38,23 +38,22 @@ For other issues, [submit a support ticket](mailto:support@asyncy.com)
 
 Run
 ```sh
-virtualenv venv --python=python3.7
-source venv/bin/activate
+virtualenv venv --python=python3.7 && source venv/bin/activate
 pip install -r requirements.txt
+
 TOXENV=true python -m story.main
 ```
 
 Test
 ```sh
 pip install tox
-source venv/bin/activate
 tox
 ```
 
 Install
 ```sh
 python setup.py install
-asyncy
+story
 ```
 
 
