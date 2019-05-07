@@ -91,7 +91,7 @@ async def connect_and_listen_with_retry(app_id, n, follow, runtime_logs,
             click.echo('Network connection lost', err=True)
             sys.exit(1)
         except websockets.exceptions.InvalidStatusCode as e:
-            if int(e.status_code/100) == 5:
+            if int(e.status_code / 100) == 5:
                 click.echo('The upstream log server appears to be restarting.'
                            '\nPlease try again in a few seconds.', err=True)
             else:
@@ -127,7 +127,8 @@ async def connect_and_listen_once(app_id, n, follow, runtime_logs,
         assert isinstance(websocket, WebSocketClientProtocol)
 
         auth_payload = {
-            'command': 'auth', 'access_token': cli.get_access_token(),
+            'command': 'auth',
+            'access_token': cli.get_access_token(),
             'id': cli.get_access_token(),
             'app_id': app_id
         }
