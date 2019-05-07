@@ -145,8 +145,9 @@ async def connect_and_listen_once(app_id, n, follow, runtime_logs,
                 raise websockets.exceptions.ConnectionClosed(-1, None)
 
         except websockets.exceptions.ConnectionClosed:
-            click.echo('The log server sent an unauthorised response.\nAre '
-                       'you sure you have access to view this app\'s logs?',
+            click.echo('The log server sent an unauthorised response.\n'
+                       'Are you sure you have access to view '
+                       'this app\'s logs?',
                        err=True)
             sys.exit(1)
 
