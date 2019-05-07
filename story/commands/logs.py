@@ -137,7 +137,7 @@ async def connect_and_listen_once(app_id, n, follow, runtime_logs,
             auth_response = await websocket.recv()
 
             # Generally, the log server will close the connection instantly.
-            # This authorised check is just for fun.
+            # This authorised check is just for consistency.
             # See https://github.com/storyscript/logstreamer#authentication.
             auth_response = json.loads(auth_response)
             if not auth_response['authorised']:
