@@ -21,7 +21,7 @@ from ..api import Apps
 @cli.cli.command()
 @click.option('--follow', '-f', is_flag=True, help='Follow the logs')
 @click.option('--last', '-n', default=10, help='Print the last n lines')
-@click.option('--services', '-s', is_flag=True,
+@click.option('--services', '-s', 'service', is_flag=True,
               help='Return logs from services used in the story')
 @click.option('--service-name', '-sn', default='*',
               help='Return logs for a specific service given by '
