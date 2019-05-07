@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
+import sys
 
-from .cli import cli
-from .commands import *
-
+try:
+    from .cli import cli
+    from .commands import *
+except KeyboardInterrupt:
+    print('Aborted!')
+    sys.exit(1)
 
 if __name__ == '__main__':
-    cli()
+    try:
+        cli()
+    except KeyboardInterrupt:
+        print('Aborted!')
+        sys.exit(1)

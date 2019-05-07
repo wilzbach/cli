@@ -39,6 +39,7 @@ requirements = [
     'raven==6.9.0',
     'requests>=2.20.0',
     'storyscript==0.18.1',
+    'websockets==7.0',
     'texttable==1.4.0',
     'pyyaml==3.13',
     'pytz>=2018.5',

@@ -13,7 +13,7 @@ from . import cli
 
 graphql_endpoint = os.getenv(
     'ASYNCY_GRAPHQL',
-    'https://api.asyncy.com/graphql'
+    'https://api.storyscript.io/graphql'
 )
 
 
@@ -277,7 +277,7 @@ class Apps:
             """,
             data={
                 'app': {
-                    'ownerUuid': cli.data['id'],
+                    'ownerUuid': cli.get_user_id(),
                     'name': name
                 }
             }
