@@ -21,13 +21,15 @@ from ..api import Apps
 @cli.cli.command()
 @click.option('--follow', '-f', is_flag=True, help='Follow the logs')
 @click.option('--last', '-n', default=10, help='Print the last n lines')
-@click.option('--service', '-s', is_flag=True,
-              help='Return logs from a service instead of the runtime')
+@click.option('--services', '-s', is_flag=True,
+              help='Return logs from services used in the story')
 @click.option('--service-name', '-sn', default='*',
-              help='Return logs from the named service')
+              help='Return logs for a specific service given by '
+                   'its name (eg: "redis" or "owner/name")')
 @click.option('--level', '-l', default='info',
               type=click.Choice(['debug', 'info', 'warning', 'error']),
-              help='Specify the minimum log level')
+              help='Specify the minimum log level '
+                   '(does not work when --services/-s is specified)')
 @options.app()
 def logs(follow, last, service, service_name, app, level):
     """
