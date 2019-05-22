@@ -76,55 +76,29 @@ jobs:
       - run:
           name: create brew pr
           command: bash ./scripts/update_brew.sh $CIRCLE_TAG
-#  release_snap:
-#    docker:
-#      - image: cibuilds/snapcraft:stable
-#    steps:
-#      - checkout
-#      - run:
-#          name: apt-get update
-#          command: apt-get update
-#      - run:
-#          name: create snapcraft.yaml
-#          command: |
-#            echo "
-#            name: asyncy
-#            version: $CIRCLE_TAG
-#            summary: Asyncy CLI
-#            description: Asyncy CLI
-#            grade: devel
-#            confinement: devmode
-#            base: core18
-#
-#            apps:
-#              asyncy:
-#                command: bin/asyncy
-#                environment:
-#                  LANG: C.UTF-8
-#                  LC_ALL: C.UTF-8
-#
-#            parts:
-#              asyncy:
-#                plugin: python
-#                python-version: python3
-#                python-packages:
-#                - asyncy==$CIRCLE_TAG
-#            " > snapcraft.yaml
-#      - run:
-#          name: build snap
-#          command: snapcraft
-#      - run:
-#          name: install snap
-#          command: snap install asyncy_${CIRCLE_TAG}_amd64.snap --dangerous --devmode
-#      - run:
-#          name: check version
-#          command: asyncy version | grep ${CIRCLE_TAG}
+  release_snap:
+    docker:
+      - image: ubuntu:18.04
+    steps:
+      - checkout
+      - run:
+          name: apt-get update
+          command: apt-get update && apt-get install snapcraft
+      - run:
+          name: build snap
+          command: snapcraft
+      - run:
+          name: install snap
+          command: snap install story_${CIRCLE_TAG}_amd64.snap --dangerous
+      - run:
+          name: check version
+          command: story version | grep ${CIRCLE_TAG}
 #      - run:
 #          name: snapcraft login
 #          command: echo $SNAPCRAFT_LOGIN | snapcraft login --with -
 #      - run:
 #          name: snapcraft push
-#          command: snapcraft push --release edge asyncy_${CIRCLE_TAG}_amd64.snap
+#          command: snapcraft push --release edge story_${CIRCLE_TAG}_amd64.snap
 workflows:
   version: 2
   build-test-deploy:
@@ -141,14 +115,14 @@ workflows:
             only: /^[0-9]+\.[0-9]+\.[0-9]+$/
           branches:
             ignore: /.*/
-#    - release_snap:
-#        requires:
-#          - release_pypi
-#        filters:
-#          tags:
-#            only: /^[0-9]+\.[0-9]+\.[0-9]+$/
-#          branches:
-#            ignore: /.*/
+    - release_snap:
+        requires:
+          - release_pypi
+        #filters:
+          #tags:
+            #only: /^[0-9]+\.[0-9]+\.[0-9]+$/
+          #branches:
+            #ignore: /.*/
     - release_brew:
         requires:
         - release_pypi
