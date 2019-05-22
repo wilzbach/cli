@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 import io
 import os
+import sys
 
 from setuptools import find_packages, setup
 
 from story.version import version
+
+
+if sys.version_info < (3, 6):
+    sys.exit('story requires Python 3.6+')
 
 
 classifiers = [
