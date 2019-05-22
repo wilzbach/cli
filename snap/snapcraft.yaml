@@ -3,12 +3,16 @@ version: git
 version-script: git describe --tags
 summary: Story CLI
 description: Core toolkit to interact with Storyscript Cloud
+grade: stable
 confinement: strict
 base: core18
 
 apps:
   story:
     command: bin/story
+    environment:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
 
 parts:
   storyscript:
