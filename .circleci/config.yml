@@ -81,12 +81,10 @@ jobs:
       - image: ubuntu:18.04
     steps:
       - checkout
+      - setup_remote_docker
       - run:
-          name: apt-get update
-          command: apt-get update && apt-get install snapcraft
-      - run:
-          name: build snap
-          command: snapcraft
+          name: Build Snap
+          command: ./snap/build.sh
       - run:
           name: install snap
           command: snap install story_${CIRCLE_TAG}_amd64.snap --dangerous
@@ -116,8 +114,11 @@ workflows:
           branches:
             ignore: /.*/
     - release_snap:
-        requires:
-          - release_pypi
+        filters:
+              tags:
+                only: /.*/
+        #requires:
+          #- release_pypi
         #filters:
           #tags:
             #only: /^[0-9]+\.[0-9]+\.[0-9]+$/
