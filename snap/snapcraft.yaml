@@ -1,6 +1,7 @@
 name: story
 version: git
-version-script: git describe --tags
+# get the latest version from git
+version-script: git describe --tags --abbrev=0
 summary: Story CLI
 description: Core toolkit to interact with Storyscript Cloud
 grade: stable
