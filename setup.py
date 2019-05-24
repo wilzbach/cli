@@ -4,12 +4,11 @@ import os
 import sys
 
 from setuptools import find_packages, setup
+from setuptools.command.install import install as _install
 
 from story.version import version
 
 
-if sys.version_info < (3, 6):
-    sys.exit('story requires Python 3.6+')
 
 
 classifiers = [
@@ -59,6 +58,16 @@ with io.open(long_description_fname, encoding='utf-8') as f:
     long_description = f.read()
 
 
+class Install(_install):
+    """
+    Overwrites the default setup.py installation to error on Python < 3.6
+    """
+    def run(self):
+        if sys.version_info < (3, 6):
+            sys.exit('story requires Python 3.6+')
+        _install.run(self)
+
+
 setup(
     name='story',
     version=version,
@@ -82,4 +91,7 @@ setup(
         'story=story.main:cli',
         'asyncy=story.main:cli'
     ]},
+    cmdclass={
+         'install': Install,
+    }
 )
