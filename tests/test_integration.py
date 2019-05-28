@@ -19,9 +19,19 @@ def test_write_no_story(cli):
     assert 'Please specify a template' in c.output
 
 
-def test_write_specified_story(cli):
-    c = cli('write', 'http')
-    assert 'http' in c.output
+@pytest.mark.parametrize(
+    "story,expected",
+    [
+        ('http', 'http'),
+        ('function', 'function'),
+        ('if', 'if'),
+        ('loop', 'for'),
+        ('twitter', 'twitter'),
+    ],
+)
+def test_write_specified_story(cli, story, expected):
+    c = cli('write', story)
+    assert expected in c.output
     assert c.exit_code == 0
 
 
