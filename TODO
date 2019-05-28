@@ -1,0 +1,3 @@
+- Ensure all exit codes are proper.
+- Ensure that stderr is being used appropriately.
+- Add --json method to apps endpoints.
