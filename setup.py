@@ -1,10 +1,29 @@
 # -*- coding: utf-8 -*-
 import io
 import os
+import sys
 
-from setuptools import find_packages, setup
+from setuptools import find_packages, setup, Command
 
 from story.version import version
+
+
+class PyTest(Command):
+    user_options = [("pytest-args=", "a", "Arguments to pass into py.test")]
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        # Command.finalize_options(self)
+        pass
+
+    def run(self):
+        import pytest
+
+        errno = pytest.main([])
+
+        sys.exit(errno)
 
 
 classifiers = [
@@ -47,6 +66,8 @@ requirements = [
     'blindspin',
 ]
 
+test_requirements = ["pytest", "delegator.py"]
+
 # Read the README.md as the long_description.
 here = os.path.abspath(os.path.dirname(__file__))
 long_description_fname = os.path.join(here, 'README.md')
@@ -71,10 +92,12 @@ setup(
     include_package_data=True,
     zip_safe=True,
     install_requires=requirements,
+    # cmdclass={"test": PyTest, "format": Format},
+    cmdclass={"test": PyTest},
+    tests_require=test_requirements,
     extras_require={},
     requires_python='>=3.6.0',
-    entry_points={'console_scripts': [
-        'story=story.main:cli',
-        'asyncy=story.main:cli'
-    ]},
+    entry_points={
+        'console_scripts': ['story=story.main:cli', 'asyncy=story.main:cli']
+    },
 )

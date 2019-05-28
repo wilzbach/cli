@@ -34,7 +34,8 @@ Content = typing.Union[str, typing.Mapping, typing.List]
 if not os.getenv('TOXENV'):
     enable_reporting = True
     sentry = Client(
-        'https://007e7d135737487f97f5fe87d5d85b55@sentry.io/1206504')
+        'https://007e7d135737487f97f5fe87d5d85b55@sentry.io/1206504'
+    )
 else:
     enable_reporting = False
     sentry = Client()
@@ -54,7 +55,8 @@ def get_user_id():
 
 def track_profile():
     _make_tracking_http_request(
-        'https://stories.storyscriptapp.com/track/profile', {
+        'https://stories.storyscriptapp.com/track/profile',
+        {
             'id': str(get_user_id()),
             'profile': {
                 'Name': data['name'],
@@ -108,11 +110,13 @@ def track(event_name, extra: dict = None):
 
     extra['CLI version'] = version
     _make_tracking_http_request(
-        'https://stories.storyscriptapp.com/track/event', {
+        'https://stories.storyscriptapp.com/track/event',
+        {
             'id': str(get_user_id()),
             'event_name': event_name,
-            'event_props': extra
-        })
+            'event_props': extra,
+        },
+    )
 
 
 def find_story_yml():
@@ -180,8 +184,9 @@ def initiate_login():
     global data
 
     click.echo(
-        'Hi! Thank you for using ' + click.style('Storyscript Cloud',
-                                                 fg='magenta') + '.'
+        'Hi! Thank you for using '
+        + click.style('Storyscript Cloud', fg='magenta')
+        + '.'
     )
     click.echo('Please login with GitHub to get started.')
 
@@ -200,8 +205,10 @@ def initiate_login():
     while True:
         with spinner():
             try:
-                url = 'https://stories.storyscriptapp.com' \
-                      '/github/oauth_callback'
+                url = (
+                    'https://stories.storyscriptapp.com'
+                    '/github/oauth_callback'
+                )
                 r = requests.get(url=url, params={'state': state})
 
                 if r.text == 'null':
@@ -264,8 +271,9 @@ def print_command(command):
 
 def assert_project(command, app, default_app, allow_option):
     if app is None:
-        click.echo(click.style('No StoryScript Cloud application found.',
-                               fg='red'))
+        click.echo(
+            click.style('No StoryScript Cloud application found.', fg='red')
+        )
         click.echo()
         click.echo('Create an application with:')
 
@@ -277,7 +285,8 @@ def assert_project(command, app, default_app, allow_option):
         click.echo(
             click.style(
                 'The --app option is not allowed with the {} command.'.format(
-                    command),
+                    command
+                ),
                 fg='red',
             )
         )
@@ -295,10 +304,7 @@ def init():
 
         with open(config_file_path, 'r') as file:
             data = json.load(file)
-            sentry.user_context({
-                'id': get_user_id(),
-                'email': data['email']
-            })
+            sentry.user_context({'id': get_user_id(), 'email': data['email']})
     elif os.path.exists(old_config_file_path):
 
         with open(old_config_file_path, 'r') as old_config:
@@ -325,8 +331,10 @@ def stream(cmd: str):
 
 def run(cmd: str):
     output = subprocess.run(
-        cmd.split(' '), check=True, stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        cmd.split(' '),
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     return str(output.stdout.decode('utf-8').strip())
 
@@ -349,8 +357,9 @@ class CLI(DYMGroup, click_help_colors.HelpColorsGroup):
     pass
 
 
-@click.group(cls=CLI, help_headers_color='yellow',
-             help_options_color='magenta')
+@click.group(
+    cls=CLI, help_headers_color='yellow', help_options_color='magenta'
+)
 def cli():
     """
     Hello! Welcome to Storyscript.
