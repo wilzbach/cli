@@ -8,7 +8,6 @@ def test_bare_apps(cli):
     # assert 'Please specify a template' in c.out
 
 
-@pytest.mark.skip
 def test_no_auth_apps_list_fails(cli):
     c = cli('apps list')
     assert c.status_code == 1

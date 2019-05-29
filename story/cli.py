@@ -366,7 +366,7 @@ class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
 )
 @click.option('--version', is_flag=True)
 @click.option(
-    '--config', default=None, hidden=True, type=click.Path(exists=True)
+    '--config', default=None, hidden=True, type=click.Path(exists=False)
 )
 def cli(version=False, config=None):
     """

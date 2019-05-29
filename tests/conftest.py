@@ -28,7 +28,11 @@ def cli():
 def user_cli():
     def function(*args):
 
+        # Create a temporary config file.
         tf = NamedTemporaryFile().name
+        with open(tf, 'w') as f:
+            f.write(STORYSCRIPT_CONFIG)
+
         # Make temporary file.
         args = ' '.join(args)
         c = delegator.run(f'story {args}', env={"STORY_CONFIG": tf})
