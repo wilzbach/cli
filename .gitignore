@@ -12,5 +12,6 @@ venv
 *.pyc
 htmlcov
 .vscode/
+.eggs/
 Pipfile.lock
 Pipfile
