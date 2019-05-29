@@ -20,7 +20,7 @@ parts:
     plugin: python
     python-version: python3
     source: https://github.com/storyscript/storyscript.git
-    source-tag: 0.19.0
+    source-tag: 0.20.0
   story:
     plugin: python
     python-version: python3

@@ -6,5 +6,5 @@ cd "$DIR"
 
 vagrant up
 vagrant upload ../../story_0.14.3_amd64.snap
-vagrant ssh -c "sudo snap install --dangerous story_0.14.3_amd64.snap && story"
+vagrant ssh -c "sudo snap install --dangerous story_0.14.4_amd64.snap && story"
 vagrant halt
