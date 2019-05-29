@@ -92,6 +92,8 @@ setup(
     include_package_data=True,
     zip_safe=True,
     install_requires=requirements,
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     # cmdclass={"test": PyTest, "format": Format},
     cmdclass={"test": PyTest},
     tests_require=test_requirements,
