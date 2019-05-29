@@ -14,7 +14,9 @@ def test_apps_fails(cli):
     assert c.status_code == 1
 
 
-def test_apps(user_cli):
-    c = user_cli('apps')
-    assert c.return_code == 0
+def test_apps(cli):
+    c = cli('apps')
+    print(c.out)
+    assert False
+    # assert c.return_code == 1
     # assert 'Please specify a template' in c.out
