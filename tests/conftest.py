@@ -1,3 +1,6 @@
+import os
+from tempfile import NamedTemporaryFile
+
 import pytest
 import delegator
 
@@ -16,7 +19,7 @@ STORYSCRIPT_CONFIG = """{
 def cli():
     def function(*args):
         args = ' '.join(args)
-        return delegator.run(f'story {args}', env={'STORYSCRIPT_CONFIG': ''})
+        return delegator.run(f'story {args}')
 
     return function
 
@@ -24,9 +27,13 @@ def cli():
 @pytest.fixture
 def user_cli():
     def function(*args):
+
+        tf = NamedTemporaryFile().name
+        # Make temporary file.
         args = ' '.join(args)
-        return delegator.run(
-            f'story {args}', env={"STORYSCRIPT_CONFIG": STORYSCRIPT_CONFIG}
-        )
+        c = delegator.run(f'story {args}', env={"STORY_CONFIG": tf})
+
+        os.remove(tf)
+        return c
 
     return function

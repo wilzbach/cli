@@ -19,7 +19,6 @@ from requests import Session
 from .helpers.didyoumean import DYMGroup
 from .version import version as story_version
 from .version import compiler_version
-from .environment import STORYSCRIPT_CONFIG
 
 # Initiate requests session, for connection pooling.
 requests = Session()
@@ -290,26 +289,21 @@ def assert_project(command, app, default_app, allow_option):
     return app
 
 
-def init():
+def init(config=None):
     global data
 
-    config_file_path = f'{home}/config'
+    # If a path was passed to --config, use that.
+    config_file_path = config if config else f'{home}/config'
     old_config_file_path = f'{old_home}/.config'
-
-    # Load the environment variable, if present.
-    if STORYSCRIPT_CONFIG:
-        data = json.load(STORYSCRIPT_CONFIG)
-        sentry.user_context({'id': get_user_id(), 'email': data['email']})
 
     if os.path.exists(config_file_path):
 
-        with open(config_file_path, 'r') as file:
-            data = json.load(file)
+        with open(config_file_path, 'r') as f:
+            data = json.load(f)
             sentry.user_context({'id': get_user_id(), 'email': data['email']})
     elif os.path.exists(old_config_file_path):
-
-        with open(old_config_file_path, 'r') as old_config:
-            data = json.load(old_config)
+        with open(old_config_file_path, 'r') as f:
+            data = json.load(f)
             settings_set(data, config_file_path)
 
         os.remove(old_config_file_path)
@@ -338,20 +332,6 @@ def run(cmd: str):
         stderr=subprocess.PIPE,
     )
     return str(output.stdout.decode('utf-8').strip())
-
-
-# def _colorize(text, color=None):
-#     # PATCH for https://github.com/r-m-n/click-help-colors/pull/3
-#     from click.termui import _ansi_colors, _ansi_reset_all
-#     if not color:
-#         return text
-#     try:
-#         return '\033[%dm' % (_ansi_colors[color]) + text + _ansi_reset_all
-#     except ValueError:
-#         raise TypeError('Unknown color %r' % color)
-#
-#
-# click_help_colors._colorize = _colorize
 
 
 def echo_version(*args, **kwargs):
@@ -385,7 +365,10 @@ class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
     },
 )
 @click.option('--version', is_flag=True)
-def cli(version=False):
+@click.option(
+    '--config', default=None, hidden=True, type=click.Path(exists=True)
+)
+def cli(version=False, config=None):
     """
     Hello! Welcome to Storyscript.
 
@@ -398,4 +381,4 @@ def cli(version=False):
         echo_version()
         sys.exit(0)
     else:
-        init()
+        init(config=config)
