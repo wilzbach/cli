@@ -9,21 +9,17 @@ import typing
 from urllib.parse import urlencode
 from uuid import uuid4
 
-from blindspin import spinner
-
 import click
-
 import click_help_colors
-
 import emoji
-
-
+from blindspin import spinner
 from raven import Client
-
 from requests import Session
 
 from .helpers.didyoumean import DYMGroup
-from .version import version
+from .version import version as story_version
+from .version import compiler_version
+from .environment import STORYSCRIPT_CONFIG
 
 # Initiate requests session, for connection pooling.
 requests = Session()
@@ -108,7 +104,7 @@ def track(event_name, extra: dict = None):
     if extra is None:
         extra = {}
 
-    extra['CLI version'] = version
+    extra['CLI version'] = story_version
     _make_tracking_http_request(
         'https://stories.storyscriptapp.com/track/event',
         {
@@ -300,6 +296,11 @@ def init():
     config_file_path = f'{home}/config'
     old_config_file_path = f'{old_home}/.config'
 
+    # Load the environment variable, if present.
+    if STORYSCRIPT_CONFIG:
+        data = json.load(STORYSCRIPT_CONFIG)
+        sentry.user_context({'id': get_user_id(), 'email': data['email']})
+
     if os.path.exists(config_file_path):
 
         with open(config_file_path, 'r') as file:
@@ -353,14 +354,63 @@ def run(cmd: str):
 # click_help_colors._colorize = _colorize
 
 
-class CLI(DYMGroup, click_help_colors.HelpColorsGroup):
-    pass
+def echo_version(*args, **kwargs):
+    click.echo(
+        click.style('Storyscript CLI', fg='magenta')
+        + ': v'
+        + story_version
+        + click.style(', ', dim=True)
+        + click.style('Storyscript Compiler', fg='cyan')
+        + ': v'
+        + compiler_version
+        + '.'
+    )
 
 
+class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
+    def get_help_option(self, ctx):
+        """Override for showing formatted main help via --help and -h options"""
+        help_options = self.get_help_option_names(ctx)
+        if not help_options or not self.add_help_option:
+            return
+
+        def show_help(ctx, param, value):
+            if value and not ctx.resilient_parsing:
+                if not ctx.invoked_subcommand:
+                    # legit main help
+                    click.echo(ctx.get_help())
+                else:
+                    # legit sub-command help
+                    click.echo(ctx.get_help(), color=ctx.color)
+                ctx.exit()
+
+        from click import Option
+
+        return Option(
+            help_options,
+            is_flag=True,
+            is_eager=True,
+            expose_value=False,
+            callback=show_help,
+            help="Show this message and exit.",
+        )
+
+
+# @click.option('--url', callback=version)
 @click.group(
-    cls=CLI, help_headers_color='yellow', help_options_color='magenta'
+    cls=CLIGroup,
+    help_headers_color='yellow',
+    help_options_color='magenta',
+    add_help_option=True,
+    no_args_is_help=True,
+    invoke_without_command=True,
+    context_settings={
+        "help_option_names": ["-h", "--help"],
+        "auto_envvar_prefix": "STORY",
+    },
 )
-def cli():
+@click.option('--version', is_flag=True)
+def cli(version=False):
     """
     Hello! Welcome to Storyscript.
 
@@ -368,4 +418,9 @@ def cli():
 
     Documentation: https://docs.storyscript.io/
     """
-    init()
+
+    if version:
+        echo_version()
+        sys.exit(0)
+    else:
+        init()

@@ -11,6 +11,5 @@ __all__ = [
     'status',
     'test',
     'update',
-    'version',
     'deploy',
 ]

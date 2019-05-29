@@ -2,8 +2,12 @@
 import sys
 
 try:
+    # Allow keyboard interrupts of CLI import.
     from .cli import cli
+
+    # Import commands for CLI.
     from .commands import *
+
 except KeyboardInterrupt:
     print('Aborted!')
     sys.exit(1)
