@@ -3,7 +3,7 @@ import delegator
 
 
 STORYSCRIPT_CONFIG = """
-{"id": "30adbab9-ba60-4d55-a7d4-35a8e26c5e11", "access_token": "lKqGuAFYY9pOrS1Ts28jMw==", "name": "Kenneth Reitz", "email": "me@kennethreitz.com", "username": "kenneth-reitz", "beta": true}⏎
+{"id": "cd3fb9d0-fc54-48c5-9a1a-9daead7da490", "access_token": "vmlLTkC+Q5lBJ0XU/OHVWA==", "name": null, "email": "kenneth+tests@storyscript.io", "username": "storyscript-cli-test", "beta": true}
 """.strip()
 
 
@@ -11,7 +11,7 @@ STORYSCRIPT_CONFIG = """
 def cli():
     def function(*args):
         args = ' '.join(args)
-        return delegator.run(f'story {args}')
+        return delegator.run(f'story {args}', env={'STORYSCRIPT_CONFIG': ''})
 
     return function
 
