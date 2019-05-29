@@ -368,32 +368,7 @@ def echo_version(*args, **kwargs):
 
 
 class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
-    def get_help_option(self, ctx):
-        """Override for showing formatted main help via --help and -h options"""
-        help_options = self.get_help_option_names(ctx)
-        if not help_options or not self.add_help_option:
-            return
-
-        def show_help(ctx, param, value):
-            if value and not ctx.resilient_parsing:
-                if not ctx.invoked_subcommand:
-                    # legit main help
-                    click.echo(ctx.get_help())
-                else:
-                    # legit sub-command help
-                    click.echo(ctx.get_help(), color=ctx.color)
-                ctx.exit()
-
-        from click import Option
-
-        return Option(
-            help_options,
-            is_flag=True,
-            is_eager=True,
-            expose_value=False,
-            callback=show_help,
-            help="Show this message and exit.",
-        )
+    pass
 
 
 # @click.option('--url', callback=version)

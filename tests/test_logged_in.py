@@ -1,22 +1,14 @@
-import os
-from tempfile import NamedTemporaryFile
-
 import pytest
 
 
-def test_login(cli):
-    c = cli('login')
+def test_bare_apps(cli):
+    c = cli('apps')
+    assert 'Usage' in c.out
+    # assert c.return_code == 1
+    # assert 'Please specify a template' in c.out
 
 
 @pytest.mark.skip
-def test_apps_fails(cli):
-    c = cli('apps')
+def test_no_auth_apps_list_fails(cli):
+    c = cli('apps list')
     assert c.status_code == 1
-
-
-def test_apps(cli):
-    c = cli('apps')
-    print(c.out)
-    assert False
-    # assert c.return_code == 1
-    # assert 'Please specify a template' in c.out

@@ -6,7 +6,8 @@ try:
     from .cli import cli
 
     # Import commands for CLI.
-    from .commands import *
+
+    from .commands import *  # noqa
 
 except KeyboardInterrupt:
     print('Aborted!')
