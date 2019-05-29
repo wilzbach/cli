@@ -39,7 +39,7 @@ requirements = [
     'emoji==0.5.0',
     'raven==6.9.0',
     'requests>=2.20.0',
-    'storyscript==0.19.0',
+    'storyscript==0.20.0',
     'websockets==7.0',
     'texttable==1.4.0',
     'pyyaml==3.13',
