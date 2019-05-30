@@ -17,21 +17,14 @@ STORYSCRIPT_CONFIG = """{
 
 @pytest.fixture
 def cli():
-    def function(*args):
-        args = ' '.join(args)
-        return delegator.run(f'story {args}')
+    def function(*args, logged_in=True):
 
-    return function
-
-
-@pytest.fixture
-def user_cli():
-    def function(*args):
-
-        # Create a temporary config file.
         tf = NamedTemporaryFile().name
-        with open(tf, 'w') as f:
-            f.write(STORYSCRIPT_CONFIG)
+
+        if logged_in:
+            # Create a temporary config file.
+            with open(tf, 'w') as f:
+                f.write(STORYSCRIPT_CONFIG)
 
         # Make temporary file.
         args = ' '.join(args)
@@ -41,3 +34,8 @@ def user_cli():
         return c
 
     return function
+
+
+@pytest.fixture
+def app_dir():
+    pass

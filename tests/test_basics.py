@@ -49,6 +49,7 @@ def test_help(cli):
     assert c.return_code == 0
 
 
+@pytest.mark.skip
 def test_completion(cli):
     c = cli('completion')
     assert 'complete' in c.out
