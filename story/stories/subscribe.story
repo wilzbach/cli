@@ -1,18 +1,18 @@
-###
-subscribe is a service that is a handler for
-events posted by applications
+# Basic event subscription example.
 
-  # Node via `npm install asyncy`
-  # Ruby via `gem install asyncy`
+# subscribe is a service that is a handler for
+# events posted by applications
 
-  # Python via `pip install asyncy`
-  from asyncy import Asyncy
-  asyncy = Asyncy('API_KEY')
-  res = asyncy.runSync('foobar', {'hello': 'world'})
-  res = await asyncy.runAsync('foobar', {'hello': 'world'})
+#   # Node via `npm install asyncy`
+#   # Ruby via `gem install asyncy`
 
-More at https://hub.asyncy.com/service/subscribe
-###
+#   # Python via `pip install asyncy`
+#   from asyncy import Asyncy
+#   asyncy = Asyncy('API_KEY')
+#   res = asyncy.runSync('foobar', {'hello': 'world'})
+#   res = await asyncy.runAsync('foobar', {'hello': 'world'})
+
+# More at https://hub.storyscript.io/service/subscribe
 
 when events triggered name:'foobar' as event
     log event.data

@@ -1,5 +1,6 @@
-if this_is_true
-    # do this
+# Basic if statement example.
+if true
+    log info msg:'This path will always be called.'
 
 else
-    # do this
+    log info msg:'This path will never be called.'

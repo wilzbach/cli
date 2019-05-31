@@ -1,8 +1,6 @@
-# Every time someone tweets `#asyncy` like it.
-#
-# More at https://hub.asyncy.com/service/twitter
+# Log all Tweets to the console.
+# More at https://hub.storyscript.io/service/twitter
 
-twitter stream as tw
-    when tw tweets hashtag:'asyncy' as tweet
-        tweet like
-        tweet retweet
+twitter stream as t
+    when t tweet as tweet
+        log info msg:tweet
