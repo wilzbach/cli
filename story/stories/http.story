@@ -1,4 +1,4 @@
-# Serverless request handler
+# Serve HTTP requests directly from Storyscript!
 #
 # Learn more at https://hub.storyscript.io/service/http
 

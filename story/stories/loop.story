@@ -1,2 +1,3 @@
-foreach myList as item
-    # TODO
+# Basic loop example.
+foreach [1, 2, 3] as n
+    log info msg:n

@@ -1,9 +1,10 @@
-###
-The Slack Bot can "listen" to all messages in the room
-or "respond" to direct messages (@mybot do this)
+# Slack bot example.
 
-More at https://hub.asyncy.com/service/slack
-###
+# The Slack Bot can "listen" to all messages in the room
+# or "respond" to direct messages (@mybot do this)
+
+# More at https://hub.storyscript.io/service/slack
+
 slack bot as client
     # listens for all messages
     when client hears pattern:/foo/i as msg
