@@ -9,21 +9,16 @@ import typing
 from urllib.parse import urlencode
 from uuid import uuid4
 
-from blindspin import spinner
-
 import click
-
 import click_help_colors
-
 import emoji
-
-
+from blindspin import spinner
 from raven import Client
-
 from requests import Session
 
 from .helpers.didyoumean import DYMGroup
-from .version import version
+from .version import version as story_version
+from .version import compiler_version
 
 # Initiate requests session, for connection pooling.
 requests = Session()
@@ -34,7 +29,8 @@ Content = typing.Union[str, typing.Mapping, typing.List]
 if not os.getenv('TOXENV'):
     enable_reporting = True
     sentry = Client(
-        'https://007e7d135737487f97f5fe87d5d85b55@sentry.io/1206504')
+        'https://007e7d135737487f97f5fe87d5d85b55@sentry.io/1206504'
+    )
 else:
     enable_reporting = False
     sentry = Client()
@@ -54,7 +50,8 @@ def get_user_id():
 
 def track_profile():
     _make_tracking_http_request(
-        'https://stories.storyscriptapp.com/track/profile', {
+        'https://stories.storyscriptapp.com/track/profile',
+        {
             'id': str(get_user_id()),
             'profile': {
                 'Name': data['name'],
@@ -106,13 +103,15 @@ def track(event_name, extra: dict = None):
     if extra is None:
         extra = {}
 
-    extra['CLI version'] = version
+    extra['CLI version'] = story_version
     _make_tracking_http_request(
-        'https://stories.storyscriptapp.com/track/event', {
+        'https://stories.storyscriptapp.com/track/event',
+        {
             'id': str(get_user_id()),
             'event_name': event_name,
-            'event_props': extra
-        })
+            'event_props': extra,
+        },
+    )
 
 
 def find_story_yml():
@@ -180,8 +179,9 @@ def initiate_login():
     global data
 
     click.echo(
-        'Hi! Thank you for using ' + click.style('Storyscript Cloud',
-                                                 fg='magenta') + '.'
+        'Hi! Thank you for using '
+        + click.style('Storyscript Cloud', fg='magenta')
+        + '.'
     )
     click.echo('Please login with GitHub to get started.')
 
@@ -200,8 +200,10 @@ def initiate_login():
     while True:
         with spinner():
             try:
-                url = 'https://stories.storyscriptapp.com' \
-                      '/github/oauth_callback'
+                url = (
+                    'https://stories.storyscriptapp.com'
+                    '/github/oauth_callback'
+                )
                 r = requests.get(url=url, params={'state': state})
 
                 if r.text == 'null':
@@ -264,8 +266,9 @@ def print_command(command):
 
 def assert_project(command, app, default_app, allow_option):
     if app is None:
-        click.echo(click.style('No StoryScript Cloud application found.',
-                               fg='red'))
+        click.echo(
+            click.style('No StoryScript Cloud application found.', fg='red')
+        )
         click.echo()
         click.echo('Create an application with:')
 
@@ -277,7 +280,8 @@ def assert_project(command, app, default_app, allow_option):
         click.echo(
             click.style(
                 'The --app option is not allowed with the {} command.'.format(
-                    command),
+                    command
+                ),
                 fg='red',
             )
         )
@@ -285,24 +289,21 @@ def assert_project(command, app, default_app, allow_option):
     return app
 
 
-def init():
+def init(config=None):
     global data
 
-    config_file_path = f'{home}/config'
+    # If a path was passed to --config, use that.
+    config_file_path = config if config else f'{home}/config'
     old_config_file_path = f'{old_home}/.config'
 
     if os.path.exists(config_file_path):
 
-        with open(config_file_path, 'r') as file:
-            data = json.load(file)
-            sentry.user_context({
-                'id': get_user_id(),
-                'email': data['email']
-            })
+        with open(config_file_path, 'r') as f:
+            data = json.load(f)
+            sentry.user_context({'id': get_user_id(), 'email': data['email']})
     elif os.path.exists(old_config_file_path):
-
-        with open(old_config_file_path, 'r') as old_config:
-            data = json.load(old_config)
+        with open(old_config_file_path, 'r') as f:
+            data = json.load(f)
             settings_set(data, config_file_path)
 
         os.remove(old_config_file_path)
@@ -325,33 +326,49 @@ def stream(cmd: str):
 
 def run(cmd: str):
     output = subprocess.run(
-        cmd.split(' '), check=True, stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        cmd.split(' '),
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     return str(output.stdout.decode('utf-8').strip())
 
 
-# def _colorize(text, color=None):
-#     # PATCH for https://github.com/r-m-n/click-help-colors/pull/3
-#     from click.termui import _ansi_colors, _ansi_reset_all
-#     if not color:
-#         return text
-#     try:
-#         return '\033[%dm' % (_ansi_colors[color]) + text + _ansi_reset_all
-#     except ValueError:
-#         raise TypeError('Unknown color %r' % color)
-#
-#
-# click_help_colors._colorize = _colorize
+def echo_version(*args, **kwargs):
+    click.echo(
+        click.style('Storyscript CLI', fg='magenta')
+        + ': v'
+        + story_version
+        + click.style(', ', dim=True)
+        + click.style('Storyscript Compiler', fg='cyan')
+        + ': v'
+        + compiler_version
+        + '.'
+    )
 
 
-class CLI(DYMGroup, click_help_colors.HelpColorsGroup):
+class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
     pass
 
 
-@click.group(cls=CLI, help_headers_color='yellow',
-             help_options_color='magenta')
-def cli():
+# @click.option('--url', callback=version)
+@click.group(
+    cls=CLIGroup,
+    help_headers_color='yellow',
+    help_options_color='magenta',
+    add_help_option=True,
+    no_args_is_help=True,
+    invoke_without_command=True,
+    context_settings={
+        "help_option_names": ["-h", "--help"],
+        "auto_envvar_prefix": "STORY",
+    },
+)
+@click.option('--version', is_flag=True)
+@click.option(
+    '--config', default=None, hidden=True, type=click.Path(exists=False)
+)
+def cli(version=False, config=None):
     """
     Hello! Welcome to Storyscript.
 
@@ -359,4 +376,9 @@ def cli():
 
     Documentation: https://docs.storyscript.io/
     """
-    init()
+
+    if version:
+        echo_version()
+        sys.exit(0)
+    else:
+        init(config=config)

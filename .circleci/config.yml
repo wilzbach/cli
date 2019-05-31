@@ -6,28 +6,16 @@ jobs:
     - image: circleci/python:3.7.0-node
     steps:
     - checkout
-    - restore_cache:
-        keys:
-        - v1-dependencies-{{ checksum "setup.py" }}
-        - v1-dependencies-
 
     - run:
         name: install dependencies
         command: |
-          python -m venv venv
-          . venv/bin/activate
-          python3 setup.py install
-          pip install tox
-
-    - save_cache:
-        paths:
-        - ./venv
-        key: v1-dependencies-{{ checksum "setup.py" }}
+          pip install pipenv
+          pipenv install --dev
 
     - run:
         command: |
-          . venv/bin/activate
-          tox
+          pipenv run pytest
 
     - run:
         name: collect coverage
@@ -46,23 +34,16 @@ jobs:
       - run:
           name: setup venv
           command: |
-            python -m venv venv
-            . venv/bin/activate
-      - run:
-          name: install twine
-          command: |
-            . venv/bin/activate
-            pip install twine
+            pip install pipenv
+            pipenv install --dev
       - run:
           name: sdist
           command: |
-            . venv/bin/activate
-            python setup.py sdist
+            pipenv run python setup.py sdist wheel
       - run:
           name: upload
           command: |
-            . venv/bin/activate
-            twine upload dist/story-*.tar.gz
+            pipenv run twine upload dist/story-*.tar.gz
   release_brew:
     macos:
       xcode: "9.0"
@@ -70,9 +51,6 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "8e:2f:db:cd:a7:a4:38:ca:c1:c3:8f:ef:fc:27:4a:93"
-#      - restore_cache:
-#          keys:
-#            - brew-cache-{{ .Branch }}
       - run:
           name: install or re-link brew
           command: |
@@ -84,11 +62,6 @@ jobs:
       - run:
           name: upgrade python
           command: brew upgrade python || echo "Python is already installed"
-#      - save_cache:
-#          paths:
-#            - /usr/local/Cellar
-#            - /usr/local/Homebrew
-#          key: brew-cache-{{ .Branch }}
       - run:
           name: install virtualenv
           command: pip3 install virtualenv

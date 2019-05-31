@@ -5,11 +5,35 @@ import sys
 
 from setuptools import find_packages, setup
 from setuptools.command.install import install as _install
+from setuptools import find_packages, setup, Command
 
 from story.version import version
 
+class Install(_install):
+    """
+    Overwrites the default setup.py installation to error on Python < 3.6
+    """
+    def run(self):
+        if sys.version_info < (3, 6):
+            sys.exit('story requires Python 3.6+')
+        _install.run(self)
 
+class PyTest(Command):
+    user_options = [("pytest-args=", "a", "Arguments to pass into py.test")]
 
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        # Command.finalize_options(self)
+        pass
+
+    def run(self):
+        import pytest
+
+        errno = pytest.main([])
+
+        sys.exit(errno)
 
 classifiers = [
     'Development Status :: 3 - Alpha',
@@ -35,7 +59,7 @@ keywords = [
 ]
 
 requirements = [
-    'asyncio==3.4.3',
+    'asyncio>=3.4.3',
     'click-completion==0.5.1',
     'click-help-colors==0.5',
     'click-spinner==0.1.8',
@@ -44,12 +68,14 @@ requirements = [
     'raven==6.9.0',
     'requests>=2.20.0',
     'storyscript==0.19.0',
-    'websockets==7.0',
-    'texttable==1.4.0',
-    'pyyaml==3.13',
+    'websockets>=7.0',
+    'texttable>=1.4.0',
+    'pyyaml>=4.2',
     'pytz>=2018.5',
     'blindspin',
 ]
+
+test_requirements = ["pytest", "delegator.py"]
 
 # Read the README.md as the long_description.
 here = os.path.abspath(os.path.dirname(__file__))
@@ -57,15 +83,6 @@ long_description_fname = os.path.join(here, 'README.md')
 with io.open(long_description_fname, encoding='utf-8') as f:
     long_description = f.read()
 
-
-class Install(_install):
-    """
-    Overwrites the default setup.py installation to error on Python < 3.6
-    """
-    def run(self):
-        if sys.version_info < (3, 6):
-            sys.exit('story requires Python 3.6+')
-        _install.run(self)
 
 
 setup(
@@ -85,6 +102,9 @@ setup(
     include_package_data=True,
     zip_safe=True,
     install_requires=requirements,
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
+    tests_require=test_requirements,
     extras_require={},
     requires_python='>=3.6.0',
     entry_points={'console_scripts': [
@@ -93,5 +113,6 @@ setup(
     ]},
     cmdclass={
          'install': Install,
+         'test': PyTest
     }
 )

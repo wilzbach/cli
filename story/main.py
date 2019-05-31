@@ -2,8 +2,13 @@
 import sys
 
 try:
+    # Allow keyboard interrupts of CLI import.
     from .cli import cli
-    from .commands import *
+
+    # Import commands for CLI.
+
+    from .commands import *  # noqa
+
 except KeyboardInterrupt:
     print('Aborted!')
     sys.exit(1)
