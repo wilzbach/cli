@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import pkgutil
 import sys
 
@@ -7,19 +8,37 @@ import click
 
 from story import cli
 
-CHOICES = [
-    'http',
-    'every',
-    'function',
-    'if',
-    'loop',
-    'twitter',
-    'slack-bot',
-    'subscribe',
-    'every',
-    'websocket',
-    '-',
-]
+
+def parse_story(story_path):
+    with open(story_path, 'r') as f:
+        contents = f.read()
+
+    first = contents.split('\n')[0]
+    return ''.join(first.split('#')[1:]).strip()
+
+
+def get_stories():
+    d = os.path.dirname(sys.modules['story'].__file__)
+    d = os.path.join(d, 'stories')
+
+    collection = []
+    for filename in os.listdir(d):
+        path = os.path.join(d, filename)
+        story = {
+            'name': filename.split('.')[0],
+            'filename': filename,
+            'path': path,
+            'dir': d,
+            'description': parse_story(path),
+        }
+        collection.append(story)
+
+    return collection
+
+
+STORIES = get_stories()
+CHOICES = [story['name'] for story in STORIES]
+CHOICES += ['-']
 
 
 @cli.cli.command()
@@ -36,20 +55,26 @@ def write(story, output_file=None):
 
     if story == '-':
         click.echo(click.style('Please specify a template:', bold=True))
-        click.echo(
-            click.style('  http', fg='cyan') + '      - serverless http'
-        )
-        click.echo(
-            click.style('  function', fg='cyan') + '  - generic function'
-        )
-        click.echo(
-            click.style('  if', fg='cyan') + '        - example if/then'
-        )
-        click.echo(
-            click.style('  loop', fg='cyan') + '      - example for loop'
-        )
-        click.echo(click.style('  twitter', fg='cyan') + '   - stream Tweets')
-        click.echo('')
+        # click.echo(
+        #     click.style('  http', fg='cyan') + '      - serverless http'
+        # )
+        # click.echo(
+        #     click.style('  function', fg='cyan') + '  - generic function'
+        # )
+        # click.echo(
+        #     click.style('  if', fg='cyan') + '        - example if/then'
+        # )
+        # click.echo(
+        #     click.style('  loop', fg='cyan') + '      - example for loop'
+        # )
+        # click.echo(click.style('  twitter', fg='cyan') + '   - stream Tweets')
+        # click.echo('')
+
+        for story in STORIES:
+            part1 = f"  {story['name']}"
+            part2 = (" " * (13 - len(part1))) + f"- {story['description']}"
+
+            click.echo(click.style(part1, fg='cyan') + part2)
 
         click.echo(
             click.style('Coming Soon', bold=True)
