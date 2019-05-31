@@ -49,11 +49,14 @@ def track(event_name, extra: dict = None):
         extra['CLI version'] = version
 
         if enable_reporting:
-            requests.post('https://stories.asyncyapp.com/track/event', json={
-                'id': str(data['id']),
-                'event_name': event_name,
-                'event_props': extra
-            })
+            requests.post(
+                'https://stories.asyncyapp.com/track/event',
+                json={
+                    'id': str(data['id']),
+                    'event_name': event_name,
+                    'event_props': extra,
+                },
+            )
     except Exception:
         # ignore issues with tracking
         pass
@@ -78,6 +81,7 @@ def get_app_name_from_yml() -> str:
     if file is None:
         return None
     import yaml
+
     with open(file, 'r') as s:
         return yaml.load(s).pop('app_name')
 
@@ -98,23 +102,21 @@ def initiate_login():
     global data
 
     click.echo(
-        'Hi! Thank you for using ' +
-        click.style('Asyncy', fg='magenta') + '.'
+        'Hi! Thank you for using ' + click.style('Asyncy', fg='magenta') + '.'
     )
     click.echo('Please login with GitHub to get started.')
 
     state = uuid4()
 
-    query = {
-        'state': state
-    }
+    query = {'state': state}
 
     url = f'https://stories.asyncyapp.com/github?{urlencode(query)}'
 
     click.launch(url)
     click.echo()
-    click.echo('Visit this link if your browser '
-               'doesn\'t open automatically:')
+    click.echo(
+        'Visit this link if your browser ' 'doesn\'t open automatically:'
+    )
     click.echo(url)
     click.echo()
 
@@ -130,7 +132,8 @@ def initiate_login():
                 res.raise_for_status()
                 if res.json().get('beta') is False:
                     click.echo(
-                        'Hello! Asyncy is in private beta at this time.')
+                        'Hello! Asyncy is in private beta at this time.'
+                    )
                     click.echo(
                         'We\'ve added you to our beta testers queue, '
                         'and you should hear from us\nshortly via email'
@@ -148,10 +151,7 @@ def initiate_login():
             except KeyboardInterrupt:
                 click.echo('Login failed. Please try again.')
                 sys.exit(1)
-    click.echo(
-        emoji.emojize(':waving_hand:') +
-        f'  Welcome {data["name"]}!'
-    )
+    click.echo(emoji.emojize(':waving_hand:') + f'  Welcome {data["name"]}!')
     click.echo()
     click.echo('Create a new app with:')
     print_command('asyncy apps create')
@@ -173,9 +173,10 @@ def initiate_login():
                         'Name': data['name'],
                         'Email': data.get('email'),
                         'GitHub Username': data.get('username'),
-                        'Timezone': time.tzname[time.daylight]
-                    }
-                })
+                        'Timezone': time.tzname[time.daylight],
+                    },
+                },
+            )
     except:
         # Ignore tracking errors
         pass
@@ -199,10 +200,12 @@ def print_command(command):
 
 
 def print_deprecated_warning(alternative):
-    click.echo(click.style('Warning: ', fg='yellow') +
-               'This command is deprecated and will be removed' +
-               ' in a future release. Please use ' +
-               click.style(f'$ {alternative}\n', fg='magenta'))
+    click.echo(
+        click.style('Warning: ', fg='yellow')
+        + 'This command is deprecated and will be removed'
+        + ' in a future release. Please use '
+        + click.style(f'$ {alternative}\n', fg='magenta')
+    )
 
 
 def assert_project(command, app, default_app, allow_option):
@@ -213,11 +216,14 @@ def assert_project(command, app, default_app, allow_option):
         print_command('asyncy apps create')
         sys.exit(1)
     elif not allow_option and app != default_app:
-        click.echo(click.style(
-            'The --app option is not allowed with the {} command.'
-            .format(command),
-            fg='red'
-        ))
+        click.echo(
+            click.style(
+                'The --app option is not allowed with the {} command.'.format(
+                    command
+                ),
+                fg='red',
+            )
+        )
         sys.exit(1)
     return app
 
@@ -227,10 +233,7 @@ def init():
     if os.path.exists(f'{home}/.config'):
         with open(f'{home}/.config', 'r') as file:
             data = json.load(file)
-            sentry.user_context({
-                'id': data['id'],
-                'email': data['email']
-            })
+            sentry.user_context({'id': data['id'], 'email': data['email']})
 
 
 def stream(cmd: str):
@@ -248,7 +251,7 @@ def run(cmd: str):
         cmd.split(' '),
         check=True,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
     )
     return str(output.stdout.decode('utf-8').strip())
 
@@ -271,9 +274,9 @@ class Cli(DYMGroup, click_help_colors.HelpColorsGroup):
     pass
 
 
-@click.group(cls=Cli,
-             help_headers_color='yellow',
-             help_options_color='magenta')
+@click.group(
+    cls=Cli, help_headers_color='yellow', help_options_color='magenta'
+)
 def cli():
     """
     Hello! Welcome to Asyncy

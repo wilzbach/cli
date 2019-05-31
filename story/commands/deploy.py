@@ -68,18 +68,20 @@ def deploy(app, message):
             + ' Deployment successful!'
         )
         click.echo(
-            f'If your Story responds to HTTP requests, please visit:\n  {url}')
+            f'If your Story responds to HTTP requests, please visit:\n  {url}'
+        )
     elif state == 'FAILED':
-        click.echo(click.style('X', fg='red') + ' Deployment failed!',
-                   err=True)
+        click.echo(
+            click.style('X', fg='red') + ' Deployment failed!', err=True
+        )
         click.echo(
             'Please use the following command to view your app\'s logs:',
-            err=True
+            err=True,
         )
         cli.print_command('story logs')
     else:
         click.echo(
             f'An unhandled state of your app has been encountered - {state}',
-            err=True
+            err=True,
         )
         click.echo(f'Please shoot an email to support@storyscript.io')

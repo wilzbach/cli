@@ -35,8 +35,9 @@ def test(debug):
             click.echo(
                 ' - '
                 + f'{k}'
-                + click.style(f'{emoji.emojize(" :heavy_check_mark:")}',
-                              fg='green')
+                + click.style(
+                    f'{emoji.emojize(" :heavy_check_mark:")}', fg='green'
+                )
             )
 
     click.echo()
@@ -77,8 +78,9 @@ def compile_app(app_name_for_analytics, debug) -> dict:
     cli.track(
         'App Compiled',
         {
-            'App name': app_name_for_analytics, 'Result': result,
-            'Stories': count
+            'App name': app_name_for_analytics,
+            'Result': result,
+            'Stories': count,
         },
     )
 

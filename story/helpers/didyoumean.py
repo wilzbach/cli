@@ -21,6 +21,7 @@ class DYMMixin(object):  # pylint: disable=too-few-public-methods
     to provide git-like *did-you-mean* functionality when
     a certain command is not registered.
     """
+
     def __init__(self, *args, **kwargs):
         self.max_suggestions = kwargs.pop('max_suggestions', 3)
         self.cutoff = kwargs.pop('cutoff', 0.5)
@@ -39,10 +40,9 @@ class DYMMixin(object):  # pylint: disable=too-few-public-methods
             original_cmd_name = click.utils.make_str(args[0])
             matches = difflib.get_close_matches(
                 original_cmd_name,
-                map(lambda c: c.replace('-', ':'),
-                    self.list_commands(ctx)),
+                map(lambda c: c.replace('-', ':'), self.list_commands(ctx)),
                 self.max_suggestions,
-                self.cutoff
+                self.cutoff,
             )
             if matches:
                 matches = '\n    '.join(

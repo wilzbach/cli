@@ -21,15 +21,28 @@ from ..api import Apps
 @cli.cli.command()
 @click.option('--follow', '-f', is_flag=True, help='Follow the logs')
 @click.option('--last', '-n', default=10, help='Print the last n lines')
-@click.option('--services', '-s', 'service', is_flag=True,
-              help='Return logs from services used in the story')
-@click.option('--service-name', '-sn', default='*',
-              help='Return logs for a specific service given by '
-                   'its name (eg: "redis" or "owner/name")')
-@click.option('--level', '-l', default='info',
-              type=click.Choice(['debug', 'info', 'warning', 'error']),
-              help='Specify the minimum log level '
-                   '(does not work when --services/-s is specified)')
+@click.option(
+    '--services',
+    '-s',
+    'service',
+    is_flag=True,
+    help='Return logs from services used in the story',
+)
+@click.option(
+    '--service-name',
+    '-sn',
+    default='*',
+    help='Return logs for a specific service given by '
+    'its name (eg: "redis" or "owner/name")',
+)
+@click.option(
+    '--level',
+    '-l',
+    default='info',
+    type=click.Choice(['debug', 'info', 'warning', 'error']),
+    help='Specify the minimum log level '
+    '(does not work when --services/-s is specified)',
+)
 @options.app()
 def logs(follow, last, service, service_name, app, level):
     """
@@ -43,19 +56,29 @@ def logs(follow, last, service, service_name, app, level):
 
     click.echo()
 
-    cli.track('App Logs Requested', {
-        'App name': app,
-        'Follow': 'Yes' if follow else 'No',
-        'Last N': last,
-        'Source': 'Runtime' if service is False else 'Service',
-        'Service Name': service_name if service else 'N/A',
-        'Minimum level': level.capitalize()
-    })
+    cli.track(
+        'App Logs Requested',
+        {
+            'App name': app,
+            'Follow': 'Yes' if follow else 'No',
+            'Last N': last,
+            'Source': 'Runtime' if service is False else 'Service',
+            'Service Name': service_name if service else 'N/A',
+            'Minimum level': level.capitalize(),
+        },
+    )
 
     asyncio.get_event_loop().run_until_complete(
-        connect_and_listen_with_retry(app_id, last, follow, service is False,
-                                      service,
-                                      service_name, level))
+        connect_and_listen_with_retry(
+            app_id,
+            last,
+            follow,
+            service is False,
+            service,
+            service_name,
+            level,
+        )
+    )
 
 
 async def ping_forever(websocket: WebSocketClientProtocol):
@@ -69,9 +92,9 @@ async def ping_forever(websocket: WebSocketClientProtocol):
         await asyncio.sleep(10)
 
 
-async def connect_and_listen_with_retry(app_id, n, follow, runtime_logs,
-                                        service_logs,
-                                        service_name, level):
+async def connect_and_listen_with_retry(
+    app_id, n, follow, runtime_logs, service_logs, service_name, level
+):
     """
     Every 4-5 minutes, the connection terminates. This is
     not intentional, as the upstream server keeps it alive.
@@ -85,18 +108,30 @@ async def connect_and_listen_with_retry(app_id, n, follow, runtime_logs,
     while True:
         try:
             completed = await connect_and_listen_once(
-                app_id, n, follow, runtime_logs,
-                service_logs, service_name, level)
+                app_id,
+                n,
+                follow,
+                runtime_logs,
+                service_logs,
+                service_name,
+                level,
+            )
         except (URLError, socket.gaierror):
             click.echo('Network connection lost', err=True)
             sys.exit(1)
         except websockets.exceptions.InvalidStatusCode as e:
             if int(e.status_code / 100) == 5:
-                click.echo('The upstream log server appears to be restarting.'
-                           '\nPlease try again in a few seconds.', err=True)
+                click.echo(
+                    'The upstream log server appears to be restarting.'
+                    '\nPlease try again in a few seconds.',
+                    err=True,
+                )
             else:
-                click.echo('The upstream log server did not respond.'
-                           '\nPlease try again in a few seconds.', err=True)
+                click.echo(
+                    'The upstream log server did not respond.'
+                    '\nPlease try again in a few seconds.',
+                    err=True,
+                )
             sys.exit(1)
 
         if completed:
@@ -118,9 +153,9 @@ connect_and_listen_with_retry above for more help.
 """
 
 
-async def connect_and_listen_once(app_id, n, follow, runtime_logs,
-                                  service_logs,
-                                  service_name, level):
+async def connect_and_listen_once(
+    app_id, n, follow, runtime_logs, service_logs, service_name, level
+):
     global cut_off_ts
 
     async with websockets.connect('wss://logs.storyscript.io') as websocket:
@@ -130,7 +165,7 @@ async def connect_and_listen_once(app_id, n, follow, runtime_logs,
             'command': 'auth',
             'access_token': cli.get_access_token(),
             'id': cli.get_access_token(),
-            'app_id': app_id
+            'app_id': app_id,
         }
         await websocket.send(json.dumps(auth_payload))
 
@@ -145,10 +180,12 @@ async def connect_and_listen_once(app_id, n, follow, runtime_logs,
                 raise websockets.exceptions.ConnectionClosed(-1, None)
 
         except websockets.exceptions.ConnectionClosed:
-            click.echo('The log server sent an unauthorised response.\n'
-                       'Are you sure you have access to view '
-                       'this app\'s logs?',
-                       err=True)
+            click.echo(
+                'The log server sent an unauthorised response.\n'
+                'Are you sure you have access to view '
+                'this app\'s logs?',
+                err=True,
+            )
             sys.exit(1)
 
         # Keep the connection alive by sending pings.
@@ -161,7 +198,7 @@ async def connect_and_listen_once(app_id, n, follow, runtime_logs,
                 'source': 'runtime',
                 'level': level,
                 'n': n,
-                'watch': follow
+                'watch': follow,
             }
         else:
             assert service_logs is True
@@ -171,7 +208,7 @@ async def connect_and_listen_once(app_id, n, follow, runtime_logs,
                 'service_name': service_name,
                 'level': level,  # Note: The upstream server ignores level.
                 'n': n,
-                'watch': follow
+                'watch': follow,
             }
 
         await websocket.send(json.dumps(filter_payload))
@@ -195,8 +232,9 @@ async def connect_and_listen_once(app_id, n, follow, runtime_logs,
             if cut_off_ts >= log['ts']:
                 continue
 
-            date = time.strftime('%b %d %H:%M:%S',
-                                 time.localtime(int(log['ts'] / 1000)))
+            date = time.strftime(
+                '%b %d %H:%M:%S', time.localtime(int(log['ts'] / 1000))
+            )
 
             tag = 'runtime'
             if service_logs:
@@ -221,11 +259,15 @@ def colourize_and_print(date, tag, level, message):
     tag = tag[:12].rjust(12)
 
     if tag:
-        click.echo(f'{click.style(date, fg="white")} '
-                   f'{click.style(level.upper(), fg=level_col)} '
-                   f'{click.style(tag, fg="blue")}: '
-                   f'{message}')
+        click.echo(
+            f'{click.style(date, fg="white")} '
+            f'{click.style(level.upper(), fg=level_col)} '
+            f'{click.style(tag, fg="blue")}: '
+            f'{message}'
+        )
     else:
-        click.echo(f'{click.style(date, fg="white")} '
-                   f'{click.style(level.upper(), fg=level_col)} '
-                   f'{message}')
+        click.echo(
+            f'{click.style(date, fg="white")} '
+            f'{click.style(level.upper(), fg=level_col)} '
+            f'{message}'
+        )

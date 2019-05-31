@@ -26,10 +26,12 @@ def check(app):
         enabled = api.Apps.maintenance(app=app, maintenance=None)
     if enabled:
         click.echo(
-            click.style('ON. Application is disabled.', bold=True, fg='red'))
+            click.style('ON. Application is disabled.', bold=True, fg='red')
+        )
     else:
         click.echo(
-            click.style('off. Application is running.', bold=True, fg='green'))
+            click.style('off. Application is running.', bold=True, fg='green')
+        )
 
 
 @maintenance.command()
@@ -42,9 +44,11 @@ def on(app):
     with spinner():
         app = api.Apps.maintenance(app=app, maintenance=True)
     click.echo(
-        '\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
+        '\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+    )
     click.echo(
-        click.style('Application is now in maintenance–mode.', dim=True))
+        click.style('Application is now in maintenance–mode.', dim=True)
+    )
 
 
 @maintenance.command()
@@ -57,5 +61,6 @@ def off(app):
     with spinner():
         app = api.Apps.maintenance(app=app, maintenance=False)
     click.echo(
-        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))
+        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
+    )
     click.echo(click.style('Application is now running.', dim=True))
