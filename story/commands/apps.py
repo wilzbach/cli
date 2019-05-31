@@ -125,6 +125,17 @@ def create(name, team):
 
     name = name or awesome.new()
 
+    # Sanity check.
+    if len(name) < 4:
+        click.echo(
+            click.style(
+                'The name you specified is too short. \n'
+                'Please use at least 4 charecters in your app name.',
+                fg='red',
+            )
+        )
+        sys.exit(1)
+
     click.echo('Creating application… ', nl=False)
 
     with spinner():
