@@ -4,7 +4,7 @@ from tempfile import NamedTemporaryFile
 import pytest
 import delegator
 
-
+# TODO: env vars
 STORYSCRIPT_CONFIG = """{
    "id":"cd3fb9d0-fc54-48c5-9a1a-9daead7da490",
    "access_token":"vmlLTkC+Q5lBJ0XU/OHVWA==",

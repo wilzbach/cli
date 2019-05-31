@@ -9,7 +9,7 @@ def test_bare_apps(cli):
 
 
 def test_apps_create(cli):
-    # Make a temporary directory to 
+    # Make a temporary directory to
     loc = mkdtemp()
     os.makedirs(loc, exist_ok=True)
 
