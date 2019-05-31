@@ -278,7 +278,7 @@ def assert_project(command, app, default_app, allow_option):
 def init():
     global data
     data = config.as_dict()
-    # init()e
+    sentry.user_context({'id': get_user_id(), 'email': data['email']})
 
 
 def stream(cmd: str):
