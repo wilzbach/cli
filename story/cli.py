@@ -336,10 +336,17 @@ class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
     },
 )
 @click.option('--version', 'do_version', is_flag=True)
-@click.option('--config', 'do_config', is_flag=True)
-@click.option('--cache', 'do_cache', is_flag=True)
-@click.option('--reset', 'do_reset', is_flag=True)
-def cli(do_version=False, do_config=False, do_cache=False, do_reset=False):
+@click.option('--config', 'do_config', is_flag=True, hidden=True)
+@click.option('--cache', 'do_cache', is_flag=True, hidden=True)
+@click.option('--reset', 'do_reset', is_flag=True, hidden=True)
+@click.option('--support', 'do_support', is_flag=True, hidden=True)
+def cli(
+    do_version=False,
+    do_config=False,
+    do_cache=False,
+    do_reset=False,
+    do_support=False,
+):
     """
     Hello! Welcome to Storyscript.
 
@@ -362,5 +369,8 @@ def cli(do_version=False, do_config=False, do_cache=False, do_reset=False):
         os.remove(config.path)
         click.echo('Installation reset.')
         sys.exit(0)
+    if do_support:
+        print('System Installation information:')
+        # TODO: this.
     else:
         init()
