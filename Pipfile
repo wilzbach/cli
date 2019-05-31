@@ -9,9 +9,10 @@ pytest = "*"
 pytest-watch = "*"
 twine = "*"
 wheel = "*"
+black = "*"
 
 [packages]
-story = {editable = true, path = "."}
+story = {editable = true,path = "."}
 
 [requires]
 python_version = "3.7"

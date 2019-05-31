@@ -9,14 +9,15 @@ from setuptools import find_packages, setup, Command
 
 from story.version import version
 
+
 class Install(_install):
-    """
-    Overwrites the default setup.py installation to error on Python < 3.6
-    """
+    """Overwrites the default setup.py installation to error on Python < 3.6."""
+
     def run(self):
         if sys.version_info < (3, 6):
             sys.exit('story requires Python 3.6+')
         _install.run(self)
+
 
 class PyTest(Command):
     user_options = [("pytest-args=", "a", "Arguments to pass into py.test")]
@@ -34,6 +35,21 @@ class PyTest(Command):
         errno = pytest.main([])
 
         sys.exit(errno)
+
+
+class Format(Command):
+    user_options = [('black-args', 'a', 'arguments to pass into black.')]
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        # Command.finalize_options(self)
+        pass
+
+    def run(self):
+        os.system('black -S -l 79 .')
+
 
 classifiers = [
     'Development Status :: 3 - Alpha',
@@ -84,7 +100,6 @@ with io.open(long_description_fname, encoding='utf-8') as f:
     long_description = f.read()
 
 
-
 setup(
     name='story',
     version=version,
@@ -92,7 +107,9 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=classifiers,
-    download_url='https://github.com/storyscript/cli/archive/'+version+'.zip',
+    download_url='https://github.com/storyscript/cli/archive/'
+    + version
+    + '.zip',
     keywords=' '.join(keywords),
     author='Storyscript',
     author_email='hello@storyscript.io',
@@ -107,12 +124,8 @@ setup(
     tests_require=test_requirements,
     extras_require={},
     requires_python='>=3.6.0',
-    entry_points={'console_scripts': [
-        'story=story.main:cli',
-        'asyncy=story.main:cli'
-    ]},
-    cmdclass={
-         'install': Install,
-         'test': PyTest
-    }
+    entry_points={
+        'console_scripts': ['story=story.main:cli', 'asyncy=story.main:cli']
+    },
+    cmdclass={'install': Install, 'test': PyTest, 'format': Format},
 )

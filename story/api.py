@@ -12,8 +12,7 @@ import requests
 from . import cli
 
 graphql_endpoint = os.getenv(
-    'ASYNCY_GRAPHQL',
-    'https://api.storyscript.io/graphql'
+    'ASYNCY_GRAPHQL', 'https://api.storyscript.io/graphql'
 )
 
 
@@ -21,31 +20,33 @@ def graphql(query, **variables):
     try:
         res = requests.post(
             graphql_endpoint,
-            data=dumps({
-                'query': query,
-                'variables': variables
-            }),
+            data=dumps({'query': query, 'variables': variables}),
             headers={
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'Authorization': f'Bearer {cli.get_access_token()}'
+                'Authorization': f'Bearer {cli.get_access_token()}',
             },
-            timeout=10
+            timeout=10,
         )
     except KeyboardInterrupt:  # OK - user cancelled.
         click.echo('\nCancelled')
         sys.exit(1)
     except (URLError, ConnectionError, requests.exceptions.ConnectionError):
-        click.echo(click.style(f'\nFailed to connect to {graphql_endpoint}',
-                               fg='red'), err=True)
+        click.echo(
+            click.style(
+                f'\nFailed to connect to {graphql_endpoint}', fg='red'
+            ),
+            err=True,
+        )
         sys.exit(1)
 
     data = res.json()
     if 'errors' in data:
         click.echo()
         for error in data['errors']:
-            click.echo(click.style('Error: ', fg='red') + error['message'],
-                       err=True)
+            click.echo(
+                click.style('Error: ', fg='red') + error['message'], err=True
+            )
         sys.exit(1)
     return data
 
@@ -64,7 +65,7 @@ class Config:
               }
             }
             """,
-            app=Apps.get_uuid_from_hostname(app)
+            app=Apps.get_uuid_from_hostname(app),
         )
         try:
             return res['data']['allReleases']['nodes'][0]['config'] or {}
@@ -73,8 +74,9 @@ class Config:
 
     @staticmethod
     def set(config: {}, app: str, message: str) -> dict:
-        return Releases.create(config, None, app,
-                               message or 'Update environment')
+        return Releases.create(
+            config, None, app, message or 'Update environment'
+        )
 
 
 class Releases:
@@ -94,7 +96,7 @@ class Releases:
               }
             }
             """,
-            app=Apps.get_uuid_from_hostname(app)
+            app=Apps.get_uuid_from_hostname(app),
         )
         try:
             return res['data']['allReleases']['nodes']
@@ -114,13 +116,16 @@ class Releases:
             }
             """,
             app=app_uuid,
-            version=version
+            version=version,
         )
         release = res['data']['releaseByAppUuidAndId']
 
-        return Releases.create(release['config'] or {},
-                               release['payload'], app,
-                               f'Rollback to v{version}')
+        return Releases.create(
+            release['config'] or {},
+            release['payload'],
+            app,
+            f'Rollback to v{version}',
+        )
 
     @staticmethod
     def get(app: str):
@@ -136,7 +141,7 @@ class Releases:
               }
             }
             """,
-            app=Apps.get_uuid_from_hostname(app)
+            app=Apps.get_uuid_from_hostname(app),
         )
         try:
             return res['data']['allReleases']['nodes']
@@ -158,9 +163,9 @@ class Releases:
                     'appUuid': Apps.get_uuid_from_hostname(app),
                     'message': message or 'Deploy app',
                     'config': config,
-                    'payload': payload
+                    'payload': payload,
                 }
-            }
+            },
         )
 
         release_ = res['data']['createRelease']['release']
@@ -169,11 +174,10 @@ class Releases:
         if payload is None:
             changes = 'Config'
 
-        cli.track('App Release Created', {
-            'Version': release_['id'],
-            'App name': app,
-            'Changes': changes
-        })
+        cli.track(
+            'App Release Created',
+            {'Version': release_['id'], 'App name': app, 'Changes': changes},
+        )
 
         return release_
 
@@ -198,14 +202,18 @@ class Apps:
               }
             }
             """,
-            app=app
+            app=app,
         )
         if res['data']['app'] is None:
             click.echo()
-            click.echo(click.style(
-                f'The app "{app}" doesn\'t seem to exist.\n'
-                f'Are you sure you have access to it?',
-                fg='red'), err=True)
+            click.echo(
+                click.style(
+                    f'The app "{app}" doesn\'t seem to exist.\n'
+                    f'Are you sure you have access to it?',
+                    fg='red',
+                ),
+                err=True,
+            )
             sys.exit(1)
 
         app_uuid = res['data']['app']['appUuid']
@@ -224,7 +232,7 @@ class Apps:
                   }
                 }
                 """,
-                app=Apps.get_uuid_from_hostname(app)
+                app=Apps.get_uuid_from_hostname(app),
             )
             return res['data']['app']['maintenance']
         else:
@@ -240,10 +248,8 @@ class Apps:
                 """,
                 data={
                     'uuid': Apps.get_uuid_from_hostname(app),
-                    'appPatch': {
-                        'maintenance': maintenance
-                    }
-                }
+                    'appPatch': {'maintenance': maintenance},
+                },
             )
 
     @staticmethod
@@ -275,12 +281,7 @@ class Apps:
               }
             }
             """,
-            data={
-                'app': {
-                    'ownerUuid': cli.get_user_id(),
-                    'name': name
-                }
-            }
+            data={'app': {'ownerUuid': cli.get_user_id(), 'name': name}},
         )
         return res['data']['createApp']['app']
 
@@ -298,8 +299,6 @@ class Apps:
             """,
             data={
                 'uuid': Apps.get_uuid_from_hostname(app),
-                'appPatch': {
-                    'deleted': True
-                }
-            }
+                'appPatch': {'deleted': True},
+            },
         )

@@ -7,9 +7,10 @@ import pytz
 
 def parse_psql_date_str(ts: str):
     # Replace the ":" in the timezone field for datetime.
-    datetime_ts = ts[0:ts.rindex(':')] + ts[ts.rindex(':') + 1:]
-    return datetime.strptime(datetime_ts, '%Y-%m-%dT%H:%M:%S.%f%z')\
-        .astimezone()
+    datetime_ts = ts[0 : ts.rindex(':')] + ts[ts.rindex(':') + 1 :]
+    return datetime.strptime(
+        datetime_ts, '%Y-%m-%dT%H:%M:%S.%f%z'
+    ).astimezone()
 
 
 # https://gist.github.com/deontologician/3503910
@@ -79,8 +80,9 @@ def reltime(date, compare_to=None, at='@'):
         datestr = 'today {at} {time}'
     elif days_ago == 1:
         datestr = 'yesterday {at} {time}'
-    elif (wd in (5, 6) and days_ago in (wd + 1, wd + 2)) or \
-            wd + 3 <= days_ago <= wd + 8:
+    elif (
+        wd in (5, 6) and days_ago in (wd + 1, wd + 2)
+    ) or wd + 3 <= days_ago <= wd + 8:
         # this was determined by making a table of wd versus days_ago and
         # divining a relationship based on everyday speech. This is somewhat
         # subjective I guess!
@@ -98,14 +100,16 @@ def reltime(date, compare_to=None, at='@'):
     else:
         # not last week, but not last month either
         datestr = '{month} {day} {at} {time} ({days_ago} days ago)'
-    return datestr.format(time=time,
-                          weekday=date.strftime('%A'),
-                          day=ordinal(date.day),
-                          days=diff.days,
-                          days_ago=days_ago,
-                          month=date.strftime('%B'),
-                          years_ago=years_ago,
-                          months_ago=months_ago,
-                          weeks_ago=weeks_ago,
-                          year=date.year,
-                          at=at)
+    return datestr.format(
+        time=time,
+        weekday=date.strftime('%A'),
+        day=ordinal(date.day),
+        days=diff.days,
+        days_ago=days_ago,
+        month=date.strftime('%B'),
+        years_ago=years_ago,
+        months_ago=months_ago,
+        weeks_ago=weeks_ago,
+        year=date.year,
+        at=at,
+    )

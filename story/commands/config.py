@@ -28,7 +28,8 @@ def list_command(app):
         config = api.Config.get(app)
 
     click.echo(
-        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))
+        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
+    )
 
     if config:
         click.echo(click.style('Storyscript variables:', dim=True))
@@ -43,7 +44,8 @@ def list_command(app):
                 click.echo(click.style(name, bold=True))
                 for _name, _value in value.items():
                     click.echo(
-                        '  ' + click.style(_name, fg='green') + f':  {_value}')
+                        '  ' + click.style(_name, fg='green') + f':  {_value}'
+                    )
 
     else:
         click.echo(click.style('No configuration set yet.', bold=True))
@@ -86,7 +88,8 @@ def set_command(variables, app, message):
     with spinner():
         config = api.Config.get(app=app)
     click.echo(
-        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green'))
+        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
+    )
 
     if variables:
         for keyval in variables:
@@ -113,8 +116,9 @@ def set_command(variables, app, message):
         click.echo('\nSetting config and deploying new release…  ', nl=False)
         with spinner():
             release = api.Config.set(config=config, app=app, message=message)
-        click.echo(click.style('\b' + emoji.emojize(':heavy_check_mark:'),
-                               fg='green'))
+        click.echo(
+            click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
+        )
         click.echo(
             f'Deployed new release… '
             + click.style(f'v{release["id"]}', bold=True, fg='magenta')
@@ -138,8 +142,9 @@ def get(variables, app):
         with spinner():
             config = api.Config.get(app=app)
 
-        click.echo(click.style(emoji.emojize(':heavy_check_mark:'),
-                               fg='green'))
+        click.echo(
+            click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+        )
 
         for name in variables:
             if '.' in name:
@@ -156,16 +161,18 @@ def get(variables, app):
                 if isinstance(value, dict):
                     for name, value in value.items():
                         click.echo(
-                            click.style(name.upper(),
-                                        fg='green') + f':  {value}'
+                            click.style(name.upper(), fg='green')
+                            + f':  {value}'
                         )
                 else:
                     click.echo(
-                        click.style(name.upper(), fg='green') + f':  {value}')
+                        click.style(name.upper(), fg='green') + f':  {value}'
+                    )
             else:
                 click.echo(
-                    click.style(f'No variable named "{name.upper()}".',
-                                fg='red')
+                    click.style(
+                        f'No variable named "{name.upper()}".', fg='red'
+                    )
                 )
     else:
         click.echo(get.__doc__.strip())
@@ -192,14 +199,16 @@ def del_command(variables, app, message):
         with spinner():
             config = api.Config.get(app=app)
         click.echo(
-            click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
+            click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+        )
 
         for key in variables:
             removed = False
             if key in config:
                 if type(config.pop(key)) is dict:
                     click.echo(
-                        click.style('Removed service', fg='red') + f': {key}')
+                        click.style('Removed service', fg='red') + f': {key}'
+                    )
                 else:
                     removed = True
             elif key.upper() in config:
@@ -213,13 +222,15 @@ def del_command(variables, app, message):
 
             if removed:
                 click.echo(
-                    click.style('Removed', fg='red') + f': {key.upper()}')
+                    click.style('Removed', fg='red') + f': {key.upper()}'
+                )
 
         click.echo('\nSetting config and deploying new release… ', nl=False)
         with spinner():
             release = api.Config.set(config=config, app=app, message=message)
-        click.echo(click.style('\b' + emoji.emojize(':heavy_check_mark:'),
-                               fg='green'))
+        click.echo(
+            click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
+        )
         click.echo(
             f'Deployed new release… '
             + click.style(f'v{release["id"]}', bold=True, fg='magenta')
