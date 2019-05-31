@@ -50,7 +50,7 @@ keywords = [
 ]
 
 requirements = [
-    'asyncio==3.4.3',
+    'asyncio>=3.4.3',
     'click-completion==0.5.1',
     'click-help-colors==0.5',
     'click-spinner==0.1.8',
@@ -59,9 +59,9 @@ requirements = [
     'raven==6.9.0',
     'requests>=2.20.0',
     'storyscript==0.19.0',
-    'websockets==7.0',
-    'texttable==1.4.0',
-    'pyyaml==3.13',
+    'websockets>=7.0',
+    'texttable>=1.4.0',
+    'pyyaml>=4.2',
     'pytz>=2018.5',
     'blindspin',
 ]
