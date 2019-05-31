@@ -84,7 +84,7 @@ def write(story, output_file=None):
             )
         )
 
-        click.echo('')
+        # click.echo('')
         sys.exit(1)
 
     else:

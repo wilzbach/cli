@@ -278,7 +278,10 @@ def assert_project(command, app, default_app, allow_option):
 def init():
     global data
     data = config.as_dict()
-    sentry.user_context({'id': get_user_id(), 'email': data['email']})
+    try:
+        sentry.user_context({'id': get_user_id(), 'email': data['email']})
+    except Exception:
+        pass
 
 
 def stream(cmd: str):
@@ -293,16 +296,6 @@ def stream(cmd: str):
 
         if output:
             click.echo(output.strip())
-
-
-def run(cmd: str):
-    output = subprocess.run(
-        cmd.split(' '),
-        check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    return str(output.stdout.decode('utf-8').strip())
 
 
 def echo_version(*args, **kwargs):

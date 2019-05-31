@@ -2,8 +2,6 @@
 
 import click
 
-from .cli import run
-
 
 try:
     from . import cli
