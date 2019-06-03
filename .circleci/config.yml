@@ -39,11 +39,11 @@ jobs:
       - run:
           name: sdist
           command: |
-            pipenv run python setup.py sdist wheel
+            pipenv run python setup.py sdist bdist_wheel --universal
       - run:
           name: upload
           command: |
-            pipenv run twine upload dist/story-*.tar.gz
+            pipenv run twine upload dist/story-*
   release_brew:
     macos:
       xcode: "9.0"
