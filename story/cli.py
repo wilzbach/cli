@@ -343,20 +343,23 @@ def cli(
     if do_version:
         echo_version()
         sys.exit(0)
-    if do_cache:
+
+    elif do_cache:
         click.echo(cache.path)
         sys.exit(0)
-    if do_config:
+
+    elif do_config:
         click.echo(config.path)
         sys.exit(0)
-    if do_reset:
+
+    elif do_reset:
         os.remove(cache.path)
         os.remove(config.path)
-        click.echo('Installation reset.')
+        click.echo('Storyscript CLI installation reset.')
         sys.exit(0)
-    # if do_completion:
 
-    if do_support:
+    elif do_support:
         echo_support()
+
     else:
         init(config_path=config_path)
