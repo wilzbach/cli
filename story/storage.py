@@ -52,6 +52,10 @@ class Storage:
     def as_dict(self):
         return self._data
 
+    def change_path(self, p):
+        self.path = p
+        self._load()
+
     def __contains__(self, *args, **kwargs):
         return self._data.__contains__(*args, **kwargs)
 

@@ -28,7 +28,7 @@ def cli():
 
         # Make temporary file.
         args = ' '.join(args)
-        c = delegator.run(f'story {args}', env={"STORY_CONFIG": tf})
+        c = delegator.run(f'story {args}', env={"STORY_CONFIG_PATH": tf})
 
         os.remove(tf)
         return c

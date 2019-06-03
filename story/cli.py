@@ -46,7 +46,8 @@ def get_access_token():
 
 
 def get_user_id():
-    return data['id']
+    """Returns the current user id, if any is available."""
+    return data.get('id')
 
 
 def track_profile():
@@ -293,9 +294,14 @@ def settings_set(content: Content, location: str):
         file.write(content)
 
 
-def init():
+def init(config_path=None):
     global data
+
+    if config_path:
+        config.change_path(config_path)
+
     data = config.as_dict()
+
     try:
         sentry.user_context({'id': get_user_id(), 'email': data['email']})
     except Exception:
@@ -348,6 +354,7 @@ class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
 )
 @click.option('--version', 'do_version', is_flag=True)
 @click.option('--config', 'do_config', is_flag=True, hidden=True)
+@click.option('--config_path', 'config_path', hidden=True)
 @click.option('--cache', 'do_cache', is_flag=True, hidden=True)
 @click.option('--reset', 'do_reset', is_flag=True, hidden=True)
 @click.option('--support', 'do_support', is_flag=True, hidden=True)
@@ -357,6 +364,7 @@ def cli(
     do_cache=False,
     do_reset=False,
     do_support=False,
+    config_path=False,
 ):
     """
     Hello! Welcome to Storyscript.
@@ -384,4 +392,4 @@ def cli(
         print('System Installation information:')
         # TODO: this.
     else:
-        init()
+        init(config_path=config_path)
