@@ -20,6 +20,8 @@ from .helpers.didyoumean import DYMGroup
 from .version import version as story_version
 from .version import compiler_version
 from .storage import config, cache
+from .support import echo_support
+from .utils import find_story_yml, get_app_name_from_yml, get_asyncy_yaml
 
 # Initiate requests session, for connection pooling.
 requests = Session()
@@ -112,49 +114,6 @@ def track(event_name, extra: dict = None):
             'event_props': extra,
         },
     )
-
-
-def find_story_yml():
-    """Finds './story.yml'."""
-    path = _find_story_yml('story.yml')
-    if not path:
-        path = _find_story_yml('asyncy.yml')
-
-    return path
-
-
-def _find_story_yml(file_name):
-    current_dir = os.getcwd()
-    while True:
-        if os.path.exists(f'{current_dir}{os.path.sep}{file_name}'):
-            return f'{current_dir}{os.path.sep}{file_name}'
-        elif current_dir == os.path.dirname(current_dir):
-            break
-        else:
-            current_dir = os.path.dirname(current_dir)
-
-    return None
-
-
-def get_app_name_from_yml() -> str:
-    file = find_story_yml()
-    if file is None:
-        return None
-    import yaml
-
-    with open(file, 'r') as s:
-        return yaml.safe_load(s).pop('app_name')
-
-
-def get_asyncy_yaml() -> dict:
-    file = find_story_yml()
-    # Anybody calling this must've already checked for this file presence.
-    assert file is not None
-
-    import yaml
-
-    with open(file, 'r') as s:
-        return yaml.safe_load(s)
 
 
 def initiate_login():
@@ -387,7 +346,6 @@ def cli(
         click.echo('Installation reset.')
         sys.exit(0)
     if do_support:
-        print('System Installation information:')
-        # TODO: this.
+        echo_support()
     else:
         init(config_path=config_path)
