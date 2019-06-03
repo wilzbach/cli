@@ -90,6 +90,7 @@ requirements = [
     'pytz>=2018.5',
     'blindspin',
     'appdirs',
+    'xerox',
 ]
 
 test_requirements = ["pytest", "delegator.py"]
