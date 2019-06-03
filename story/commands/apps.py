@@ -142,7 +142,7 @@ def create(name, team):
     click.echo(' - [ ] Write a Story:')
     click.echo(
         '       $ '
-        + click.style('story bootstrap http > http.story', fg='magenta')
+        + click.style('story write http > http.story', fg='magenta')
     )
     click.echo()
     click.echo(' - [ ] Deploy to Storyscript Cloud:')
