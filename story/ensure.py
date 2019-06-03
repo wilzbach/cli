@@ -47,7 +47,7 @@ def ensure_latest():
         if semver.cmp(current_version, latest_version) == -1:
             click.echo(
                 click.style(
-                    f'A new release (v{latest_version}) of the Storyscript ClI is now available!',
+                    f'A new release (v{latest_version}) of the Storyscript CLI is now available!',
                     fg='yellow',
                 ),
                 err=True,

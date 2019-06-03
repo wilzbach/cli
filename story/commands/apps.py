@@ -169,6 +169,18 @@ def url(app):
 
 @apps.command()
 @options.app()
+def open(app):
+    """Open the full URL of an app, in the browser."""
+    cli.user()
+    url = f'https://{app}.storyscriptapp.com/'
+
+    click.echo(url, nl=print_nl)
+    click.launch(url)
+    sys.exit(0)
+
+
+@apps.command()
+@options.app()
 @click.option(
     '--confirm', is_flag=True, help='Do not prompt to confirm destruction.'
 )
