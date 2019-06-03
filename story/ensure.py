@@ -7,6 +7,7 @@ from .storage import cache
 
 PYPI_API_URL = 'https://pypi.org/pypi/story/json'
 CACHE_EXPIRES = 60 * 60 * 3
+REQUEST_TIMEOUT = 2
 
 http_session = requests.Session()
 
@@ -17,7 +18,11 @@ def _latest_pypi():
         return cache['cli-latest']
 
     # Make an HTTP request to the PyPI JSON API.
-    r = http_session.get(url=PYPI_API_URL)
+    try:
+        r = http_session.get(url=PYPI_API_URL, timeout=REQUEST_TIMEOUT)
+        r.raise_for_status()
+    except Exception:
+        return None
 
     # Fetch the releases from the JSON response.
     releases = r.json()['releases']
@@ -38,12 +43,12 @@ def ensure_latest():
     # Grab the latest version from PyPi. Valid for three hours.
     latest_version = _latest_pypi()
 
-    compared = semver.cmp(current_version, latest_version)
-    if compared == -1:
-        click.echo(
-            click.style(
-                f'A new release (v{latest_version}) of the Storyscript ClI is now available!',
-                fg='yellow',
-            ),
-            err=True,
-        )
+    if latest_version:
+        if semver.cmp(current_version, latest_version) == -1:
+            click.echo(
+                click.style(
+                    f'A new release (v{latest_version}) of the Storyscript ClI is now available!',
+                    fg='yellow',
+                ),
+                err=True,
+            )
