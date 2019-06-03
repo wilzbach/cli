@@ -275,6 +275,24 @@ def assert_project(command, app, default_app, allow_option):
     return app
 
 
+def settings_set(content: Content, location: str):
+    """Overwrites settings, to given location and content."""
+
+    # Ensure the path is created and exists..
+    loc_dir = os.path.abspath(location)
+    loc_dir = os.path.dirname(loc_dir)
+
+    os.makedirs(loc_dir, exist_ok=True)
+
+    # If content is an object-like...
+    if isinstance(content, (list, dict)):
+        content = json.dumps(content, indent=2)
+
+    # Write to the file.
+    with open(location, 'w+') as file:
+        file.write(content)
+
+
 def init():
     global data
     data = config.as_dict()
