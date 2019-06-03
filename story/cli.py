@@ -23,6 +23,7 @@ from .storage import config, cache
 from .support import echo_support
 from .utils import find_story_yml, get_app_name_from_yml, get_asyncy_yaml
 from .ensure import ensure_latest
+from . import options
 
 # Initiate requests session, for connection pooling.
 requests = Session()
@@ -306,11 +307,16 @@ class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
     no_args_is_help=True,
     invoke_without_command=True,
     context_settings={
-        "help_option_names": ["-h", "--help"],
-        "auto_envvar_prefix": "STORY",
+        'help_option_names': ['-h', '--help'],
+        'auto_envvar_prefix': 'STORY',
     },
 )
-@click.option('--version', 'do_version', is_flag=True)
+@click.option(
+    '--version',
+    'do_version',
+    is_flag=True,
+    help='Show version information and exit',
+)
 @click.option('--config', 'do_config', is_flag=True, hidden=True)
 @click.option('--config_path', 'config_path', hidden=True)
 @click.option('--cache', 'do_cache', is_flag=True, hidden=True)
@@ -321,6 +327,7 @@ class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
 @click.option('--reset', 'do_reset', is_flag=True, hidden=True)
 @click.option('--support', 'do_support', is_flag=True, hidden=True)
 def cli(
+    app=None,
     do_version=False,
     do_config=False,
     do_cache=False,
