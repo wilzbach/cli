@@ -13,3 +13,4 @@ venv
 htmlcov
 .vscode/
 .eggs/
+demo/
