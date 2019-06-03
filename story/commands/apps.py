@@ -174,7 +174,7 @@ def open(app):
     cli.user()
     url = f'https://{app}.storyscriptapp.com/'
 
-    click.echo(url, nl=print_nl)
+    click.echo(url)
     click.launch(url)
     sys.exit(0)
 
