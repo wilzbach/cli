@@ -36,7 +36,10 @@ def echo_support():
     click.echo(report)
 
     # Copy the report to the clipboard!
-    xerox.copy(report)
-    click.echo(click.style('Copied to clipboard!', fg='red', bold=True))
+    try:
+        xerox.copy(report)
+        click.echo(click.style('Copied to clipboard!', fg='red', bold=True))
+    except Exception:
+        pass
 
     # TODO: this.
