@@ -22,6 +22,7 @@ from .version import compiler_version
 from .storage import config, cache
 from .support import echo_support
 from .utils import find_story_yml, get_app_name_from_yml, get_asyncy_yaml
+from .ensure import ensure_latest
 
 # Initiate requests session, for connection pooling.
 requests = Session()
@@ -313,6 +314,10 @@ class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
 @click.option('--config', 'do_config', is_flag=True, hidden=True)
 @click.option('--config_path', 'config_path', hidden=True)
 @click.option('--cache', 'do_cache', is_flag=True, hidden=True)
+@click.option(
+    '--disable-version-check', 'dont_check', is_flag=True, hidden=True
+)
+@click.option('--completion', 'do_completion', is_flag=True, hidden=True)
 @click.option('--reset', 'do_reset', is_flag=True, hidden=True)
 @click.option('--support', 'do_support', is_flag=True, hidden=True)
 def cli(
@@ -321,6 +326,8 @@ def cli(
     do_cache=False,
     do_reset=False,
     do_support=False,
+    do_completion=False,
+    dont_check=False,
     config_path=False,
 ):
     """
@@ -330,6 +337,8 @@ def cli(
 
     Documentation: https://docs.storyscript.io/
     """
+
+    ensure_latest()
 
     if do_version:
         echo_version()
@@ -345,6 +354,8 @@ def cli(
         os.remove(config.path)
         click.echo('Installation reset.')
         sys.exit(0)
+    # if do_completion:
+
     if do_support:
         echo_support()
     else:

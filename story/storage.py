@@ -1,5 +1,6 @@
 import os
 import json
+from time import time
 
 import appdirs
 
@@ -18,6 +19,7 @@ class Storage:
 
         self._touch()
         self._load()
+        self._ensure()
 
     def _touch(self):
         # Make the directory, if it doesn't exist.
@@ -34,6 +36,19 @@ class Storage:
             except ValueError:
                 pass
 
+    def _ensure(self):
+        for k in self._data:
+            if k.startswith('_'):
+                if '_expires' in k:
+                    expires_key = f'_{k}_expires'
+                    try:
+                        if time() > self._data[expires_key]:
+                            self.delete(k)
+                            self.delete(expires_key)
+
+                    except KeyError:
+                        pass
+
     def _save(self):
         with open(self.path, 'w') as f:
             json.dump(self._data, f)
@@ -41,8 +56,13 @@ class Storage:
     def fetch(self, key, default=None):
         return self._data.get(key, default)
 
-    def store(self, key, value):
+    def store(self, key, value, expires=False):
         self._data[key] = value
+
+        # Set expiration, if applicable.
+        if expires:
+            self._data[f'_{key}_expires'] = time() + expires
+
         self._save()
 
     def delete(self, key):
@@ -58,6 +78,9 @@ class Storage:
 
     def __contains__(self, *args, **kwargs):
         return self._data.__contains__(*args, **kwargs)
+
+    def __getitem__(self, *args, **kwargs):
+        return self._data.__getitem__(*args, **kwargs)
 
 
 cache_loc = os.path.join(CACHE_DIR, 'cache.json')

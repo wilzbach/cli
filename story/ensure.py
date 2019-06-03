@@ -1,0 +1,50 @@
+import click
+import semver
+import requests
+
+from .version import version as story_version
+from .storage import cache
+
+PYPI_API_URL = 'https://pypi.org/pypi/story/json'
+CACHE_EXPIRES = 60 * 60 * 3
+
+http_session = requests.Session()
+
+
+def _latest_pypi():
+    # Restore from cache, if applicable.
+    if 'cli-latest' in cache:
+        return cache['cli-latest']
+
+    # Make an HTTP request to the PyPI JSON API.
+    r = http_session.get(url=PYPI_API_URL)
+
+    # Fetch the releases from the JSON response.
+    releases = r.json()['releases']
+
+    # Grab the latest release.
+    latest = [k for k in releases.keys()][-1]
+
+    cache.store('cli-latest', latest, expires=CACHE_EXPIRES)
+
+    # Parse the version string:
+    return latest
+
+
+def ensure_latest():
+    current_version = '.'.join(story_version.split('.')[:3])
+    # parsed_current_version = semver.parse(current_version)
+
+    # Grab the latest version from PyPi. Valid for three hours.
+    latest_version = _latest_pypi()
+    # parsed_latest_version = semver.parse(latest_version)
+
+    compared = semver.cmp(current_version, latest_version)
+    if compared == -1:
+        click.echo(
+            click.style(
+                f'A new release (v{latest_version}) of the Storyscript ClI is now available!',
+                fg='yellow',
+            ),
+            err=True,
+        )
