@@ -7,19 +7,19 @@ from urllib.error import URLError
 
 import click
 
-import requests
+from requests import Session
 
 from . import cli
+from .storage import cache
+from .environment import SS_GRAPHQL
 
-graphql_endpoint = os.getenv(
-    'ASYNCY_GRAPHQL', 'https://api.storyscript.io/graphql'
-)
+requests = Session()
 
 
 def graphql(query, **variables):
     try:
         res = requests.post(
-            graphql_endpoint,
+            SS_GRAPHQL,
             data=dumps({'query': query, 'variables': variables}),
             headers={
                 'Content-Type': 'application/json',
@@ -33,9 +33,7 @@ def graphql(query, **variables):
         sys.exit(1)
     except (URLError, ConnectionError, requests.exceptions.ConnectionError):
         click.echo(
-            click.style(
-                f'\nFailed to connect to {graphql_endpoint}', fg='red'
-            ),
+            click.style(f'\nFailed to connect to {SS_GRAPHQL}', fg='red'),
             err=True,
         )
         sys.exit(1)
@@ -191,8 +189,18 @@ class Apps:
         This method also caches all queries made, but only during the current
         CLI session.
         """
-        if Apps._hostname_to_uuid.get(app) is not None:
-            return Apps._hostname_to_uuid.get(app)
+        cache_key = f'app-{app}'
+        the_uuid = None
+
+        if cache_key in cache:
+            the_uuid = cache.fetch(cache_key)
+
+        if not the_uuid:
+            the_uuid = Apps._hostname_to_uuid.get(app)
+
+        # Cache the app's UUID.
+        if cache_key not in cache:
+            cache.store(cache_key, the_uuid)
 
         res = graphql(
             """

@@ -19,6 +19,7 @@ from requests import Session
 from .helpers.didyoumean import DYMGroup
 from .version import version as story_version
 from .version import compiler_version
+from .storage import config, cache
 
 # Initiate requests session, for connection pooling.
 requests = Session()
@@ -36,8 +37,6 @@ else:
     sentry = Client()
 
 data = None
-home = os.path.expanduser('~/.storyscript')
-old_home = os.path.expanduser('~/.asyncy')
 
 
 def get_access_token():
@@ -45,7 +44,8 @@ def get_access_token():
 
 
 def get_user_id():
-    return data['id']
+    """Returns the current user id, if any is available."""
+    return data.get('id')
 
 
 def track_profile():
@@ -157,24 +157,6 @@ def get_asyncy_yaml() -> dict:
         return yaml.safe_load(s)
 
 
-def settings_set(content: Content, location: str):
-    """Overwrites settings, to given location and content."""
-
-    # Ensure the path is created and exists..
-    loc_dir = os.path.abspath(location)
-    loc_dir = os.path.dirname(loc_dir)
-
-    os.makedirs(loc_dir, exist_ok=True)
-
-    # If content is an object-like...
-    if isinstance(content, (list, dict)):
-        content = json.dumps(content, indent=2)
-
-    # Write to the file.
-    with open(location, 'w+') as file:
-        file.write(content)
-
-
 def initiate_login():
     global data
 
@@ -228,7 +210,10 @@ def initiate_login():
         )
         sys.exit(1)
 
-    settings_set(r.text, f'{home}/config')
+    data = r.json()
+    for k, v in data.items():
+        config.store(k, v)
+
     init()
 
     click.echo(emoji.emojize(':waving_hand:') + f'  Welcome {data["name"]}!')
@@ -289,25 +274,36 @@ def assert_project(command, app, default_app, allow_option):
     return app
 
 
-def init(config=None):
+def settings_set(content: Content, location: str):
+    """Overwrites settings, to given location and content."""
+
+    # Ensure the path is created and exists..
+    loc_dir = os.path.abspath(location)
+    loc_dir = os.path.dirname(loc_dir)
+
+    os.makedirs(loc_dir, exist_ok=True)
+
+    # If content is an object-like...
+    if isinstance(content, (list, dict)):
+        content = json.dumps(content, indent=2)
+
+    # Write to the file.
+    with open(location, 'w+') as file:
+        file.write(content)
+
+
+def init(config_path=None):
     global data
 
-    # If a path was passed to --config, use that.
-    config_file_path = config if config else f'{home}/config'
-    old_config_file_path = f'{old_home}/.config'
+    if config_path:
+        config.change_path(config_path)
 
-    if os.path.exists(config_file_path):
+    data = config.as_dict()
 
-        with open(config_file_path, 'r') as f:
-            data = json.load(f)
-            sentry.user_context({'id': get_user_id(), 'email': data['email']})
-    elif os.path.exists(old_config_file_path):
-        with open(old_config_file_path, 'r') as f:
-            data = json.load(f)
-            settings_set(data, config_file_path)
-
-        os.remove(old_config_file_path)
-        init()
+    try:
+        sentry.user_context({'id': get_user_id(), 'email': data['email']})
+    except Exception:
+        pass
 
 
 def stream(cmd: str):
@@ -322,16 +318,6 @@ def stream(cmd: str):
 
         if output:
             click.echo(output.strip())
-
-
-def run(cmd: str):
-    output = subprocess.run(
-        cmd.split(' '),
-        check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    return str(output.stdout.decode('utf-8').strip())
 
 
 def echo_version(*args, **kwargs):
@@ -364,11 +350,20 @@ class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
         "auto_envvar_prefix": "STORY",
     },
 )
-@click.option('--version', is_flag=True)
-@click.option(
-    '--config', default=None, hidden=True, type=click.Path(exists=False)
-)
-def cli(version=False, config=None):
+@click.option('--version', 'do_version', is_flag=True)
+@click.option('--config', 'do_config', is_flag=True, hidden=True)
+@click.option('--config_path', 'config_path', hidden=True)
+@click.option('--cache', 'do_cache', is_flag=True, hidden=True)
+@click.option('--reset', 'do_reset', is_flag=True, hidden=True)
+@click.option('--support', 'do_support', is_flag=True, hidden=True)
+def cli(
+    do_version=False,
+    do_config=False,
+    do_cache=False,
+    do_reset=False,
+    do_support=False,
+    config_path=False,
+):
     """
     Hello! Welcome to Storyscript.
 
@@ -377,8 +372,22 @@ def cli(version=False, config=None):
     Documentation: https://docs.storyscript.io/
     """
 
-    if version:
+    if do_version:
         echo_version()
         sys.exit(0)
+    if do_cache:
+        click.echo(cache.path)
+        sys.exit(0)
+    if do_config:
+        click.echo(config.path)
+        sys.exit(0)
+    if do_reset:
+        os.remove(cache.path)
+        os.remove(config.path)
+        click.echo('Installation reset.')
+        sys.exit(0)
+    if do_support:
+        print('System Installation information:')
+        # TODO: this.
     else:
-        init(config=config)
+        init(config_path=config_path)
