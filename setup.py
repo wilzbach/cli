@@ -91,6 +91,7 @@ requirements = [
     'blindspin',
     'appdirs',
     'xerox',
+    'semver',
 ]
 
 test_requirements = ["pytest", "delegator.py"]

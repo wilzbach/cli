@@ -53,3 +53,8 @@ def test_help(cli):
 def test_completion(cli):
     c = cli('completion')
     assert 'complete' in c.out
+
+
+def test_support(cli):
+    c = cli('--support')
+    assert 'argv' in c.out

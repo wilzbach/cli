@@ -1,5 +1,4 @@
 - Ensure all exit codes are proper.
-- Ensure that stderr is being used appropriately.
 - Add --json method to apps endpoints.
 - Add version-control based versioning.
     - https://github.com/storyscript/storyscript/blob/master/setup.py#L67

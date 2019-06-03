@@ -1,11 +1,10 @@
-# 0.1.0
-- Refactor to support Asyncy Cloud
+# v0.15.0
 
-# 0.0.7
-
-- Refactor project layout
-- Fix checking if stack is running
-
-# 0.0.6
-
-First release for Alpha
+- New location of Storyscript CLI config and cache directories.
+- Automatically check for new versions, and prompt the user to upgrade, when available.
+- Cache app UUID between calls, to improve speed.
+- New hidden `--support`, `--config`, `--cache`, & `--reset`, for providing user support.
+- All CLI arguments can be passed as environment variables (`STORY_…`)
+- Use Requests HTTP sessions (for connection reuse/pooling), whenever possible.
+- More proper exit codes.
+- Ability to use `story write` without being logged in.
