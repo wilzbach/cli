@@ -37,8 +37,6 @@ else:
     sentry = Client()
 
 data = None
-home = os.path.expanduser('~/.storyscript')
-old_home = os.path.expanduser('~/.asyncy')
 
 
 def get_access_token():
