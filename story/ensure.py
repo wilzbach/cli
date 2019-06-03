@@ -25,19 +25,18 @@ def _latest_pypi():
     # Grab the latest release.
     latest = [k for k in releases.keys()][-1]
 
+    # Store the results in the cache for three hours.
     cache.store('cli-latest', latest, expires=CACHE_EXPIRES)
 
-    # Parse the version string:
+    # Parse the version string.
     return latest
 
 
 def ensure_latest():
     current_version = '.'.join(story_version.split('.')[:3])
-    # parsed_current_version = semver.parse(current_version)
 
     # Grab the latest version from PyPi. Valid for three hours.
     latest_version = _latest_pypi()
-    # parsed_latest_version = semver.parse(latest_version)
 
     compared = semver.cmp(current_version, latest_version)
     if compared == -1:
