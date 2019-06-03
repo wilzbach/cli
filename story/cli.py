@@ -338,7 +338,9 @@ def cli(
     Documentation: https://docs.storyscript.io/
     """
 
-    ensure_latest()
+    # Check for new versions, if allowed.
+    if not dont_check:
+        ensure_latest()
 
     if do_version:
         echo_version()
