@@ -8,3 +8,4 @@
 - Use Requests HTTP sessions (for connection reuse/pooling), whenever possible.
 - More proper exit codes.
 - Ability to use `story write` without being logged in.
+- New `story apps open` command.
