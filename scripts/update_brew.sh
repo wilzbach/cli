@@ -40,7 +40,7 @@ echo "Updating brew..."
 brew update
 echo "Testing the formula locally with brew..."
 brew install Formula/story.rb
-story version | grep $tag
+story --version | grep $tag
 story --help
 git checkout -b release_$tag
 git commit -a -m "Release $tag."
