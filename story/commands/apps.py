@@ -29,6 +29,12 @@ def apps():
     pass
 
 
+@cli.cli.group(hidden=True)
+def app():
+    """Create, list, and manage apps on Storyscript Cloud."""
+    apps()
+
+
 @apps.command(name='list')
 def list_command():
     """List apps that you have access to."""
