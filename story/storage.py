@@ -65,6 +65,26 @@ class Storage:
 
         self._save()
 
+    def copy_from(self, path, delete=False):
+        try:
+            # Ensure that the path exists.
+            assert os.path.exists(path)
+
+            # Open and de-serialize the old file.
+            with open(path, 'r') as f:
+                old_contents = json.load(f)
+
+            # Copy the items over.
+            for (k, v) in old_contents.items():
+                self.store(k, v)
+
+            # Delete the file, if requested.
+            if delete:
+                os.remove(path)
+
+        except AssertionError:
+            pass
+
     def delete(self, key):
         del self._data[key]
         self._save()
@@ -83,8 +103,12 @@ class Storage:
         return self._data.__getitem__(*args, **kwargs)
 
 
+# Configure cache.
 cache_loc = os.path.join(CACHE_DIR, 'cache.json')
 cache = Storage(path=cache_loc)
 
+# Configure config.
 config_loc = os.path.join(STORAGE_DIR, 'config.json')
 config = Storage(path=config_loc)
+# Copy old config over, if necessary.
+config.copy_from(os.path.expanduser('~/.storyscript/config.json'), delete=True)

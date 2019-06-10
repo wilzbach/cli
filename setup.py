@@ -48,7 +48,7 @@ class Format(Command):
         pass
 
     def run(self):
-        os.system('black -S -l 79 .')
+        os.system('black -S -l 79 story')
 
 
 classifiers = [
@@ -127,8 +127,6 @@ setup(
     tests_require=test_requirements,
     extras_require={},
     requires_python='>=3.6.0',
-    entry_points={
-        'console_scripts': ['story=story.main:cli', 'asyncy=story.main:cli']
-    },
+    entry_points={'console_scripts': ['story=story.main:cli']},
     cmdclass={'install': Install, 'test': PyTest, 'format': Format},
 )

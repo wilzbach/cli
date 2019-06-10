@@ -29,6 +29,12 @@ def apps():
     pass
 
 
+@cli.cli.group(hidden=True)
+def app():
+    """Create, list, and manage apps on Storyscript Cloud."""
+    apps()
+
+
 @apps.command(name='list')
 def list_command():
     """List apps that you have access to."""
@@ -182,22 +188,37 @@ def open(app):
 @apps.command()
 @options.app()
 @click.option(
-    '--confirm', is_flag=True, help='Do not prompt to confirm destruction.'
+    '--yes', '-y', is_flag=True, help='Assume yes to destruction confirmation.'
 )
-def destroy(confirm, app):
+@click.option(
+    '--all', is_flag=True, help='Destroy all Storyscript Cloud apps.'
+)
+def destroy(yes=False, app=None, all=False):
     """Destroy an app."""
 
     cli.user()
 
-    if confirm or click.confirm(
-        f'Do you want to destroy {app!r}?', abort=True
-    ):
-        click.echo(f'Destroying application {app!r}… ', nl=False)
+    if all:
+        click.echo('Destroying all Storyscript Cloud applications:', err=True)
+        apps = [app['name'] for app in api.Apps.list()]
+    else:
+        apps = [app]
 
-        with spinner():
-            api.Apps.destroy(app=app)
-            cli.track('App Destroyed', {'App name': app})
+    for app in apps:
 
-        click.echo(
-            '\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
-        )
+        if yes or click.confirm(
+            f'Do you want to destroy {app!r}?', abort=True
+        ):
+            click.echo(f'Destroying application {app!r}… ', nl=False)
+
+            with spinner():
+                api.Apps.destroy(app=app)
+                cli.track('App Destroyed', {'App name': app})
+
+            click.echo(
+                '\b'
+                + click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+            )
+            click.echo()
+
+    sys.exit(0)
