@@ -8,6 +8,7 @@ from urllib.error import URLError
 import click
 
 from requests import Session
+from requests import ConnectionError
 
 from . import cli
 from .storage import cache
@@ -31,7 +32,7 @@ def graphql(query, **variables):
     except KeyboardInterrupt:  # OK - user cancelled.
         click.echo('\nCancelled')
         sys.exit(1)
-    except (URLError, ConnectionError, requests.exceptions.ConnectionError):
+    except (URLError, ConnectionError):
         click.echo(
             click.style(f'\nFailed to connect to {SS_GRAPHQL}', fg='red'),
             err=True,
