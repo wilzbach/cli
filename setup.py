@@ -48,7 +48,7 @@ class Format(Command):
         pass
 
     def run(self):
-        os.system('black -S -l 79 .')
+        os.system('black -S -l 79 story')
 
 
 classifiers = [
