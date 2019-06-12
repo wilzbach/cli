@@ -163,7 +163,7 @@ class Releases:
                     'message': message or 'Deploy app',
                     'config': config,
                     'payload': payload,
-                    'always_pull_images': always_pull_images or False
+                    'always_pull_images': always_pull_images
                 }
             },
         )
