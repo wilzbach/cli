@@ -1,3 +1,3 @@
 # Add two numbers with a defined function.
-function AddNumbers a:number b:number returns number
+function addNumbers a: int b: int returns int
     return a + b
