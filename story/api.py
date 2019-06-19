@@ -7,12 +7,12 @@ from urllib.error import URLError
 
 import click
 
-from requests import Session
 from requests import ConnectionError
+from requests import Session
 
 from . import cli
-from .storage import cache
 from .environment import SS_GRAPHQL
+from .storage import cache
 
 requests = Session()
 

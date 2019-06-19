@@ -1,9 +1,11 @@
 import click
-import semver
+
 import requests
 
-from .version import version as story_version
+import semver
+
 from .storage import cache
+from .version import version as story_version
 
 PYPI_API_URL = 'https://pypi.org/pypi/story/json'
 CACHE_EXPIRES = 60 * 60 * 3
@@ -47,7 +49,8 @@ def ensure_latest():
         if semver.cmp(current_version, latest_version) == -1:
             click.echo(
                 click.style(
-                    f'A new release (v{latest_version}) of the Storyscript CLI is now available!',
+                    f'A new release (v{latest_version}) of the '
+                    f'Storyscript CLI is now available!',
                     fg='yellow',
                 ),
                 err=True,

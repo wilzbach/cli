@@ -1,18 +1,15 @@
+import json
 import os
 from tempfile import NamedTemporaryFile
 
-import pytest
 import delegator
 
-# TODO: env vars
-STORYSCRIPT_CONFIG = """{
-   "id":"cd3fb9d0-fc54-48c5-9a1a-9daead7da490",
-   "access_token":"vmlLTkC+Q5lBJ0XU/OHVWA==",
-   "name":null,
-   "email":"kenneth+tests@storyscript.io",
-   "username":"storyscript-cli-test",
-   "beta":true
-}""".strip()
+import pytest
+
+STORYSCRIPT_CONFIG = {
+    'id': os.environ['STORYSCRIPT_INT_CONF_USER_ID'],
+    'access_token': os.environ['STORYSCRIPT_INT_CONF_ACCESS_TOKEN']
+}
 
 
 @pytest.fixture
@@ -24,11 +21,11 @@ def cli():
         if logged_in:
             # Create a temporary config file.
             with open(tf, 'w') as f:
-                f.write(STORYSCRIPT_CONFIG)
+                f.write(json.dumps(STORYSCRIPT_CONFIG))
 
         # Make temporary file.
         args = ' '.join(args)
-        c = delegator.run(f'story {args}', env={"STORY_CONFIG_PATH": tf})
+        c = delegator.run(f'story {args}', env={'STORY_CONFIG_PATH': tf})
 
         os.remove(tf)
         return c

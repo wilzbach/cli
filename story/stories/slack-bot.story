@@ -7,9 +7,9 @@
 
 slack bot as client
     # listens for all messages
-    when client hears pattern:/foo/i as msg
+    when client hears pattern: /foo/i as msg
         msg reply text:'bar' room:msg.room
 
     # reply to direct messages
-    when client responds pattern:/hello/i as msg
+    when client responds pattern: /hello/i as msg
         msg reply text:'world' room:msg.room
