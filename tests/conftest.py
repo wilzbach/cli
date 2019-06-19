@@ -1,8 +1,9 @@
 import os
 from tempfile import NamedTemporaryFile
 
-import pytest
 import delegator
+
+import pytest
 
 # TODO: env vars
 STORYSCRIPT_CONFIG = """{
@@ -28,7 +29,7 @@ def cli():
 
         # Make temporary file.
         args = ' '.join(args)
-        c = delegator.run(f'story {args}', env={"STORY_CONFIG_PATH": tf})
+        c = delegator.run(f'story {args}', env={'STORY_CONFIG_PATH': tf})
 
         os.remove(tf)
         return c

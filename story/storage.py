@@ -1,5 +1,5 @@
-import os
 import json
+import os
 from time import time
 
 import appdirs
