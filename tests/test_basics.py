@@ -17,7 +17,6 @@ story_params = (
         ('function', 'function'),
         ('if', 'if'),
         ('loop', 'for'),
-        ('twitter', 'tweet'),
     ],
 )
 
