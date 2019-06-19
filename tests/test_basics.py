@@ -11,7 +11,7 @@ def test_write_no_story(cli):
 
 
 story_params = (
-    "story,expected",
+    'story,expected',
     [
         ('http', 'http'),
         ('function', 'function'),
