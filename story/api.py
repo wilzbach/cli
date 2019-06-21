@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import os
 import sys
 from json import dumps
-from urllib.error import URLError
 
 import click
 
-from requests import ConnectionError
-from requests import Session
+from requests import RequestException, Session
 
 from . import cli
 from .environment import SS_GRAPHQL
@@ -32,7 +29,7 @@ def graphql(query, **variables):
     except KeyboardInterrupt:  # OK - user cancelled.
         click.echo('\nCancelled')
         sys.exit(1)
-    except (URLError, ConnectionError):
+    except RequestException:
         click.echo(
             click.style(f'\nFailed to connect to {SS_GRAPHQL}', fg='red'),
             err=True,
