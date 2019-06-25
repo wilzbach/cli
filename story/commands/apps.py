@@ -29,12 +29,6 @@ def apps():
     pass
 
 
-@cli.cli.group(hidden=True)
-def app():
-    """Create, list, and manage apps on Storyscript Cloud."""
-    apps()
-
-
 @apps.command(name='list')
 def list_command():
     """List apps that you have access to."""
@@ -173,9 +167,9 @@ def url(app):
     click.echo(f'https://{app}.storyscriptapp.com/', nl=print_nl)
 
 
-@apps.command()
+@apps.command('open')
 @options.app()
-def open(app):
+def do_open(app):
     """Open the full URL of an app, in the browser."""
     cli.user()
     url = f'https://{app}.storyscriptapp.com/'

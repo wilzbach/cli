@@ -3,8 +3,9 @@ import os
 import pkgutil
 import sys
 
-import emoji
 import click
+
+import emoji
 
 from story import cli
 
@@ -59,7 +60,7 @@ def write(story, output_file=None):
         # Print the stories to the console.
         for story in STORIES:
             part1 = f"  {story['name']}"
-            part2 = (" " * (13 - len(part1))) + f"- {story['description']}"
+            part2 = (' ' * (13 - len(part1))) + f'- {story["description"]}'
 
             click.echo(click.style(part1, fg='cyan') + part2)
         click.echo()

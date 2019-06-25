@@ -9,21 +9,27 @@ import typing
 from urllib.parse import urlencode
 from uuid import uuid4
 
-import click
-import click_help_colors
-import emoji
 from blindspin import spinner
+
+import click
+
+import click_help_colors
+
+
+import emoji
+
 from raven import Client
+
 from requests import Session
 
+from . import options
+from .ensure import ensure_latest
 from .helpers.didyoumean import DYMGroup
-from .version import version as story_version
-from .version import compiler_version
-from .storage import config, cache
+from .storage import cache, config
 from .support import echo_support
 from .utils import find_story_yml, get_app_name_from_yml, get_asyncy_yaml
-from .ensure import ensure_latest
-from . import options
+from .version import compiler_version
+from .version import version as story_version
 
 # Initiate requests session, for connection pooling.
 requests = Session()
@@ -213,7 +219,7 @@ def print_command(command):
 def assert_project(command, app, default_app, allow_option):
     if app is None:
         click.echo(
-            click.style('No StoryScript Cloud application found.', fg='red')
+            click.style('No Storyscript Cloud application found.', fg='red')
         )
         click.echo()
         click.echo('Create an application with:')
