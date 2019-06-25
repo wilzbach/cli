@@ -9,12 +9,13 @@ import emoji
 
 from storyscript.exceptions import StoryError
 
-from .. import cli
+from .. import cli, options
 
 
 @cli.cli.command()
 @click.option('--debug', is_flag=True, help='Compile in debug mode')
-def test(debug):
+@options.app()
+def test(debug, app):
     """Compile your Storyscripts, and check for any errors."""
 
     cli.user()
