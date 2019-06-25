@@ -219,7 +219,7 @@ def print_command(command):
 def assert_project(command, app, default_app, allow_option):
     if app is None:
         click.echo(
-            click.style('No StoryScript Cloud application found.', fg='red')
+            click.style('No Storyscript Cloud application found.', fg='red')
         )
         click.echo()
         click.echo('Create an application with:')
