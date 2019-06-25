@@ -162,7 +162,7 @@ class Releases:
                     'message': message or 'Deploy app',
                     'config': config,
                     'payload': payload,
-                    'always_pull_images': always_pull_images
+                    'alwaysPullImages': always_pull_images
                 }
             },
         )
