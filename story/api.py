@@ -146,7 +146,8 @@ class Releases:
             return []
 
     @staticmethod
-    def create(config: {}, payload: {}, app: str, message: str, always_pull_images: bool) -> dict:
+    def create(config: {}, payload: {}, app: str, message: str,
+               always_pull_images: bool) -> dict:
         res = graphql(
             """
             mutation ($data: CreateReleaseInput!){
