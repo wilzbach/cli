@@ -14,20 +14,29 @@ The goals of this project is to provide a utility for developers to interact wit
 
 ## Installation
 
-### Python
-
-```shell
-pip install --user story
-```
-
-Python 3.6 or higher is required.
-On Ubuntu/Debian, use `pip3`.
-
 ### OSX
 
 ```shell
 brew install storyscript/brew/story
 ```
+
+### Linux
+
+The Storyscript CLI is available as a [SnapCraft package](https://snapcraft.io/story):
+
+```shell
+sudo snap install story
+```
+
+Snap is [available for many Linux distributions](https://docs.snapcraft.io/installing-snapd).
+
+### Directly from Python
+
+```shell
+pip install --user story
+```
+Python 3.6 or higher is required.
+On Ubuntu/Debian, use `pip3`.
 
 ✨🍰✨
 
