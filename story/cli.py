@@ -22,12 +22,11 @@ from raven import Client
 
 from requests import Session
 
-from . import options
+from . import utils
 from .ensure import ensure_latest
 from .helpers.didyoumean import DYMGroup
 from .storage import cache, config
 from .support import echo_support
-from .utils import find_story_yml, get_app_name_from_yml, get_asyncy_yaml
 from .version import compiler_version
 from .version import version as story_version
 
@@ -214,6 +213,18 @@ def print_command(command):
     """Prints a command to the CLI."""
 
     click.echo('  $ ' + click.style(command, fg='magenta'))
+
+
+def find_story_yml():
+    return utils.find_story_yml()
+
+
+def get_app_name_from_yml():
+    return utils.get_app_name_from_yml()
+
+
+def get_asyncy_yaml():
+    return utils.get_asyncy_yaml()
 
 
 def assert_project(command, app, default_app, allow_option):

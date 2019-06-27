@@ -15,8 +15,10 @@ from ..api import Apps, Config, Releases
 
 @cli.cli.command()
 @click.option('--message', is_flag=True, help='Deployment message')
+@click.option('--hard', is_flag=True,
+              help='Pull the latest service images on deploy')
 @options.app(allow_option=False)
-def deploy(app, message):
+def deploy(app, message, hard):
     """Deploy your app to Storyscript Cloud."""
     cli.user()
 
@@ -29,7 +31,7 @@ def deploy(app, message):
 
     with spinner():
         config = Config.get(app)
-        release = Releases.create(config, payload, app, message)
+        release = Releases.create(config, payload, app, message, hard)
 
     url = f'https://{app}.storyscriptapp.com/'
     click.echo()

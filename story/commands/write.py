@@ -81,7 +81,7 @@ def write(story, output_file=None):
         click.echo(
             '  - Examples: '
             + click.style(
-                'https://github.com/topics/storyscript-example', fg='cyan'
+                'https://github.com/storyscript/examples', fg='cyan'
             )
         )
 

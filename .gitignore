@@ -14,3 +14,12 @@ htmlcov
 .vscode/
 .eggs/
 demo/
+Pipfile.lock
+Pipfile
+
+# snapfiles
+*.snap
+/parts/
+/prime/
+/stage/
+/snap/.snapcraft
