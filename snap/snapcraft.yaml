@@ -17,7 +17,7 @@ parts:
   story:
     plugin: python
     python-version: python3
-    source: .
+    source: dist/story.tar.gz
     stage-packages:
       - libbz2-1.0
       - libdb5.3
