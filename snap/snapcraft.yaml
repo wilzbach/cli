@@ -1,7 +1,6 @@
 name: story
 version: git
-# get the latest version from git
-version-script: git describe --tags --abbrev=0
+version-script: echo ${CIRCLE_TAG}
 summary: Story CLI
 description: Core toolkit to interact with Storyscript Cloud
 grade: stable
@@ -14,13 +13,7 @@ apps:
     environment:
       LANG: C.UTF-8
       LC_ALL: C.UTF-8
-
 parts:
-  storyscript:
-    plugin: python
-    python-version: python3
-    source: https://github.com/storyscript/storyscript.git
-    source-tag: 0.20.1
   story:
     plugin: python
     python-version: python3
