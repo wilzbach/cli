@@ -77,8 +77,8 @@ jobs:
           name: create brew pr
           command: bash ./scripts/update_brew.sh $CIRCLE_TAG
   release_snap:
-    docker:
-      - image: ubuntu:18.04
+    #docker:
+    #  - image: ubuntu:18.04
     steps:
       - checkout
       - setup_remote_docker
