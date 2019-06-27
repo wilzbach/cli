@@ -82,9 +82,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Fake CIRCLE_TAG # todo: remove me!!!
-          command: export CIRCLE_TAG=0.16.2
-      - run:
           name: Install snapd and snapcraft
           command: sudo apt-get install snapd snapcraft
       - run:
@@ -101,7 +98,7 @@ jobs:
           command: /snap/bin/story --version | grep ${CIRCLE_TAG}
       - run:
           name: Login to snapcraft
-          command: mkdir ~/.snapcraft && echo $SNAPCRAFT_LOGIN_FILE_BASE64 | base64 --decode > ~/.snapcraft/snapcraft.cfg
+          command: mkdir -p .snapcraft && echo $SNAPCRAFT_LOGIN_FILE_BASE64 | base64 --decode --ignore-garbage > .snapcraft/snapcraft.cfg
       - run:
           name: Push to snapcraft
           command: snapcraft push story_${CIRCLE_TAG}_amd64.snap --release stable
@@ -122,19 +119,16 @@ workflows:
           branches:
             ignore: /.*/
     - release_snap:
+        requires:
+          - release_pypi
         filters:
           tags:
-            only: snap_releases  # todo: change to tags eventually.
-        #requires:
-          #- release_pypi
-        #filters:
-          #tags:
-            #only: /^[0-9]+\.[0-9]+\.[0-9]+$/
-          #branches:
-            #ignore: /.*/
+            only: /^[0-9]+\.[0-9]+\.[0-9]+$/
+          branches:
+            ignore: /.*/
     - release_brew:
         requires:
-        - release_pypi
+          - release_pypi
         filters:
           tags:
             only: /^[0-9]+\.[0-9]+\.[0-9]+$/
