@@ -83,28 +83,28 @@ jobs:
       - checkout
       - run:
           name: Fake CIRCLE_TAG # todo: remove me!!!
-          command: export CIRCLE_TAG=0.16.1
+          command: export CIRCLE_TAG=0.16.2
       - run:
-          name: Install snapd
-          command: sudo apt-get install snapd
+          name: Install snapd and snapcraft
+          command: sudo apt-get install snapd snapcraft
       - run:
           name: Build snapcraft build container
           command: docker build -t story-snapcraft snap
       - run:
           name: Build snap image
-          command: docker run --rm -v $PWD:/story story-snapcraft /bin/sh -c 'cd /story && snapcraft clean && snapcraft'
+          command: docker run --rm -e CIRCLE_TAG=${CIRCLE_TAG} -v $PWD:/story story-snapcraft /bin/sh -c 'cd /story && snapcraft clean && snapcraft'
       - run:
           name: Install the recently build snap locally
           command: sudo snap install --dangerous story_${CIRCLE_TAG}_amd64.snap
       - run:
           name: Check the version of the snap installed
           command: /snap/bin/story --version | grep ${CIRCLE_TAG}
-#      - run:
-#          name: snapcraft login
-#          command: echo $SNAPCRAFT_LOGIN | snapcraft login --with -
-#      - run:
-#          name: snapcraft push
-#          command: snapcraft push --release edge story_${CIRCLE_TAG}_amd64.snap
+      - run:
+          name: Login to snapcraft
+          command: mkdir ~/.snapcraft && echo $SNAPCRAFT_LOGIN_FILE_BASE64 | base64 --decode > ~/.snapcraft/snapcraft.cfg
+      - run:
+          name: Push to snapcraft
+          command: snapcraft push story_${CIRCLE_TAG}_amd64.snap --release stable
 workflows:
   version: 2
   build-test-deploy:
