@@ -1,5 +1,5 @@
 name: story
-version: git
+version: 1  # Doesn't matter, since version-script will run.
 version-script: echo ${CIRCLE_TAG}
 summary: Story CLI
 description: Core toolkit to interact with Storyscript Cloud
