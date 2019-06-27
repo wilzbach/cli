@@ -77,11 +77,10 @@ jobs:
           name: create brew pr
           command: bash ./scripts/update_brew.sh $CIRCLE_TAG
   release_snap:
-    docker:
-      - image: ubuntu:18.04
+    machine:
+      image: circleci/classic:latest
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name: Build Snap
           command: ./snap/build.sh
@@ -115,8 +114,8 @@ workflows:
             ignore: /.*/
     - release_snap:
         filters:
-              tags:
-                only: /.*/
+          tags:
+            only: snap_releases  # todo: change to tags eventually.
         #requires:
           #- release_pypi
         #filters:
