@@ -6,17 +6,28 @@ jobs:
     - image: circleci/python:3.7.0-node
     steps:
     - checkout
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "setup.py" }}
+        - v1-dependencies-
 
     - run:
         name: install dependencies
         command: |
-          pip install pipenv
-          pipenv install --dev
+          python -m venv venv
+          . venv/bin/activate
+          python3 setup.py install
+          pip install tox
+
+    - save_cache:
+        paths:
+        - ./venv
+        key: v1-dependencies-{{ checksum "setup.py" }}
 
     - run:
         command: |
-          pipenv run pip install tox
-          pipenv run tox .
+          . venv/bin/activate
+          tox
 
     - run:
         name: collect coverage
@@ -35,16 +46,23 @@ jobs:
       - run:
           name: setup venv
           command: |
-            pip install pipenv
-            pipenv install --dev
+            python -m venv venv
+            . venv/bin/activate
+      - run:
+          name: install twine
+          command: |
+            . venv/bin/activate
+            pip install twine
       - run:
           name: sdist
           command: |
-            pipenv run python setup.py sdist bdist_wheel --universal
+            . venv/bin/activate
+            python setup.py sdist
       - run:
           name: upload
           command: |
-            pipenv run twine upload dist/story-*
+            . venv/bin/activate
+            twine upload dist/story-*.tar.gz
   release_brew:
     macos:
       xcode: "9.0"
