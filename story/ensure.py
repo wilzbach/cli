@@ -4,7 +4,7 @@ import requests
 
 import semver
 
-from .storage import cache
+from . import storage
 from .version import version as story_version
 
 PYPI_API_URL = 'https://pypi.org/pypi/story/json'
@@ -16,8 +16,8 @@ http_session = requests.Session()
 
 def _latest_pypi():
     # Restore from cache, if applicable.
-    if 'cli-latest' in cache:
-        return cache['cli-latest']
+    if 'cli-latest' in storage.cache:
+        return storage.cache['cli-latest']
 
     # Make an HTTP request to the PyPI JSON API.
     try:
@@ -33,7 +33,7 @@ def _latest_pypi():
     latest = [k for k in releases.keys()][-1]
 
     # Store the results in the cache for three hours.
-    cache.store('cli-latest', latest, expires=CACHE_EXPIRES)
+    storage.cache.store('cli-latest', latest, expires=CACHE_EXPIRES)
 
     # Parse the version string.
     return latest

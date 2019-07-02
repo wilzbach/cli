@@ -22,10 +22,9 @@ from raven import Client
 
 from requests import Session
 
-from . import utils
+from . import storage, utils
 from .ensure import ensure_latest
 from .helpers.didyoumean import DYMGroup
-from .storage import cache, config
 from .support import echo_support
 from .version import compiler_version
 from .version import version as story_version
@@ -178,7 +177,7 @@ def initiate_login():
 
     data = r.json()
     for k, v in data.items():
-        config.store(k, v)
+        storage.config.store(k, v)
 
     init()
 
@@ -273,10 +272,9 @@ def settings_set(content: Content, location: str):
 def init(config_path=None):
     global data
 
-    if config_path:
-        config.change_path(config_path)
+    storage.init_storage(config_path)
 
-    data = config.as_dict()
+    data = storage.config.as_dict()
 
     try:
         sentry.user_context({'id': get_user_id(), 'email': data['email']})
@@ -362,20 +360,16 @@ def cli(
     Documentation: https://docs.storyscript.io/
     """
 
-    # Check for new versions, if allowed.
-    if not dont_check:
-        ensure_latest()
-
     if do_version:
         echo_version()
         sys.exit(0)
 
     elif do_cache:
-        click.echo(cache.path)
+        click.echo(storage.cache.path)
         sys.exit(0)
 
     elif do_config:
-        click.echo(config.path)
+        click.echo(storage.config.path)
         sys.exit(0)
 
     elif do_reset:
@@ -386,11 +380,15 @@ def cli(
 
     else:
         init(config_path=config_path)
+        
+        # Check for new versions, if allowed.
+        if not dont_check:
+            ensure_latest()
 
 
 def reset():
-    os.remove(cache.path)
-    os.remove(config.path)
+    storage.cache.remove_file_on_disk()
+    storage.config.remove_file_on_disk()
     click.echo('Storyscript CLI installation reset.\n'
                'Run the following command to login again:')
     print_command('story login')
