@@ -18,12 +18,11 @@ def test_deploy(runner, with_message, patch, hard_deployment,
         # Relative imports are used here since we need to trigger
         # the cli init code in an isolated filesystem, inside an app dir.
         # Weird things happen otherwise. Not the most efficient way, but works.
-        from story import cli, api
+        from story import api
         from story.commands import test
         from story.commands.deploy import deploy
 
         patch.object(test, 'compile_app', return_value=payload)
-        patch.object(cli, 'user')
         patch.object(time, 'sleep')
 
         patch.object(api.Config, 'get')
@@ -52,7 +51,7 @@ def test_deploy(runner, with_message, patch, hard_deployment,
             assert result.stdout == ''
             return
         else:
-            result = runner.run(deploy, 0, *args)
+            result = runner.run(deploy, exit_code=0, args=args)
 
         if maintenance:
             assert 'Your app is in maintenance mode.' in result.stdout

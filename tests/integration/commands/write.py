@@ -25,13 +25,14 @@ def test_write_a_story(runner, story_name, patch, write_to_file, app_name):
 
     if write_to_file:
         with runner.runner.isolated_filesystem():
-            result = runner.run(write, 0, story_name, 'a.story')
+            result = runner.run(write, exit_code=0,
+                                args=[story_name, 'a.story'])
 
             with open('a.story', 'r') as f:
                 file_content = f.read()
 
     else:
-        result = runner.run(write, 0, story_name)
+        result = runner.run(write, exit_code=0, args=[story_name])
 
     data = pkgutil.get_data('story', f'stories/{story_name}.story')
 
