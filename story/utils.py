@@ -33,6 +33,10 @@ def get_app_name_from_yml() -> str:
         return yaml.safe_load(s).pop('app_name')
 
 
+def get_project_root_dir() -> str:
+    return os.path.dirname(find_story_yml())
+
+
 def get_asyncy_yaml(must_exist=True) -> dict:
     file = find_story_yml()
 

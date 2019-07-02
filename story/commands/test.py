@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import os
 import sys
 
 import click
@@ -9,7 +8,7 @@ import emoji
 
 from storyscript.exceptions import StoryError
 
-from .. import cli, options
+from .. import cli, options, utils
 
 
 @cli.cli.command()
@@ -57,7 +56,7 @@ def compile_app(app_name_for_analytics, debug) -> dict:
     click.echo(click.style('Compiling Stories… ', bold=True))
 
     try:
-        stories = json.loads(App.compile(os.getcwd()))
+        stories = json.loads(App.compile(utils.get_project_root_dir()))
     except StoryError as e:
         click.echo('Failed to compile project:\n', err=True)
         click.echo(click.style(str(e.message()), fg='red'), err=True)
