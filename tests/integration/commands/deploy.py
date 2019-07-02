@@ -10,8 +10,8 @@ from pytest import mark
 @mark.parametrize('maintenance', [True, False])
 @mark.parametrize('payload', [None, 'my_super_complex_payload'])
 def test_deploy(runner, with_message, patch, hard_deployment,
-                            final_release_state, maintenance, payload,
-                            init_sample_app_in_cwd):
+                final_release_state, maintenance, payload,
+                init_sample_app_in_cwd):
     with runner.runner.isolated_filesystem():
         init_sample_app_in_cwd()
 
