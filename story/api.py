@@ -72,7 +72,7 @@ class Config:
     @staticmethod
     def set(config: {}, app: str, message: str) -> dict:
         return Releases.create(
-            config, None, app, message or 'Update environment'
+            config, None, app, message or 'Update environment', False
         )
 
 
@@ -122,6 +122,7 @@ class Releases:
             release['payload'],
             app,
             f'Rollback to v{version}',
+            False
         )
 
     @staticmethod
