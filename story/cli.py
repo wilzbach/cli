@@ -379,13 +379,18 @@ def cli(
         sys.exit(0)
 
     elif do_reset:
-        os.remove(cache.path)
-        os.remove(config.path)
-        click.echo('Storyscript CLI installation reset.')
+        reset()
         sys.exit(0)
-
     elif do_support:
         echo_support()
 
     else:
         init(config_path=config_path)
+
+
+def reset():
+    os.remove(cache.path)
+    os.remove(config.path)
+    click.echo('Storyscript CLI installation reset.\n'
+               'Run the following command to login again:')
+    print_command('story login')
