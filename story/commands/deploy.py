@@ -14,7 +14,7 @@ from ..api import Apps, Config, Releases
 
 
 @cli.cli.command()
-@click.option('--message', is_flag=True, help='Deployment message')
+@click.option('--message', help='Deployment message')
 @click.option('--hard', is_flag=True,
               help='Pull the latest service images on deploy')
 @options.app(allow_option=False)
