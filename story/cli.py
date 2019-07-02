@@ -380,7 +380,7 @@ def cli(
 
     else:
         init(config_path=config_path)
-        
+
         # Check for new versions, if allowed.
         if not dont_check:
             ensure_latest()
