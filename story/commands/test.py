@@ -9,7 +9,7 @@ import emoji
 
 from storyscript.exceptions import StoryError
 
-from .. import cli, options
+from .. import cli, options, utils
 
 
 @cli.cli.command()
@@ -56,8 +56,11 @@ def compile_app(app_name_for_analytics, debug) -> dict:
 
     click.echo(click.style('Compiling Stories… ', bold=True))
 
+    old_cwd = os.getcwd()
+
     try:
-        stories = json.loads(App.compile(os.getcwd()))
+        os.chdir(utils.get_project_root_dir())
+        stories = json.loads(App.compile(utils.get_project_root_dir()))
     except StoryError as e:
         click.echo('Failed to compile project:\n', err=True)
         click.echo(click.style(str(e.message()), fg='red'), err=True)
@@ -66,6 +69,8 @@ def compile_app(app_name_for_analytics, debug) -> dict:
         click.echo('Failed to compile project:\n', err=True)
         click.echo(click.style(str(e), fg='red'), err=True)
         stories = None
+    finally:
+        os.chdir(old_cwd)
 
     result = 'Success'
     count = 0
