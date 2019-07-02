@@ -10,8 +10,10 @@ from click.testing import CliRunner, Result
 import pytest
 
 STORYSCRIPT_CONFIG = {
-    'id': os.environ['STORYSCRIPT_INT_CONF_USER_ID'],
-    'access_token': os.environ['STORYSCRIPT_INT_CONF_ACCESS_TOKEN']
+    'id': os.environ.get('STORYSCRIPT_INT_CONF_USER_ID', 'my_user_id'),
+    'access_token': os.environ.get('STORYSCRIPT_INT_CONF_ACCESS_TOKEN',
+                                   'my_access_token'),
+    'email': 'me@me.com'
 }
 
 
@@ -19,7 +21,14 @@ STORYSCRIPT_CONFIG = {
 def runner(magic):
     cli_runner = CliRunner()
 
-    def function(command_function, exit_code, *args) -> Result:
+    def function(command_function, exit_code: int = 0,
+                 args: list = []) -> Result:
+        with open('config.json', 'w') as f:
+            f.write(json.dumps(STORYSCRIPT_CONFIG))
+
+        from story import cli
+        cli.init(config_path='config.json')
+
         result = cli_runner.invoke(
             command_function,
             args=args)
