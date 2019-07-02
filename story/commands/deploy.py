@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-from time import sleep
+import time
 
 from blindspin import spinner
 
@@ -8,7 +8,7 @@ import click
 
 import emoji
 
-from .test import compile_app
+from . import test
 from .. import cli, options
 from ..api import Apps, Config, Releases
 
@@ -22,7 +22,7 @@ def deploy(app, message, hard):
     """Deploy your app to Storyscript Cloud."""
     cli.user()
 
-    payload = compile_app(app, False)  # Also adds a spinner.
+    payload = test.compile_app(app, False)  # Also adds a spinner.
 
     if payload is None:
         sys.exit(1)  # Error already printed by compile_app.
@@ -61,7 +61,7 @@ def deploy(app, message, hard):
         state = 'QUEUED'
         while state in ['DEPLOYING', 'QUEUED']:
             state = Releases.get(app)[0]['state']
-            sleep(0.5)
+            time.sleep(0.5)
 
     click.echo()
     if state == 'DEPLOYED':

@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from tempfile import NamedTemporaryFile
 
 from click.testing import CliRunner, Result
@@ -19,7 +20,10 @@ def runner(magic):
     cli_runner = CliRunner()
 
     def function(command_function, exit_code, *args) -> Result:
-        result = cli_runner.invoke(command_function, args)
+        result = cli_runner.invoke(
+            command_function,
+            args=args)
+
         if result.exception is not None \
                 and not isinstance(result.exception, SystemExit):
             print(result.exc_info)
@@ -27,7 +31,7 @@ def runner(magic):
             # TODO: it's not straightforward
             assert False
 
-        assert result.exit_code == exit_code
+        assert result.exit_code == exit_code, result.stdout
         return result
 
     out = magic()
@@ -92,6 +96,23 @@ def patch(mocker, patch_init, patch_many):
     mocker.patch.init = patch_init
     mocker.patch.many = patch_many
     return mocker.patch
+
+
+@pytest.fixture
+def init_sample_app_in_cwd():
+    def cb():
+        with open('story.yml', 'w') as f:
+            f.write('app_name: my_app\n')
+
+        os.mkdir('src')
+        os.mkdir('src/b')
+        with open('src/a.story', 'w') as f:
+            f.write('a = 1 + 0\n')
+
+        with open('src/b/b.story', 'w') as f:
+            f.write('b = 0 + 1\n')
+
+    return cb
 
 
 @pytest.fixture
