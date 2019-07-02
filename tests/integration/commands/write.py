@@ -8,7 +8,7 @@ from story.commands.write import write
 
 
 def test_write_choices(runner):
-    result = runner.run(write, 1)
+    result = runner.run(write, exit_code=1)
     assert 'Please specify a template' in result.output
     assert 'Run $ story write :template_name:' in result.output
 
@@ -23,16 +23,16 @@ def test_write_a_story(runner, story_name, patch, write_to_file, app_name):
 
     file_content = None
 
-    if write_to_file:
-        with runner.runner.isolated_filesystem():
+    with runner.runner.isolated_filesystem():
+        if write_to_file:
             result = runner.run(write, exit_code=0,
                                 args=[story_name, 'a.story'])
 
             with open('a.story', 'r') as f:
                 file_content = f.read()
 
-    else:
-        result = runner.run(write, exit_code=0, args=[story_name])
+        else:
+            result = runner.run(write, exit_code=0, args=[story_name])
 
     data = pkgutil.get_data('story', f'stories/{story_name}.story')
 

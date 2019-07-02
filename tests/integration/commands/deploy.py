@@ -47,7 +47,7 @@ def test_deploy(runner, with_message, patch, hard_deployment,
             args.append('--hard')
 
         if payload is None:
-            result = runner.run(deploy, 1)
+            result = runner.run(deploy, exit_code=1)
             assert result.stdout == ''
             return
         else:
