@@ -21,13 +21,16 @@ STORYSCRIPT_CONFIG = {
 def runner(magic):
     cli_runner = CliRunner()
 
-    def function(command_function, exit_code: int = 0,
+    def function(command_function, init_with_config_path='config.json',
+                 write_default_config=True,
+                 exit_code: int = 0,
                  args: list = []) -> Result:
-        with open('config.json', 'w') as f:
-            f.write(json.dumps(STORYSCRIPT_CONFIG))
+        if write_default_config:
+            with open(init_with_config_path, 'w') as f:
+                f.write(json.dumps(STORYSCRIPT_CONFIG))
 
         from story import cli
-        cli.init(config_path='config.json')
+        cli.init(config_path=init_with_config_path)
 
         result = cli_runner.invoke(
             command_function,
