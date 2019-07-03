@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-import subprocess
 import sys
 
 from blindspin import spinner
@@ -98,7 +97,7 @@ def create(name, team):
         click.echo(
             click.style(
                 'The name you specified is too short. \n'
-                'Please use at least 4 charecters in your app name.',
+                'Please use at least 4 characters in your app name.',
                 fg='red',
             )
         )
