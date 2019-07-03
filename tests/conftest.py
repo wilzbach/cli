@@ -18,7 +18,20 @@ STORYSCRIPT_CONFIG = {
 
 
 @pytest.fixture
-def runner(magic):
+def pre_init_cli_runner():
+    def wrapper(init_with_config_path='config.json',
+                write_default_config=True):
+        if write_default_config:
+            with open(init_with_config_path, 'w') as f:
+                f.write(json.dumps(STORYSCRIPT_CONFIG))
+        from story import cli
+        cli.init(config_path=init_with_config_path)
+
+    return wrapper
+
+
+@pytest.fixture
+def runner(magic, pre_init_cli_runner):
     cli_runner = CliRunner()
 
     def function(command_function, stdin: str = None,
@@ -26,12 +39,7 @@ def runner(magic):
                  write_default_config=True,
                  exit_code: int = 0,
                  args: list = []) -> Result:
-        if write_default_config:
-            with open(init_with_config_path, 'w') as f:
-                f.write(json.dumps(STORYSCRIPT_CONFIG))
-
-        from story import cli
-        cli.init(config_path=init_with_config_path)
+        pre_init_cli_runner(init_with_config_path, write_default_config)
 
         result = cli_runner.invoke(
             command_function,
