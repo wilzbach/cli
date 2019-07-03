@@ -14,8 +14,9 @@ from storyscript.exceptions import StoryError
 
 @mark.parametrize('mock_tree_as_none', [True, False])
 @mark.parametrize('no_stories_found', [True, False])
+@mark.parametrize('debug', [True, False])
 def test_test(runner, patch, init_sample_app_in_cwd, mock_tree_as_none,
-              no_stories_found):
+              no_stories_found, debug):
     expected_exit_code = 0
     compile_app_result = {
         'stories': {
@@ -23,6 +24,10 @@ def test_test(runner, patch, init_sample_app_in_cwd, mock_tree_as_none,
             'a2.story': {}
         }
     }
+
+    args = []
+    if debug:
+        args.append('--debug')
 
     if no_stories_found:
         compile_app_result['stories'] = {}
@@ -37,7 +42,9 @@ def test_test(runner, patch, init_sample_app_in_cwd, mock_tree_as_none,
         from story.commands import test
         patch.object(test, 'compile_app', return_value=compile_app_result)
 
-        result = runner.run(test.test, exit_code=expected_exit_code)
+        result = runner.run(test.test, args=args, exit_code=expected_exit_code)
+
+    test.compile_app.assert_called_with('my_app', debug)
 
     if mock_tree_as_none:
         assert result.stdout == ''
