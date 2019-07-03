@@ -5,6 +5,7 @@ import click
 
 from pytest import mark
 
+from story import api, cli
 from story.helpers import datetime
 
 
@@ -113,3 +114,67 @@ def test_url(patch, runner, init_sample_app_in_cwd, isatty):
         app_url += '\n'
 
     assert app_url == result.stdout
+
+
+@mark.parametrize('all_apps', [True, False])
+@mark.parametrize('yes_to_all', [True, False])
+@mark.parametrize('app_name', [None, 'my_secret_app'])
+def test_destroy(patch, runner, init_sample_app_in_cwd, all_apps,
+                 yes_to_all, app_name):
+    if all_apps and app_name:  # Invalid combination.
+        return
+
+    patch.object(api.Apps, 'destroy')
+    if all_apps:
+        patch.object(api.Apps, 'list', return_value=[
+            {'name': 'my_app_1'},
+            {'name': 'my_app_2'},
+            {'name': 'my_app_3'},
+        ])
+
+    patch.object(cli, 'track')
+
+    args = []
+
+    stdin = 'y\n'
+
+    if all_apps:
+        stdin = 'y\ny\ny\n'
+        args.append('--all')
+
+    if yes_to_all:
+        args.append('--yes')
+        stdin = None
+
+    if app_name:
+        args.append('-a')
+        args.append(app_name)
+
+    with runner.runner.isolated_filesystem():
+        init_sample_app_in_cwd()
+
+        from story.commands import apps
+        result = runner.run(apps.destroy, stdin=stdin, args=args)
+
+    if not app_name:
+        app_name = 'my_app'  # The default app name, from the current directory
+
+    if all_apps:
+        for i in range(1, 4):
+            assert f'Destroying application \'my_app_{i}\'' in result.stdout
+
+        assert api.Apps.destroy.mock_calls == [
+            mock.call(app='my_app_1'),
+            mock.call(app='my_app_2'),
+            mock.call(app='my_app_3'),
+        ]
+
+        assert cli.track.mock_calls == [
+            mock.call('App Destroyed', {'App name': 'my_app_1'}),
+            mock.call('App Destroyed', {'App name': 'my_app_2'}),
+            mock.call('App Destroyed', {'App name': 'my_app_3'}),
+        ]
+    else:
+        assert f'Destroying application \'{app_name}\'' in result.stdout
+        api.Apps.destroy.assert_called_with(app=app_name)
+        cli.track.assert_called_with('App Destroyed', {'App name': app_name})

@@ -21,7 +21,8 @@ STORYSCRIPT_CONFIG = {
 def runner(magic):
     cli_runner = CliRunner()
 
-    def function(command_function, init_with_config_path='config.json',
+    def function(command_function, stdin: str = None,
+                 init_with_config_path='config.json',
                  write_default_config=True,
                  exit_code: int = 0,
                  args: list = []) -> Result:
@@ -34,6 +35,7 @@ def runner(magic):
 
         result = cli_runner.invoke(
             command_function,
+            input=stdin,
             args=args)
 
         if result.exception is not None \
