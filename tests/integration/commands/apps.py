@@ -3,6 +3,8 @@ from unittest import mock
 
 import click
 
+from pytest import mark
+
 from story.helpers import datetime
 
 
@@ -90,3 +92,24 @@ def test_do_open(runner, init_sample_app_in_cwd, patch):
     app_url = 'https://my_app.storyscriptapp.com/'
     click.launch.assert_called_with(app_url)
     assert app_url in result.stdout
+
+
+@mark.parametrize('isatty', [True, False])
+def test_url(patch, runner, init_sample_app_in_cwd, isatty):
+    patch.object(click, 'launch')
+
+    with runner.runner.isolated_filesystem():
+        init_sample_app_in_cwd()
+
+        from story.commands import apps
+
+        patch.object(apps, '_isatty', return_value=isatty)
+
+        result = runner.run(apps.url)
+
+    app_url = 'https://my_app.storyscriptapp.com/'
+
+    if isatty:
+        app_url += '\n'
+
+    assert app_url == result.stdout

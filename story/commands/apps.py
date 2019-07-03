@@ -164,10 +164,14 @@ def url(app):
     cli.user()
     print_nl = False
 
-    if os.isatty(sys.stdout.fileno()):
+    if _isatty():
         print_nl = True
 
     click.echo(f'https://{app}.storyscriptapp.com/', nl=print_nl)
+
+
+def _isatty():
+    os.isatty(sys.stdout.fileno())
 
 
 @apps.command('open')
