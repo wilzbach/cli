@@ -25,6 +25,7 @@ click_completion.init()
     '-i',
     '--case-insensitive',
     is_flag=True,
+    default=True,
     help='Case insensitive completion',
 )
 @click.option(
