@@ -8,7 +8,8 @@ from story.commands.write import write
 
 
 def test_write_choices(runner):
-    result = runner.run(write, exit_code=1)
+    with runner.runner.isolated_filesystem():
+        result = runner.run(write, exit_code=1)
     assert 'Please specify a template' in result.output
     assert 'Run $ story write :template_name:' in result.output
 
