@@ -12,7 +12,7 @@ from .. import api
 from .. import awesome
 from .. import cli
 from .. import options
-from ..helpers.datetime import parse_psql_date_str, reltime
+from ..helpers import datetime
 
 
 def maintenance(enabled: bool) -> str:
@@ -47,9 +47,13 @@ def list_command():
     all_apps = [['NAME', 'STATE', 'CREATED']]
     for app in res:
         count += 1
-        date = parse_psql_date_str(app['timestamp'])
+        date = datetime.parse_psql_date_str(app['timestamp'])
         all_apps.append(
-            [app['name'], maintenance(app['maintenance']), reltime(date)]
+            [
+                app['name'],
+                maintenance(app['maintenance']),
+                datetime.reltime(date)
+            ]
         )
 
     table.add_rows(rows=all_apps)
