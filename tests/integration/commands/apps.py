@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from unittest import mock
 
+import click
+
 from story.helpers import datetime
 
 
@@ -74,3 +76,17 @@ def test_list_no_apps(runner, patch, init_sample_app_in_cwd):
 
     assert 'No application found' in result.stdout
     assert 'story apps create' in result.stdout
+
+
+def test_do_open(runner, init_sample_app_in_cwd, patch):
+    patch.object(click, 'launch')
+    with runner.runner.isolated_filesystem():
+        init_sample_app_in_cwd()
+
+        from story.commands.apps import do_open
+
+        result = runner.run(do_open)
+
+    app_url = 'https://my_app.storyscriptapp.com/'
+    click.launch.assert_called_with(app_url)
+    assert app_url in result.stdout
