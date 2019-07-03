@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+import os
 from unittest import mock
 
 import click
 
 from pytest import mark
 
-from story import api, cli
+from story import api, awesome, cli
 from story.helpers import datetime
 
 
@@ -178,3 +179,59 @@ def test_destroy(patch, runner, init_sample_app_in_cwd, all_apps,
         assert f'Destroying application \'{app_name}\'' in result.stdout
         api.Apps.destroy.assert_called_with(app=app_name)
         cli.track.assert_called_with('App Destroyed', {'App name': app_name})
+
+
+def test_create_inside_an_existing_project(runner, init_sample_app_in_cwd):
+    with runner.runner.isolated_filesystem():
+        init_sample_app_in_cwd()
+        from story.commands.apps import create
+        result = runner.run(create, exit_code=1)
+
+        assert 'There appears to be an Storyscript Cloud project in' \
+               f' {os.getcwd()}/story.yml already' in result.stdout
+
+
+def test_create_with_short_name(runner):
+    with runner.runner.isolated_filesystem():
+        from story.commands.apps import create
+        result = runner.run(create, args=['a'], exit_code=1)
+
+    assert 'The name you specified is too short.' in result.stdout
+    assert 'use at least 4 characters' in result.stdout
+
+
+@mark.parametrize('custom_app_name', [None, 'my_custom_app_name_is_too_cool'])
+@mark.parametrize('team', [None, 'my_team_name'])
+def test_create(runner, patch, custom_app_name, team):
+    args = []
+
+    if custom_app_name:
+        app_name = custom_app_name
+        args.append(app_name)
+    else:
+        app_name = 'my_app_name_different_than_default'
+        patch.object(awesome, 'new', return_value=app_name)
+
+    if team:
+        args.append('--team')
+        args.append(team)
+
+    patch.object(api.Apps, 'create')
+    patch.object(cli, 'track')
+
+    with runner.runner.isolated_filesystem():
+        from story.commands.apps import create
+        result = runner.run(create, args=args, exit_code=0)
+
+        with open('story.yml') as f:
+            actual_contents_of_story_yml = f.read()
+
+    assert 'Creating story.yml…' in result.stdout
+    assert f'App Name: {app_name}' in result.stdout
+    assert f'App URL: https://{app_name}.storyscriptapp.com/' in result.stdout
+    assert 'We hope you enjoy your deployment experience' in result.stdout
+
+    assert actual_contents_of_story_yml == f'app_name: {app_name}\n'
+
+    api.Apps.create.assert_called_with(name=app_name, team=team)
+    cli.track.assert_called_with('App Created', {'App name': app_name})

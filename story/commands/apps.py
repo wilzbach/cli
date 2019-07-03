@@ -129,7 +129,7 @@ def create(name, team):
 
     click.echo('\nApp Name: ' + click.style(name, bold=True))
     click.echo(
-        'App URL:  '
+        'App URL: '
         + click.style(f'https://{name}.storyscriptapp.com/', fg='blue')
         + '\n'
     )
