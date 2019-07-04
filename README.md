@@ -42,7 +42,7 @@ On Ubuntu/Debian, use `pip3`.
 
 ## Usage
 
-Call `story` to get a full list of commands or continue to [read the documentation](https://docs.storyscript.io/cli).
+Call `story` to get a full list of commands or continue to [read the documentation](https://docs.storyscript.io/dev/cli).
 
 ![usage](https://github.com/storyscript/cli/blob/e7c2dc8f4b1de08163e94db16219a90fdb1d7d6b/ext/story-cli.png?raw=true)
 
