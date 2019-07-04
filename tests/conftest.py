@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from tempfile import NamedTemporaryFile
+from unittest.mock import MagicMock
 
 from click.testing import CliRunner, Result
 
@@ -118,6 +119,24 @@ def patch(mocker, patch_init, patch_many):
     mocker.patch.init = patch_init
     mocker.patch.many = patch_many
     return mocker.patch
+
+
+@pytest.fixture
+def async_mock():
+    def return_value(*args, **kwargs):
+        """
+        Inspired from
+        https://blog.miguelgrinberg.com/post/unit-testing-asyncio-code.
+        """
+        m = MagicMock(*args, **kwargs)
+
+        async def mock_coro(*args, **kwargs):
+            return m(*args, **kwargs)
+
+        mock_coro.mock = m
+        return mock_coro
+
+    return return_value
 
 
 @pytest.fixture
