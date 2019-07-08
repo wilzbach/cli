@@ -140,7 +140,7 @@ def get(variables, app):
     for name in variables:
         if '.' in name:
             service, name = tuple(name.split('.', 1))
-            value = config[service.lower()].get(name.upper(), None)
+            value = config.get(service.lower(), {}).get(name.upper(), None)
         else:
             if name in config:
                 # could be a service here
