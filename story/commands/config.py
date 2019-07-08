@@ -99,7 +99,7 @@ def set_command(variables, app, message):
             )
             click.echo(set_command.__doc__.strip())
             sys.exit(1)
-        # TODO validate against a regexp pattern
+
         if '.' in key:
             service, key = tuple(key.split('.', 1))
             config.setdefault(service.lower(), {})[key.upper()] = val
