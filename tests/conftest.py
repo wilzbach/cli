@@ -1,12 +1,8 @@
 import json
 import os
-import sys
-from tempfile import NamedTemporaryFile
 from unittest.mock import MagicMock
 
 from click.testing import CliRunner, Result
-
-# import delegator
 
 import pytest
 
@@ -61,28 +57,6 @@ def runner(magic, pre_init_cli_runner):
     out.run = function
     out.runner = cli_runner
     return out
-
-
-# @pytest.fixture
-# def cli():
-#     def function(*args, logged_in=True):
-#
-#         tf = NamedTemporaryFile().name
-#
-#         if logged_in:
-#             # Create a temporary config file.
-#             with open(tf, 'w') as f:
-#                 f.write(json.dumps(STORYSCRIPT_CONFIG))
-#
-#         # Make temporary file.
-#         args = ' '.join(args)
-#         c = delegator.run(f'story {args}', env={'TOXENV': 'true',
-#                                                 'STORY_CONFIG_PATH': tf})
-#
-#         os.remove(tf)
-#         return c
-#
-#     return function
 
 
 @pytest.fixture

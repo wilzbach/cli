@@ -94,7 +94,7 @@ requirements = [
     'semver',
 ]
 
-test_requirements = ["pytest", "delegator.py"]
+test_requirements = ["pytest"]
 
 # Read the README.md as the long_description.
 here = os.path.abspath(os.path.dirname(__file__))
