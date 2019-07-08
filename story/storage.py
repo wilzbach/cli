@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 from time import time
 
 import appdirs
@@ -118,5 +119,5 @@ def init_storage(config_loc: str = None):
         config_loc = os.path.join(STORAGE_DIR, 'config.json')
 
     config = Storage(path=config_loc)
-    config.copy_from(os.path.expanduser('~/.storyscript/config.json'),
+    config.copy_from(f'{Path.home()}/.storyscript/config.json',
                      delete=True)
