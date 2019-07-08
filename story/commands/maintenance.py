@@ -42,7 +42,7 @@ def on(app):
     cli.user()
     click.echo(f'Enabling maintenance mode for app {app}… ', nl=False)
     with spinner():
-        app = api.Apps.maintenance(app=app, maintenance=True)
+        api.Apps.maintenance(app=app, maintenance=True)
     click.echo(
         '\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
     )
@@ -59,7 +59,7 @@ def off(app):
     cli.user()
     click.echo(f'Disabling maintenance mode for app {app}… ', nl=False)
     with spinner():
-        app = api.Apps.maintenance(app=app, maintenance=False)
+        api.Apps.maintenance(app=app, maintenance=False)
     click.echo(
         click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
     )
