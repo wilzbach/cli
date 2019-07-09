@@ -158,6 +158,3 @@ async def test_connect_and_listen_with_retry(runner, init_sample_app_in_cwd,
 
     if isinstance(final_result_of_connect_once, BaseException):
         click.get_current_context.return_value.exit.assert_called_with(1)
-
-
-# todo: add tests for connect_and_listen_once
