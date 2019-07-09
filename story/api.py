@@ -6,13 +6,11 @@ from urllib.error import URLError
 
 import click
 
-from requests import RequestException, Session
+import requests
 
 from . import cli
 from .environment import SS_GRAPHQL
 from .storage import cache
-
-requests = Session()
 
 
 def graphql(query, **variables):
@@ -29,13 +27,15 @@ def graphql(query, **variables):
         )
     except KeyboardInterrupt:  # OK - user cancelled.
         click.echo('\nCancelled')
-        sys.exit(1)
-    except (URLError, RequestException):
+        click.get_current_context().exit(1)
+        return
+    except (URLError, requests.RequestException):
         click.echo(
             click.style(f'\nFailed to connect to {SS_GRAPHQL}', fg='red'),
             err=True,
         )
-        sys.exit(1)
+        click.get_current_context().exit(1)
+        return
 
     data = res.json()
     if 'errors' in data:
@@ -44,7 +44,8 @@ def graphql(query, **variables):
             click.echo(
                 click.style('Error: ', fg='red') + error['message'], err=True
             )
-        sys.exit(1)
+        click.get_current_context().exit(1)
+        return
     return data
 
 
