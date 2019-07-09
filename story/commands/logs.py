@@ -118,7 +118,8 @@ async def connect_and_listen_with_retry(
             )
         except (URLError, socket.gaierror):
             click.echo('Network connection lost', err=True)
-            sys.exit(1)
+            click.get_current_context().exit(1)
+            return
         except websockets.exceptions.InvalidStatusCode as e:
             if int(e.status_code / 100) == 5:
                 click.echo(
@@ -132,7 +133,8 @@ async def connect_and_listen_with_retry(
                     '\nPlease try again in a few seconds.',
                     err=True,
                 )
-            sys.exit(1)
+            click.get_current_context().exit(1)
+            return
 
         if completed:
             break

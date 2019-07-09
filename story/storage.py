@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 from time import time
 
 import appdirs
@@ -21,9 +22,14 @@ class Storage:
         self._load()
         self._ensure()
 
+    def remove_file_on_disk(self):
+        os.remove(self.path)
+
     def _touch(self):
         # Make the directory, if it doesn't exist.
-        os.makedirs(os.path.dirname(self.path), exist_ok=True)
+        if os.path.dirname(self.path) != '':
+            # Can be empty if the path is relative, and in the CWD.
+            os.makedirs(os.path.dirname(self.path), exist_ok=True)
 
         # Touch the file.
         with open(self.path, 'a') as f:
@@ -92,10 +98,6 @@ class Storage:
     def as_dict(self):
         return self._data
 
-    def change_path(self, p):
-        self.path = p
-        self._load()
-
     def __contains__(self, *args, **kwargs):
         return self._data.__contains__(*args, **kwargs)
 
@@ -103,12 +105,19 @@ class Storage:
         return self._data.__getitem__(*args, **kwargs)
 
 
-# Configure cache.
-cache_loc = os.path.join(CACHE_DIR, 'cache.json')
-cache = Storage(path=cache_loc)
+cache: Storage = None
+config: Storage = None
 
-# Configure config.
-config_loc = os.path.join(STORAGE_DIR, 'config.json')
-config = Storage(path=config_loc)
-# Copy old config over, if necessary.
-config.copy_from(os.path.expanduser('~/.storyscript/config.json'), delete=True)
+
+def init_storage(config_loc: str = None):
+    global cache, config
+
+    cache_file = os.path.join(CACHE_DIR, 'cache.json')
+    cache = Storage(path=cache_file)
+
+    if config_loc is None:
+        config_loc = os.path.join(STORAGE_DIR, 'config.json')
+
+    config = Storage(path=config_loc)
+    config.copy_from(f'{Path.home()}/.storyscript/config.json',
+                     delete=True)

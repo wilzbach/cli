@@ -10,7 +10,7 @@ import emoji
 from .. import api
 from .. import cli
 from .. import options
-from ..helpers.datetime import parse_psql_date_str, reltime
+from ..helpers import datetime
 
 
 @cli.cli.group()
@@ -44,12 +44,12 @@ def list_command(app, limit):
         table.set_cols_align(['l', 'l', 'l', 'l'])
         all_releases = [['VERSION', 'STATUS', 'CREATED', 'MESSAGE']]
         for release in res:
-            date = parse_psql_date_str(release['timestamp'])
+            date = datetime.parse_psql_date_str(release['timestamp'])
             all_releases.append(
                 [
                     f'v{release["id"]}',
                     release['state'].capitalize(),
-                    reltime(date),
+                    datetime.reltime(date),
                     release['message'],
                 ]
             )
@@ -79,7 +79,7 @@ def rollback(version, app):
         )
 
     try:
-        if int(version) == 0:
+        if int(version) <= 0:
             click.echo('Unable to rollback a release before v1.')
             sys.exit(1)
     except ValueError:

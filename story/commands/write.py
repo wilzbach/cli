@@ -50,10 +50,6 @@ CHOICES += ['-']
 def write(story, output_file=None):
     """Pre–defined Storyscripts for your app!"""
 
-    # Support '$ story write http -` usecase.`
-    if output_file == '-':
-        output_file = None
-
     if story == '-':
         click.echo(click.style('Please specify a template:', bold=True))
 

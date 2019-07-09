@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import sys
+
 from blindspin import spinner
 
 import click
@@ -49,20 +51,15 @@ def list_command(app):
 
     else:
         click.echo(click.style('No configuration set yet.', bold=True))
-        click.echo(
-            '\nSet Storyscript environment '
-            + click.style('$ ', dim=True)
-            + click.style('story config set key=value', fg='magenta')
-        )
-        click.echo(
-            'Set service environment '
-            + click.style('$ ', dim=True)
-            + click.style('story config set service.key=value', fg='magenta')
-        )
+        click.echo()
+        click.echo('Set Storyscript secrets with:')
+        cli.print_command('story config set key=value')
+        click.echo('Set service environment variables with:')
+        cli.print_command('story config set service.key=value')
 
 
 @config.command(name='set')
-@click.argument('variables', nargs=-1)
+@click.argument('variables', nargs=-1, required=True)
 @click.option(
     '--message',
     '-m',
@@ -91,95 +88,87 @@ def set_command(variables, app, message):
         click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
     )
 
-    if variables:
-        for keyval in variables:
-            try:
-                key, val = tuple(keyval.split('=', 1))
-            except ValueError:
-                click.echo(
-                    f'Config variables must be of the form name=value.'
-                    f'\nGot unexpected pair "{keyval}"',
-                    err=True,
-                )
-                click.echo(set_command.__doc__.strip())
-                return
-            # TODO validate against a regexp pattern
-            if '.' in key:
-                service, key = tuple(key.split('.', 1))
-                config.setdefault(service.lower(), {})[key.upper()] = val
-            else:
-                config[key.upper()] = val
+    for keyval in variables:
+        try:
+            key, val = tuple(keyval.split('=', 1))
+        except ValueError:
+            click.echo(
+                f'Config variables must be of the form name=value.'
+                f'\nGot unexpected pair "{keyval}"',
+                err=True,
+            )
+            click.echo(set_command.__doc__.strip())
+            sys.exit(1)
 
-            click.echo()
-            click.echo(f" {click.style(key.upper(), fg='green')}: {val}")
+        if '.' in key:
+            service, key = tuple(key.split('.', 1))
+            config.setdefault(service.lower(), {})[key.upper()] = val
+        else:
+            config[key.upper()] = val
 
-        click.echo('\nSetting config and deploying new release…  ', nl=False)
-        with spinner():
-            release = api.Config.set(config=config, app=app, message=message)
-        click.echo(
-            click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
-        )
-        click.echo(
-            f'Deployed new release… '
-            + click.style(f'v{release["id"]}', bold=True, fg='magenta')
-        )
+        click.echo()
+        click.echo(f" {click.style(key.upper(), fg='green')}: {val}")
 
-    else:
-        click.echo(set_command.__doc__.strip())
+    click.echo('\nSetting config and deploying new release…  ', nl=False)
+    with spinner():
+        release = api.Config.set(config=config, app=app, message=message)
+    click.echo(
+        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
+    )
+    click.echo(
+        f'Deployed new release… '
+        + click.style(f'v{release["id"]}', bold=True, fg='magenta')
+    )
 
 
 @config.command()
-@click.argument('variables', nargs=-1)
+@click.argument('variables', nargs=-1, required=True)
 @options.app()
 def get(variables, app):
     """Get one or more environment variables."""
 
     cli.user()
+    click.echo(f'Fetching config for {app}… ', nl=False)
 
-    if variables:
-        click.echo(f'Fetching config for {app}… ', nl=False)
+    with spinner():
+        config = api.Config.get(app=app)
 
-        with spinner():
-            config = api.Config.get(app=app)
+    click.echo(
+        click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+    )
 
-        click.echo(
-            click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
-        )
-
-        for name in variables:
-            if '.' in name:
-                service, name = tuple(name.split('.', 1))
-                value = config[service.lower()].get(name.upper(), None)
+    for name in variables:
+        if '.' in name:
+            service, name = tuple(name.split('.', 1))
+            value = config.get(service.lower(), {}).get(name.upper(), None)
+        else:
+            if name in config:
+                # could be a service here
+                value = config[name]
             else:
-                if name in config:
-                    # could be a service here
-                    value = config[name]
-                else:
-                    value = config.get(name.upper(), None)
+                value = config.get(name.upper(), None)
 
-            if value:
-                if isinstance(value, dict):
-                    for name, value in value.items():
-                        click.echo(
-                            click.style(name.upper(), fg='green')
-                            + f':  {value}'
-                        )
-                else:
+        if value:
+            if isinstance(value, dict):
+                for name, value in value.items():
                     click.echo(
-                        click.style(name.upper(), fg='green') + f':  {value}'
+                        click.style(name.upper(), fg='green')
+                        + f':  {value}'
                     )
             else:
                 click.echo(
-                    click.style(
-                        f'No variable named "{name.upper()}".', fg='red'
-                    )
+                    click.style(name.upper(), fg='green') + f':  {value}'
                 )
-    else:
-        click.echo(get.__doc__.strip())
+        else:
+            click.echo(
+                click.style(
+                    f'No variable named "{name.upper()}".', fg='red'
+                )
+            )
 
 
 @config.command(name='del')
-@click.argument('variables', nargs=-1)
+@click.argument('variables', nargs=-1, required=True)
 @click.option(
     '--message',
     '-m',
@@ -193,48 +182,43 @@ def del_command(variables, app, message):
     Delete one or more environment variables
     """
     cli.user()
-    if variables:
+    click.echo('Fetching config… ', nl=False)
+    with spinner():
+        config = api.Config.get(app=app)
+    click.echo(
+        click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
+    )
 
-        click.echo('Fetching config… ', nl=False)
-        with spinner():
-            config = api.Config.get(app=app)
-        click.echo(
-            click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
-        )
-
-        for key in variables:
-            removed = False
-            if key in config:
-                if type(config.pop(key)) is dict:
-                    click.echo(
-                        click.style('Removed service', fg='red') + f': {key}'
-                    )
-                else:
-                    removed = True
-            elif key.upper() in config:
-                config.pop(key.upper())
-                removed = True
-            elif '.' in key:
-                service, key = tuple(key.split('.', 1))
-                if service in config and key.upper() in config[service]:
-                    config[service].pop(key.upper())
-                    removed = True
-
-            if removed:
+    for key in variables:
+        removed = False
+        if key in config:
+            if type(config.pop(key)) is dict:
                 click.echo(
-                    click.style('Removed', fg='red') + f': {key.upper()}'
+                    click.style('Removed service', fg='red') + f': {key}'
                 )
+            else:
+                removed = True
+        elif key.upper() in config:
+            config.pop(key.upper())
+            removed = True
+        elif '.' in key:
+            service, key = tuple(key.split('.', 1))
+            if service in config and key.upper() in config[service]:
+                config[service].pop(key.upper())
+                removed = True
 
-        click.echo('\nSetting config and deploying new release… ', nl=False)
-        with spinner():
-            release = api.Config.set(config=config, app=app, message=message)
-        click.echo(
-            click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
-        )
-        click.echo(
-            f'Deployed new release… '
-            + click.style(f'v{release["id"]}', bold=True, fg='magenta')
-        )
+        if removed:
+            click.echo(
+                click.style('Removed', fg='red') + f': {key.upper()}'
+            )
 
-    else:
-        click.echo(del_command.__doc__.strip())
+    click.echo('\nSetting config and deploying new release… ', nl=False)
+    with spinner():
+        release = api.Config.set(config=config, app=app, message=message)
+    click.echo(
+        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
+    )
+    click.echo(
+        f'Deployed new release… '
+        + click.style(f'v{release["id"]}', bold=True, fg='magenta')
+    )

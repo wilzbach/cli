@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-import subprocess
 import sys
 
 from blindspin import spinner
@@ -13,7 +12,7 @@ from .. import api
 from .. import awesome
 from .. import cli
 from .. import options
-from ..helpers.datetime import parse_psql_date_str, reltime
+from ..helpers import datetime
 
 
 def maintenance(enabled: bool) -> str:
@@ -48,9 +47,13 @@ def list_command():
     all_apps = [['NAME', 'STATE', 'CREATED']]
     for app in res:
         count += 1
-        date = parse_psql_date_str(app['timestamp'])
+        date = datetime.parse_psql_date_str(app['timestamp'])
         all_apps.append(
-            [app['name'], maintenance(app['maintenance']), reltime(date)]
+            [
+                app['name'],
+                maintenance(app['maintenance']),
+                datetime.reltime(date)
+            ]
         )
 
     table.add_rows(rows=all_apps)
@@ -98,7 +101,7 @@ def create(name, team):
         click.echo(
             click.style(
                 'The name you specified is too short. \n'
-                'Please use at least 4 charecters in your app name.',
+                'Please use at least 4 characters in your app name.',
                 fg='red',
             )
         )
@@ -126,7 +129,7 @@ def create(name, team):
 
     click.echo('\nApp Name: ' + click.style(name, bold=True))
     click.echo(
-        'App URL:  '
+        'App URL: '
         + click.style(f'https://{name}.storyscriptapp.com/', fg='blue')
         + '\n'
     )
@@ -161,10 +164,14 @@ def url(app):
     cli.user()
     print_nl = False
 
-    if os.isatty(sys.stdout.fileno()):
+    if _isatty():
         print_nl = True
 
     click.echo(f'https://{app}.storyscriptapp.com/', nl=print_nl)
+
+
+def _isatty():
+    os.isatty(sys.stdout.fileno())
 
 
 @apps.command('open')

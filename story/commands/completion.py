@@ -37,14 +37,15 @@ click_completion.init()
     required=False,
     type=click_completion.DocumentedChoice(click_completion.core.shells),
 )
-@click.argument('path', required=False)
+@click.option('--path', required=False,
+              help='Specify a custom completion file for your shell')
 def completion(path, shell, install, case_insensitive):
     """Show or install shell completion code"""
-    extra_env = (
-        {'_CLICK_COMPLETION_COMMAND_CASE_INSENSITIVE_COMPLETE': 'ON'}
-        if case_insensitive
-        else {}
-    )
+    extra_env = {}
+
+    if case_insensitive:
+        extra_env['_CLICK_COMPLETION_COMMAND_CASE_INSENSITIVE_COMPLETE'] = 'ON'
+
     if install:
         shell, path = click_completion.core.install(
             shell=shell, path=path, append=True, extra_env=extra_env
