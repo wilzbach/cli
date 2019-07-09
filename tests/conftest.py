@@ -46,11 +46,11 @@ def runner(magic, pre_init_cli_runner):
         if result.exception is not None \
                 and not isinstance(result.exception, SystemExit):
             print(result.exc_info)
-            # TODO: find a way to print the exception traceback
-            # TODO: it's not straightforward
+            print(result.stderr)
             assert False
 
-        assert result.exit_code == exit_code, result.stdout
+        assert result.exit_code == exit_code, \
+            f'stdout: {result.stdout}\n\nstderr: {result.stderr}'
         return result
 
     out = magic()
