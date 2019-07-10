@@ -122,6 +122,10 @@ def track(event_name, extra: dict = None):
     )
 
 
+class NoCredsException(BaseException):
+    pass
+
+
 def initiate_login():
     global data
 
@@ -154,14 +158,20 @@ def initiate_login():
                 r = requests.get(url=url, params={'state': state})
 
                 if r.text == 'null':
-                    raise IOError()
+                    raise NoCredsException()
 
                 r.raise_for_status()
                 break
 
-            except IOError:
+            except IOError as e:
+                click.echo(f'The following network error occurred:', err=True)
+                click.echo(f'\t{str(e)}', err=True)
+                click.echo('The Storyscript Cloud CLI '
+                           'will retry automatically...')
+                click.echo()
+                time.sleep(2)
+            except NoCredsException:
                 time.sleep(0.5)
-
             except KeyboardInterrupt:
                 click.echo('Login failed. Please try again.')
                 sys.exit(1)
