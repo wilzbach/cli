@@ -75,7 +75,6 @@ keywords = [
 ]
 
 requirements = [
-    'asyncio>=3.4.3',
     'click-completion==0.5.1',
     'click-help-colors==0.5',
     'click-spinner==0.1.8',
