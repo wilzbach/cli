@@ -8,9 +8,8 @@ import click
 
 import requests
 
-from . import cli
+from . import cli, storage
 from .environment import SS_GRAPHQL
-from .storage import cache
 
 
 def graphql(query, **variables):
@@ -195,15 +194,15 @@ class Apps:
         cache_key = f'app-{app}'
         the_uuid = None
 
-        if cache_key in cache:
-            the_uuid = cache.fetch(cache_key)
+        if cache_key in storage.cache:
+            the_uuid = storage.cache.fetch(cache_key)
 
         if not the_uuid:
             the_uuid = Apps._hostname_to_uuid.get(app)
 
         # Cache the app's UUID.
-        if cache_key not in cache:
-            cache.store(cache_key, the_uuid)
+        if cache_key not in storage.cache:
+            storage.cache.store(cache_key, the_uuid)
 
         res = graphql(
             """
