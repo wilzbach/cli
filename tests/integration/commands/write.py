@@ -4,14 +4,14 @@ import pkgutil
 from pytest import mark
 
 from story import cli
-from story.commands.write import write
+from story.commands.template import template
 
 
 def test_write_choices(runner):
     with runner.runner.isolated_filesystem():
-        result = runner.run(write, exit_code=1)
+        result = runner.run(template, exit_code=1)
     assert 'Please specify a template' in result.output
-    assert 'Run $ story write :template_name:' in result.output
+    assert 'Run $ story template :template_name:' in result.output
 
 
 @mark.parametrize('story_name', ['http', 'function', 'if',
@@ -26,14 +26,14 @@ def test_write_a_story(runner, story_name, patch, write_to_file, app_name):
 
     with runner.runner.isolated_filesystem():
         if write_to_file:
-            result = runner.run(write, exit_code=0,
+            result = runner.run(template, exit_code=0,
                                 args=[story_name, 'a.story'])
 
             with open('a.story', 'r') as f:
                 file_content = f.read()
 
         else:
-            result = runner.run(write, exit_code=0, args=[story_name])
+            result = runner.run(template, exit_code=0, args=[story_name])
 
     data = pkgutil.get_data('story', f'stories/{story_name}.story')
 
