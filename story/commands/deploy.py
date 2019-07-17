@@ -86,7 +86,7 @@ def deploy(app, message, hard):
             click.style('X', fg='red') + ' Deployment failed!', err=True
         )
         click.echo(
-            'Oops! An internal error occurred.\n'
+            'An internal error occurred.\n'
             'The Storyscript team has been notified.\n'
             'Please visit https://status.storyscript.io/ '
             'for incident reports and updates.',
