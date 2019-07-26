@@ -75,7 +75,8 @@ Install
 python setup.py install
 story
 ```
-
+## Releasing
+See [RELEASING.md](RELEASING.md) for release instructions.
 
 <!-- ## License -->
 <!-- [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fstoryscript%2Fcli.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fstoryscript%2Fcli?ref=badge_large) -->
