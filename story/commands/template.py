@@ -42,7 +42,7 @@ CHOICES = [story['name'] for story in STORIES]
 CHOICES += ['-']
 
 
-@cli.cli.command()
+@cli.cli.command(aliases=['write'])
 @click.argument('story', default='-', type=click.Choice(CHOICES))
 @click.argument(
     'output_file', default=None, type=click.Path(exists=False), required=False

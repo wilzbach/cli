@@ -24,6 +24,7 @@ from requests import Session
 
 from . import storage, utils
 from .ensure import ensure_latest
+from .helpers.aliases import ClickAliasedGroup
 from .helpers.didyoumean import DYMGroup
 from .support import echo_support
 from .version import compiler_version
@@ -319,7 +320,7 @@ def echo_version(*args, **kwargs):
     )
 
 
-class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup):
+class CLIGroup(DYMGroup, click_help_colors.HelpColorsGroup, ClickAliasedGroup):
     pass
 
 
