@@ -229,6 +229,12 @@ async def connect_and_listen_once(
                 return False
 
             log = json.loads(message)
+            if log.get('type') == 'error':
+                click.echo(
+                    message=log.get('message', 'An unknown error occurred'),
+                    err=True)
+                return True
+
             last_log = log
 
             if cut_off_ts >= log['ts']:
