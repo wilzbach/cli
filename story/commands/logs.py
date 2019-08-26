@@ -166,7 +166,7 @@ async def connect_and_listen_once(
         auth_payload = {
             'command': 'auth',
             'access_token': cli.get_access_token(),
-            'id': cli.get_access_token(),
+            'id': cli.get_user_id(),
             'app_id': app_id,
         }
         await websocket.send(json.dumps(auth_payload))
