@@ -3,7 +3,6 @@ import io
 import os
 import sys
 
-from setuptools import find_packages, setup
 from setuptools.command.install import install as _install
 from setuptools import find_packages, setup, Command
 
