@@ -104,7 +104,6 @@ def test_url(patch, runner, init_sample_app_in_cwd, isatty):
         init_sample_app_in_cwd()
 
         from story.commands import apps
-
         patch.object(apps, '_isatty', return_value=isatty)
 
         result = runner.run(apps.url)
@@ -187,7 +186,7 @@ def test_create_inside_an_existing_project(runner, init_sample_app_in_cwd):
         from story.commands.apps import create
         result = runner.run(create, exit_code=1)
 
-        assert 'There appears to be an Storyscript Cloud project in' \
+        assert 'There appears to be a Storyscript Cloud project in' \
                f' {os.getcwd()}/story.yml already' in result.stdout
 
 
@@ -216,12 +215,13 @@ def test_create(runner, patch, custom_app_name, team):
         args.append('--team')
         args.append(team)
 
+    from story.commands import apps
+    patch.object(apps, 'create_story_yaml', side_effect=apps.create_story_yaml)
     patch.object(api.Apps, 'create')
     patch.object(cli, 'track')
 
     with runner.runner.isolated_filesystem():
-        from story.commands.apps import create
-        result = runner.run(create, args=args, exit_code=0)
+        result = runner.run(apps.create, args=args, exit_code=0)
 
         with open('story.yml') as f:
             actual_contents_of_story_yml = f.read()
@@ -233,5 +233,37 @@ def test_create(runner, patch, custom_app_name, team):
 
     assert actual_contents_of_story_yml == f'app_name: {app_name}\n'
 
+    apps.create_story_yaml.assert_called_with(app_name)
     api.Apps.create.assert_called_with(name=app_name, team=team)
     cli.track.assert_called_with('App Created', {'App name': app_name})
+
+
+def test_init_inside_an_existing_project(runner, init_sample_app_in_cwd):
+    with runner.runner.isolated_filesystem():
+        init_sample_app_in_cwd()
+        from story.commands import apps
+        result = runner.run(apps.init, args=['myapp'], exit_code=1)
+
+        assert 'There appears to be a Storyscript Cloud project in' \
+               f' {os.getcwd()}/story.yml already' in result.stdout
+
+
+def test_init(runner, patch):
+    app_name = 'myapp'
+    patch.object(api.Apps, 'get_uuid_from_hostname')
+    from story.commands import apps
+    patch.object(apps, 'create_story_yaml', side_effect=apps.create_story_yaml)
+    with runner.runner.isolated_filesystem():
+        result = runner.run(apps.init, args=[app_name], exit_code=0)
+        with open('story.yml') as f:
+            actual_contents_of_story_yml = f.read()
+
+    apps.create_story_yaml.assert_called_with(app_name)
+    api.Apps.get_uuid_from_hostname.assert_called_with(app_name)
+
+    assert 'Creating story.yml…' in result.stdout
+    assert f'App Name: {app_name}' in result.stdout
+    assert f'App URL: https://{app_name}.storyscriptapp.com/' in result.stdout
+    assert 'We hope you enjoy your deployment experience' in result.stdout
+
+    assert actual_contents_of_story_yml == f'app_name: {app_name}\n'

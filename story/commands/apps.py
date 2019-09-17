@@ -79,7 +79,7 @@ def create(name, team):
     if story_yaml is not None:
         click.echo(
             click.style(
-                'There appears to be an Storyscript Cloud project in '
+                'There appears to be a Storyscript Cloud project in '
                 f'{story_yaml} already.\n',
                 fg='red',
             )
@@ -116,6 +116,30 @@ def create(name, team):
         '\b' + click.style(emoji.emojize(':heavy_check_mark:'), fg='green')
     )
 
+    create_story_yaml(name)
+
+
+@apps.command()
+@click.argument('name', nargs=1, required=True)
+def init(name):
+    story_yaml = cli.find_story_yml()
+
+    if story_yaml is not None:
+        click.echo(
+            click.style(
+                'There appears to be a Storyscript Cloud project in '
+                f'{story_yaml} already.\n',
+                fg='red',
+            )
+        )
+        sys.exit(1)
+
+    api.Apps.get_uuid_from_hostname(name)
+
+    create_story_yaml(name)
+
+
+def create_story_yaml(name):
     # click.echo('Adding git-remote... ', nl=False)
     # cli.run(f'git remote add asyncy https://git.asyncy.com/{name}')
     # click.echo(click.style(emoji.emojize(':heavy_check_mark:'), fg='green'))
