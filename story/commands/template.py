@@ -42,12 +42,12 @@ CHOICES = [story['name'] for story in STORIES]
 CHOICES += ['-']
 
 
-@cli.cli.command()
+@cli.cli.command(aliases=['write'])
 @click.argument('story', default='-', type=click.Choice(CHOICES))
 @click.argument(
     'output_file', default=None, type=click.Path(exists=False), required=False
 )
-def write(story, output_file=None):
+def template(story, output_file=None):
     """Pre–defined Storyscripts for your app!"""
 
     if story == '-':
@@ -62,7 +62,7 @@ def write(story, output_file=None):
         click.echo()
         click.echo(
             '  Run $ '
-            + click.style('story write :template_name: ', fg='magenta')
+            + click.style('story template :template_name: ', fg='magenta')
             + emoji.emojize(':backhand_index_pointing_left:')
         )
         click.echo('')
