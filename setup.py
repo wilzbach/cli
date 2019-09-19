@@ -3,7 +3,6 @@ import io
 import os
 import sys
 
-from setuptools import find_packages, setup
 from setuptools.command.install import install as _install
 from setuptools import find_packages, setup, Command
 
@@ -82,7 +81,7 @@ requirements = [
     'emoji==0.5.0',
     'raven==6.9.0',
     'requests~=2.20',
-    'storyscript==0.23.4',
+    'storyscript==0.24.0',
     'websockets~=7.0',
     'texttable~=1.4.0',
     'pyyaml>=4.2',
@@ -117,7 +116,7 @@ setup(
     author_email='hello@storyscript.io',
     url='https://docs.storyscript.io/cli',
     license='Apache 2',
-    packages=find_packages(exclude=['scripts', 'tests']),
+    packages=find_packages(exclude=('build.*', 'tests', 'tests.*')),
     include_package_data=True,
     zip_safe=True,
     install_requires=requirements,
