@@ -10,7 +10,9 @@ from pytest import mark
     'DEPLOYED', 'FAILED', 'UNKNOWN', 'TEMP_DEPLOYMENT_FAILURE'
 ])
 @mark.parametrize('maintenance', [True, False])
-@mark.parametrize('payload', [None, 'my_super_complex_payload'])
+@mark.parametrize('payload', [
+    None, {'stories': {'foo'}, 'services': ['bar', 'baz']}
+])
 def test_deploy(runner, with_message, patch, hard_deployment,
                 final_release_state, maintenance, payload,
                 init_sample_app_in_cwd):
@@ -66,6 +68,13 @@ def test_deploy(runner, with_message, patch, hard_deployment,
         assert time.sleep.call_count == 3
 
         if final_release_state == 'DEPLOYED':
+            assert 'Configured 1 story' in result.stdout
+            assert 'Deployed 2 services' in result.stdout
+            assert '- bar' in result.stdout
+            assert '- baz' in result.stdout
+            assert 'Created ingress route' in result.stdout
+            assert 'Configured logging' in result.stdout
+            assert 'Configured health checks' in result.stdout
             assert 'Deployment successful!' in result.stdout
         elif final_release_state == 'FAILED':
             assert 'Deployment failed!' in result.stdout

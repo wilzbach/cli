@@ -27,7 +27,11 @@ def deploy(app, message, hard):
     if payload is None:
         sys.exit(1)  # Error already printed by compile_app.
 
-    click.echo(f'Deploying app {app}... ', nl=False)
+    num_stories = len(payload['stories'])
+    echo_with_tick(f"Compiled {num_stories} {pluralise('story', num_stories)}")
+    click.echo()
+
+    click.echo(click.style(f'Deploying app {app}... ', bold=True), nl=False)
 
     with spinner():
         config = Config.get(app)
@@ -35,13 +39,12 @@ def deploy(app, message, hard):
 
     url = f'https://{app}.storyscriptapp.com/'
     click.echo()
-    click.echo(
-        click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
-        + f' Version {release["id"]} of your app has '
-        f'been queued for deployment.\n'
-    )
+    echo_with_tick(f'Version {release["id"]} of your app'
+                   ' has been queued for deployment.')
+    click.echo()
 
-    click.echo('Waiting for deployment to complete…  ', nl=False)
+    click.echo(click.style('Waiting for deployment to complete…  ',
+                           bold=True), nl=False)
     with spinner():
         if Apps.maintenance(app, maintenance=None):
             click.echo()
@@ -65,10 +68,20 @@ def deploy(app, message, hard):
 
     click.echo()
     if state == 'DEPLOYED':
-        click.echo(
-            click.style('\b' + emoji.emojize(':heavy_check_mark:'), fg='green')
-            + ' Deployment successful!'
-        )
+        num_services = len(payload['services'])
+        echo_with_tick(f'Configured '
+                       f"{num_stories} {pluralise('story', num_stories)}")
+        echo_with_tick(f'Deployed '
+                       f"{num_services} {pluralise('service', num_services)}")
+        for s in payload['services']:
+            click.echo('  - ' + s)
+        echo_with_tick(f'Created ingress route')
+        echo_with_tick('Configured logging')
+        echo_with_tick('Configured health checks')
+        echo_with_tick('Deployment successful!')
+        click.echo()
+        click.echo('To see your app\'s logs, please run:\n  story logs -f')
+        click.echo()
         click.echo(
             f'If your Story responds to HTTP requests, please visit:\n  {url}'
         )
@@ -98,3 +111,21 @@ def deploy(app, message, hard):
             err=True,
         )
         click.echo(f'Please shoot an email to support@storyscript.io')
+
+
+def echo_with_tick(message):
+    click.echo(
+        click.style('\b' + emoji.emojize(':heavy_check_mark:') + ' ',
+                    fg='green') + message
+    )
+
+
+def pluralise(word, quantity):
+    if quantity == 1:
+        return word
+
+    words = {
+        'story': 'stories',
+        'service': 'services'
+    }
+    return words[word]
