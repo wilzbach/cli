@@ -40,9 +40,15 @@ def graphql(query, **variables):
     if 'errors' in data:
         click.echo()
         for error in data['errors']:
-            click.echo(
-                click.style('Error: ', fg='red') + error['message'], err=True
-            )
+            if error['message'] == 'InvalidOrExpiredToken':
+                click.echo('Your session has expired.', err=True)
+                click.echo()
+                cli.reset()
+            else:
+                click.echo(
+                    click.style('Error: ', fg='red') + error['message'],
+                    err=True
+                )
         click.get_current_context().exit(1)
         return
     return data

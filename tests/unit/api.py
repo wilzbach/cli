@@ -19,7 +19,8 @@ def patch_graphql(patch):
     patch.object(api.Apps, 'get_uuid_from_hostname')
 
 
-@mark.parametrize('with_api_errors', [True, False])
+@mark.parametrize('with_api_error', [None, 'RandomError',
+                                     'InvalidOrExpiredToken'])
 @mark.parametrize('api_throws_an_exception',
                   [
                       None,
@@ -27,18 +28,22 @@ def patch_graphql(patch):
                       requests.RequestException(),
                       KeyboardInterrupt()
                   ])
-def test_graphql(runner, patch, with_api_errors, api_throws_an_exception):
+def test_graphql(runner, patch, with_api_error, api_throws_an_exception):
+    if with_api_error and api_throws_an_exception:
+        # Invalid combination.
+        return
+
     if api_throws_an_exception:
         patch.object(click, 'get_current_context')
         patch.object(requests, 'post', side_effect=api_throws_an_exception)
     else:
         patch.object(requests, 'post')
 
-    if with_api_errors:
+    if with_api_error:
         requests.post.return_value.json.return_value = {
             'errors': [
                 {
-                    'message': 'my_error_message'
+                    'message': with_api_error
                 }
             ]
         }
@@ -55,6 +60,7 @@ def test_graphql(runner, patch, with_api_errors, api_throws_an_exception):
         from story import cli
 
     patch.object(cli, 'get_access_token')
+    patch.object(cli, 'reset')
 
     ret_val = api.graphql(my_query, **variables)
 
@@ -72,11 +78,16 @@ def test_graphql(runner, patch, with_api_errors, api_throws_an_exception):
         timeout=10
     )
 
-    if with_api_errors or api_throws_an_exception:
+    if with_api_error or api_throws_an_exception:
         click.get_current_context().exit.assert_called_with(1)
+        if with_api_error == 'InvalidOrExpiredToken':
+            cli.reset.assert_called()
+        else:
+            cli.reset.assert_not_called()
         assert ret_val is None
     else:
         assert ret_val == requests.post.return_value.json.return_value
+        cli.reset.assert_not_called()
 
 
 app_name = 'my_app'
