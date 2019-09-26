@@ -68,13 +68,17 @@ def deploy(app, message, hard):
 
     click.echo()
     if state == 'DEPLOYED':
-        num_services = len(payload['services'])
         echo_with_tick(f'Configured '
                        f"{num_stories} {pluralise('story', num_stories)}")
+        for s in payload['stories']:
+            click.echo('  - ' + s)
+
+        num_services = len(payload['services'])
         echo_with_tick(f'Deployed '
                        f"{num_services} {pluralise('service', num_services)}")
         for s in payload['services']:
             click.echo('  - ' + s)
+
         echo_with_tick(f'Created ingress route')
         echo_with_tick('Configured logging')
         echo_with_tick('Configured health checks')

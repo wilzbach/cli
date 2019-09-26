@@ -69,6 +69,7 @@ def test_deploy(runner, with_message, patch, hard_deployment,
 
         if final_release_state == 'DEPLOYED':
             assert 'Configured 1 story' in result.stdout
+            assert '- foo' in result.stdout
             assert 'Deployed 2 services' in result.stdout
             assert '- bar' in result.stdout
             assert '- baz' in result.stdout
