@@ -81,7 +81,7 @@ requirements = [
     'emoji==0.5.0',
     'raven==6.9.0',
     'requests~=2.20',
-    'storyscript==0.24.0',
+    'storyscript==0.24.1',
     'websockets~=7.0',
     'texttable~=1.4.0',
     'pyyaml>=4.2',
