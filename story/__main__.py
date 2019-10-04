@@ -6,7 +6,6 @@ try:
     from .cli import cli
 
     # Import commands for CLI.
-
     from .commands import *  # noqa
 
 except KeyboardInterrupt:
