@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 from unittest.mock import MagicMock
 
 from click.testing import CliRunner, Result
@@ -133,3 +134,16 @@ def init_sample_app_in_cwd():
 @pytest.fixture
 def app_dir():
     pass
+
+
+@pytest.fixture
+def spawn_process():
+    def cb(cmd):
+        proc = subprocess.Popen(cmd,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+
+        return proc.returncode, stdout.decode(), stderr.decode()
+
+    return cb
