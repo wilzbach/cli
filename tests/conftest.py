@@ -1,5 +1,7 @@
 import json
 import os
+import subprocess
+import sys
 from unittest.mock import MagicMock
 
 from click.testing import CliRunner, Result
@@ -133,3 +135,21 @@ def init_sample_app_in_cwd():
 @pytest.fixture
 def app_dir():
     pass
+
+
+@pytest.fixture
+def spawn_cli_subprocess():
+    def cb(args=None):
+        # Python exec path on Windows should be quoted in case of spaces
+        path = '"{}"' if sys.platform == 'win32' else '{}'
+        python = path.format(sys.executable)
+        command = [python, '-m', 'story'] + (args or [])
+
+        proc = subprocess.Popen(command,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+
+        return proc.returncode, stdout.decode(), stderr.decode()
+
+    return cb
