@@ -4,6 +4,7 @@
 [![CircleCI](https://img.shields.io/circleci/project/github/storyscript/cli.svg?style=flat-square)](https://circleci.com/gh/storyscript/cli)
 [![Codecov](https://img.shields.io/codecov/c/github/storyscript/cli.svg?style=flat-square)](https://codecov.io/gh/storyscript/cli)
 [![PyPI](https://img.shields.io/pypi/v/story.svg?style=flat-square)](https://pypi.org/project/story/)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg?style=for-the-badge)](https://github.com/storyscript/.github/blob/master/CODE_OF_CONDUCT.md)
 <!-- [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fstoryscript%2Fcli.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fstoryscript%2Fcli?ref=badge_shield) -->
 
 The Storyscript CLI is used to manage Storyscript Cloud from the command line.
