@@ -42,11 +42,7 @@ echo "Testing the formula locally with brew..."
 brew install Formula/story.rb
 story --version | grep $tag
 story --help
-git checkout -b release_$tag
 git commit -a -m "Release $tag."
-git push origin release_$tag
-git checkout master
-git merge release_$tag
 git tag $tag
 git push origin master
 git push origin master --tags

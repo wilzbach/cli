@@ -76,6 +76,7 @@ Install
 python setup.py install
 story
 ```
+
 ## Releasing
 See [RELEASING.md](RELEASING.md) for release instructions.
 

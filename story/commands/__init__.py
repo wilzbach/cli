@@ -1,6 +1,6 @@
 __all__ = [
     'apps',
-    'write',
+    'template',
     'config',
     'completion',
     'feedback',
