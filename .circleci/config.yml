@@ -44,25 +44,12 @@ jobs:
     steps:
       - checkout
       - run:
-          name: setup venv
+          name:  upload to PyPI
           command: |
             python -m venv venv
             . venv/bin/activate
-      - run:
-          name: install twine
-          command: |
-            . venv/bin/activate
             pip install twine
-      - run:
-          name: sdist
-          command: |
-            . venv/bin/activate
-            python setup.py sdist
-      - run:
-          name: upload
-          command: |
-            . venv/bin/activate
-            twine upload dist/story-*.tar.gz
+            python setup.py upload
   release_brew:
     macos:
       xcode: "9.0"
