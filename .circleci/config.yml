@@ -44,6 +44,12 @@ jobs:
     steps:
       - checkout
       - run:
+            name: init .pypirc
+            command: |
+              echo -e "[pypi]" >> ~/.pypirc
+              echo -e "username = ${PYPI_USER}" >> ~/.pypirc
+              echo -e "password = ${PYPI_PASSWORD}" >> ~/.pypirc
+      - run:
           name:  upload to PyPI
           command: |
             python -m venv venv
