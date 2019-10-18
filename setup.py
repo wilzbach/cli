@@ -118,13 +118,13 @@ setup(
     license='Apache 2',
     packages=find_packages(exclude=('build.*', 'tests', 'tests.*')),
     include_package_data=True,
+    python_requires='>=3.6.0',  # f-strings
     zip_safe=True,
     install_requires=requirements,
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
     tests_require=test_requirements,
     extras_require={},
-    requires_python='>=3.6.0',
     entry_points={'console_scripts': ['story=story.__main__:cli']},
     cmdclass={'install': Install, 'test': PyTest, 'format': Format},
 )
