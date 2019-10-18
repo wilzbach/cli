@@ -119,7 +119,6 @@ setup(
     packages=find_packages(exclude=('build.*', 'tests', 'tests.*')),
     include_package_data=True,
     python_requires='>=3.6.0',  # f-strings
-    zip_safe=True,
     install_requires=requirements,
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
