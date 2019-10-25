@@ -92,7 +92,12 @@ requirements = [
     'semver',
 ]
 
-test_requirements = ["pytest"]
+test_requirements = [
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-asyncio",
+]
 
 # Read the README.md as the long_description.
 here = os.path.abspath(os.path.dirname(__file__))
