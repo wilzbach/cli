@@ -87,3 +87,20 @@ def test_deploy(runner, with_message, patch, hard_deployment,
             assert f'An unhandled state of your app has been encountered ' \
                    f'- {final_release_state}' in result.stdout
             assert 'support@storyscript.io' in result.stdout
+
+
+def test_deploy_no_stories(runner, patch, init_sample_app_in_cwd):
+    with runner.runner.isolated_filesystem():
+        with open('story.yml', 'w') as f:
+            f.write('app_name: my_app\n')
+
+        from story.commands import test
+        from story.commands.deploy import deploy
+
+        patch.object(test, 'compile_app', return_value={'stories': []})
+
+        result = runner.run(deploy, exit_code=1, args=[])
+
+        assert 'No stories were found for your app' in result.stdout
+        assert 'You can write an example story using:' in result.stdout
+        assert 'story template http > http.story' in result.stdout

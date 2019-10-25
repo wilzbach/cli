@@ -28,6 +28,17 @@ def deploy(app, message, hard):
         sys.exit(1)  # Error already printed by compile_app.
 
     num_stories = len(payload['stories'])
+    if num_stories == 0:
+        click.echo(
+            click.style('No stories were found for your app.', fg='red'),
+            err=True
+        )
+        click.echo()
+        click.echo('You can write an example story using:', err=True)
+        cli.print_command('story template http > http.story')
+
+        sys.exit(1)
+
     echo_with_tick(f"Compiled {num_stories} {pluralise('story', num_stories)}")
     click.echo()
 
