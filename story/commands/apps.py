@@ -169,7 +169,7 @@ def create_story_yaml(name):
     click.echo(' - [ ] Write a Story:')
     click.echo(
         '       $ '
-        + click.style('story write http > http.story', fg='magenta')
+        + click.style('story template http > http.story', fg='magenta')
     )
     click.echo()
     click.echo(' - [ ] Deploy to Storyscript Cloud:')
