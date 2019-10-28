@@ -4,7 +4,7 @@ import os
 
 import click
 
-from pytest import mark
+from pytest import mark, raises
 
 from story import cli
 
@@ -119,3 +119,35 @@ def test_compile_app(runner, patch, init_sample_app_in_cwd,
         'Result': 'Failed' if force_compilation_error else 'Success',
         'Stories': 0 if force_compilation_error else 2
     })
+
+
+@mark.parametrize('compilation_exc,error_repr', [
+    (StoryError('E100', 'a.story', path='foo'),
+        "StoryError('E100', 'a.story')"),
+    (BaseException('oh no!'), "BaseException('oh no!')"),
+])
+def test_compile_app_debug(runner, patch, init_sample_app_in_cwd,
+                           pre_init_cli_runner,
+                           compilation_exc, error_repr):
+    app_name_for_analytics = 'my_special_app'
+
+    patch.object(cli, 'get_asyncy_yaml', return_value='asyncy_yml_content')
+    patch.object(cli, 'track')
+
+    patch.object(click, 'echo')
+    patch.object(App, 'compile', side_effect=compilation_exc)
+
+    with runner.runner.isolated_filesystem():
+        init_sample_app_in_cwd()
+        pre_init_cli_runner()
+        from story.commands import test
+
+        error_type = type(compilation_exc)
+
+        with raises(error_type) as e:
+            test.compile_app(
+                app_name_for_analytics,
+                debug=True
+            )
+
+        assert repr(e.value) == error_repr
