@@ -10,12 +10,13 @@ from pytest import mark
     'DEPLOYED', 'FAILED', 'UNKNOWN', 'TEMP_DEPLOYMENT_FAILURE'
 ])
 @mark.parametrize('maintenance', [True, False])
+@mark.parametrize('debug', [True, False])
 @mark.parametrize('payload', [
     None, {'stories': {'foo'}, 'services': ['bar', 'baz']}
 ])
 def test_deploy(runner, with_message, patch, hard_deployment,
                 final_release_state, maintenance, payload,
-                init_sample_app_in_cwd):
+                init_sample_app_in_cwd, debug):
     with runner.runner.isolated_filesystem():
         init_sample_app_in_cwd()
 
@@ -50,6 +51,9 @@ def test_deploy(runner, with_message, patch, hard_deployment,
         if hard_deployment:
             args.append('--hard')
 
+        if debug:
+            args.append('--debug')
+
         if payload is None:
             result = runner.run(deploy, exit_code=1)
             assert result.stdout == ''
@@ -66,6 +70,8 @@ def test_deploy(runner, with_message, patch, hard_deployment,
             api.Config.get(), payload, 'my_app', message, hard_deployment)
 
         assert time.sleep.call_count == 3
+
+        test.compile_app.assert_called_with('my_app', debug=debug)
 
         if final_release_state == 'DEPLOYED':
             assert 'Configured 1 story' in result.stdout

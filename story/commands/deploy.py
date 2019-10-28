@@ -15,14 +15,15 @@ from ..api import Apps, Config, Releases
 
 @cli.cli.command()
 @click.option('--message', help='Deployment message')
+@click.option('--debug', is_flag=True, help='Compile in debug mode')
 @click.option('--hard', is_flag=True,
               help='Pull the latest service images on deploy')
 @options.app(allow_option=False)
-def deploy(app, message, hard):
+def deploy(app, message, hard, debug):
     """Deploy your app to Storyscript Cloud."""
     cli.user()
 
-    payload = test.compile_app(app, False)  # Also adds a spinner.
+    payload = test.compile_app(app, debug=debug)  # Also adds a spinner.
 
     if payload is None:
         sys.exit(1)  # Error already printed by compile_app.
