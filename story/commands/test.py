@@ -62,13 +62,20 @@ def compile_app(app_name_for_analytics, debug) -> dict:
         os.chdir(utils.get_project_root_dir())
         stories = json.loads(App.compile(utils.get_project_root_dir()))
     except StoryError as e:
+        # report internal errors
+        if e.error_code() == 'E0001':
+            cli.sentry.captureException(e)
+
         click.echo('Failed to compile project:\n', err=True)
         if debug:
             raise e
         else:
             click.echo(click.style(str(e.message()), fg='red'), err=True)
+
         stories = None
     except BaseException as e:
+        # report internal errors
+        cli.sentry.captureException(e)
         click.echo('Failed to compile project:\n', err=True)
         if debug:
             raise e

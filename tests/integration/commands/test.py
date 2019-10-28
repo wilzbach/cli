@@ -9,7 +9,7 @@ from pytest import mark, raises
 from story import cli
 
 from storyscript.App import App
-from storyscript.exceptions import StoryError
+from storyscript.exceptions import ProcessingError, StoryError
 
 
 @mark.parametrize('mock_tree_as_none', [True, False])
@@ -24,6 +24,8 @@ def test_test(runner, patch, init_sample_app_in_cwd, mock_tree_as_none,
             'a2.story': {}
         }
     }
+
+    patch.object(cli, 'sentry')
 
     args = []
     if debug:
@@ -68,9 +70,13 @@ def test_compile_app(runner, patch, init_sample_app_in_cwd,
     app_name_for_analytics = 'my_special_app'
 
     patch.object(cli, 'get_asyncy_yaml', return_value='asyncy_yml_content')
+    patch.object(cli, 'sentry')
     patch.object(cli, 'track')
 
     patch.object(click, 'echo')
+
+    if isinstance(compilation_exc, StoryError):
+        compilation_exc.process()
 
     if force_compilation_error:
         patch.object(App, 'compile',
@@ -121,20 +127,27 @@ def test_compile_app(runner, patch, init_sample_app_in_cwd,
     })
 
 
-@mark.parametrize('compilation_exc,error_repr', [
-    (StoryError('E100', 'a.story', path='foo'),
-        "StoryError('E100', 'a.story')"),
-    (BaseException('oh no!'), "BaseException('oh no!')"),
+@mark.parametrize('compilation_exc,error_repr,sentry_tracked', [
+    (StoryError(ProcessingError('service_name'), 'a.story', path='foo'),
+        "StoryError(ProcessingError('service_name'), 'a.story')", False),
+    (StoryError.internal_error(BaseException('internal')),
+        "StoryError(BaseException('internal'))", True),
+    (BaseException('oh no!'), "BaseException('oh no!')", True),
 ])
 def test_compile_app_debug(runner, patch, init_sample_app_in_cwd,
                            pre_init_cli_runner,
-                           compilation_exc, error_repr):
+                           compilation_exc, error_repr, sentry_tracked):
     app_name_for_analytics = 'my_special_app'
 
     patch.object(cli, 'get_asyncy_yaml', return_value='asyncy_yml_content')
+    patch.object(cli, 'sentry')
     patch.object(cli, 'track')
 
     patch.object(click, 'echo')
+
+    if isinstance(compilation_exc, StoryError):
+        compilation_exc.process()
+
     patch.object(App, 'compile', side_effect=compilation_exc)
 
     with runner.runner.isolated_filesystem():
@@ -151,3 +164,8 @@ def test_compile_app_debug(runner, patch, init_sample_app_in_cwd,
             )
 
         assert repr(e.value) == error_repr
+
+        if sentry_tracked:
+            cli.sentry.captureException.assert_called()
+        else:
+            cli.sentry.captureException.assert_not_called()
